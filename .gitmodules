@@ -1,0 +1,4 @@
+[submodule "addoons/moduli"]
+	path = addoons/moduli
+	url = git@github.com:addoons/moduli.git
+	branch = 12.0
