@@ -21,7 +21,7 @@
                     <div class="row mt16 mb16">
 
                         <div class="col-md-12 text-center">
-                            <span ><h1 class="text-center ore_fc">0</h1></span>
+                            <span ><h1 class="text-center ore_fc" style="font-size: 48px; color: #875A7B;">0</h1></span>
 
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                 <div class="container">
                     <div class="row mt16 mb16">
                         <div class="col-md-12 text-center">
-                            <span ><h1 class="text-center ore_sv">0</h1></span>
+                            <span ><h1 class="text-center ore_sv" style="font-size: 48px; color: #875A7B;">0</h1></span>
                         </div>
                     </div>
                 </div>
