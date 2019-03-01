@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+
         <template id="addoons_menu_editor" inherit_id="website.snippets" name="Addoons">
             <xpath expr="//div[@id='snippet_structure']" position="after">
                 <div id="snippet_addons_menu" class="o_panel">
@@ -53,5 +55,7 @@
                    t-thumbnail="/addoons_website_theme/static/src/img/hourglass.png"/>
             </xpath>
         </template>
+
+
     </data>
 </odoo>
