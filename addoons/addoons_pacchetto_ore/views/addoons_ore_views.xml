@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--CHIAMATE ACTION -->
+        <record model="ir.actions.act_window" id="addoons_ore_action">
+            <field name="name">Pacchetti ore</field>
+            <field name="res_model">pacchetti.ore</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <menuitem id="addoons_ore_menu" name="Pacchetti ore" sequence="5" parent="sale.sale_menu_root" action="addoons_ore_action"/>
+
+        <record id="pacchetto_ore_search_view" model="ir.ui.view">
+            <field name="name">pacchetti.ore.search</field>
+            <field name="model">pacchetti.ore</field>
+            <field name="arch" type="xml">
+                <search string="ore">
+                    <field string="cliente" name="partner_id"/>
+                    <field string="tipo" name="type"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- tree view pacchetti.ore -->
+        <record id="view_pacchetti_ore_tree" model="ir.ui.view">
+            <field name="name">pacchetti.ore.tree</field>
+            <field name="model">pacchetti.ore</field>
+            <field name="arch" type="xml">
+                <tree >
+                    <field name="partner_id"  string="Cliente"/>
+                    <field  name="description" string="Descrizione" />
+                    <field  name="start_date" string="Inizio validità"/>
+                    <field  name="end_date" string="Fine validità"/>
+                    <field  name="hours" string="Ore"/>
+                    <field  name="type" string="tipo"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- form view pacchetti.ore -->
+        <record id="view_pacchetti_ore_form" model="ir.ui.view">
+            <field name="name">pacchetti.ore.form</field>
+            <field name="model">pacchetti.ore</field>
+            <field name="arch" type="xml">
+                <form string="" class="o_sale_order">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field  name="partner_id" string="Cliente" required="1"/>
+                                <field  name="start_date" string="Inizio validità" />
+                                <field  name="end_date" string="Fine validità"/>
+                            </group>
+                            <group>
+                                <field  name="hours" string="Ore" required="1"/>
+                                <field  name="type" string="tipo" required="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Descrizione">
+                                <field name="description" />
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- tree view task.paccchetto.ore -->
+        <record id="view_task_pacchetto_tree" model="ir.ui.view">
+            <field name="name">task.pacchetto.ore.tree</field>
+            <field name="model">task.pacchetto.ore</field>
+            <field name="arch" type="xml">
+                <tree string="Pacchetto ore" editable="bottom">
+                    <field  name="requested_hours" string="Ore" required="1"/>
+                    <field  name="type" string="tipo" required="1"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>
