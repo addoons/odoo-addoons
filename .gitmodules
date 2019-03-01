@@ -1,9 +1,1 @@
-[submodule "addoons/moduli"]
-	path = addoons/moduli
-	url = git@github.com:addoons/moduli.git
-	branch = 12.0
 
-[submodule "addoons/moduli-master"]
-	path = addoons/moduli-master
-	url = git@github.com:addoons/moduli.git
-	branch = master
