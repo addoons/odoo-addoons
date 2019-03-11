@@ -1,0 +1,724 @@
+<odoo>
+    <data>
+
+        <template id="report_saleorder">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="addoons_report_template.report_saleorder_document" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </template>
+
+        <report
+                id="sale.report_sale_order"
+                string="Preventivo/Ordine (PDF)"
+                model="sale.order"
+                report_type="qweb-pdf"
+                file="addoons_report_template.report_saleorder"
+                name="addoons_report_template.report_saleorder"
+                paperformat="addoons_report_template.paperformat_addoons_report"
+        />
+
+
+        <template id="report_saleorder_document">
+            <t t-call="addoons_report_template.external_layout">
+                <t t-set="doc" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
+                <div class="page">
+                    <style>
+                        @import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+                        .page span, .page h1, .page strong, .page h2{
+                        font-family: font-family: 'Roboto', sans-serif !important;
+                        }
+                        .sale-table th{
+                        background-color: #875a7b !important;
+                        padding: 10px !important;
+                        color: white;
+                        border: none !important;
+                        border-bottom: none !important;
+                        font-size: 14px;
+                        }
+                        .sale-table td{
+                        padding: 10px !important;
+                        font-size: 14px;
+                        border:none;
+                        }
+                        .table-extra th{
+                        background-color:#e6e6e6;
+                        }
+                        .table-spec {
+                        width:100%;
+                        page-break-inside:auto;
+                        }
+                        .table-spec tr{
+                        width:100%;
+                        page-break-inside:avoid;
+                        border:none !important;
+                        }
+                        .table-spec th{
+                        background-color: #875a7b !important;
+                        padding: 8px !important;
+                        color: white;
+                        border:none !important;
+                        }
+                        .table-spec td{
+                        border:none !important;
+                        }
+                        .contratto-sviluppo{
+                        font-size: 11px !important;
+                        text-align:justify;
+                        }
+                        .contratto-sviluppo *{
+                        font-size: 11px !important;
+                        text-align:justify;
+                        }
+                    </style>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <strong>Cliente: </strong><br/>
+                                    <span t-field="doc.partner_id.name"/><br/>
+                                    <span t-field="doc.partner_id"
+                                          t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                </div>
+                                <div class="col-xs-6">
+                                    <strong>Fatturazione: </strong><br/>
+                                    <span t-field="doc.partner_invoice_id.name"/><br/>
+                                    <span t-field="doc.partner_invoice_id"
+                                          t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6" style="text-align:right; margin-top: -10px;">
+                            <span style="font-size: 42px;" t-if="doc.state in ['sale']">Ordine di Vendita</span>
+                            <span style="font-size: 42px;" t-if="doc.state in ['draft','sent']">Preventivo</span><br/>
+                            <div style="background-color: #875a7b; color: white; padding: 2px; width: 300px; float:right;">
+                                <span style="font-size: 37px;">N° <span t-field="doc.name"/></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <div class="row mt32 mb32" id="informations">
+                        <div t-if="doc.client_order_ref" class="col-xs-3">
+                            <strong>Referenza:</strong>
+                            <p t-field="doc.client_order_ref"/>
+                        </div>
+                        <div t-if="doc.date_order" class="col-xs-3">
+                            <strong t-if="doc.state in ['draft','sent']">Data Preventivo:</strong>
+                            <p t-field="doc.date_order"  t-field-options='{"format": "dd/MM/yyyy"}'/>
+                        </div>
+                        <div t-if="doc.validity_date and doc.state in ['draft','sent']" class="col-xs-3">
+                            <strong>Data Scadenza:</strong>
+                            <p t-field="doc.validity_date"/>
+                        </div>
+                        <div t-if="doc.user_id.name" class="col-xs-3">
+                            <strong>Commerciale:</strong>
+                            <p t-field="doc.user_id"/>
+                        </div>
+                    </div>
+
+                    <t t-if="doc.check_description()">
+                        <h3>
+                            <strong>Analisi Del Progetto</strong>
+                        </h3>
+                        <br/><br/>
+                        <span t-raw="doc.full_description"/>
+                        <div style="page-break-after:always;"/>
+                        <h3>
+                            <strong>Condizioni Economiche</strong>
+                        </h3>
+                        <br/><br/>
+                    </t>
+
+                    <t t-set="display_discount" t-value="any([l.discount for l in doc.order_line])"/>
+
+                    <t t-set="cont" t-value="1"/>
+                    <t t-foreach="doc.order_lines_layouted()" t-as="page">
+                        <t t-foreach="page" t-as="layout_category">
+                            <h4><strong><t t-esc="layout_category['name']"/></strong></h4>
+                            <table class="table sale-table">
+                                <thead style="background-color:#e6e6e6; border:none; border-bottom: none !important;">
+                                    <tr style="border: none !important;">
+                                        <th width="5%">#</th>
+                                        <th width="35%">Descrizione</th>
+                                        <th width="10%" class="text-right">Qt.</th>
+                                        <th width="10%" class="text-right">Pr. Unit.</th>
+                                        <th width="10%" t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">Sc.%</th>
+                                        <th width="10%" class="text-right">Tasse</th>
+                                        <th width="10%" class="text-right" groups="sale.group_show_price_subtotal">Pr. Tot.</th>
+                                        <th width="10%" class="text-right price_tax_included" groups="sale.group_show_price_total">Totale</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="sale_tbody">
+                                    <t t-if="layout_category_size > 1 or page_size > 1" groups="sale.group_sale_layout">
+                                        <tr class="active">
+                                            <td colspan="7" style="font-weight: bold; border-bottom: 1px solid black;">&amp;bull;
+                                                <t t-esc="layout_category['name']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-foreach="layout_category['lines']" t-as="l">
+                                        <tr>
+                                            <td><t t-esc="cont"/></td>
+                                            <td><span t-field="l.name"/></td>
+                                            <td class="text-right">
+                                                <span t-field="l.product_uom_qty"/>
+                                                <span t-field="l.product_uom" groups="product.group_uom"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="l.price_unit"/>
+                                            </td>
+                                            <td t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">
+                                                <t t-if="l.discount > 0">
+                                                    <span t-field="l.discount"/>%
+                                                </t>
+                                            </td>
+                                            <td class="text-right">
+                                                IVA <span t-esc="int(l.tax_id.amount)"/>%
+                                            </td>
+                                            <td class="text-right" groups="sale.group_show_price_subtotal">
+                                                <span t-field="l.price_subtotal"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
+                                            <td class="text-right" groups="sale.group_show_price_total">
+                                                <span t-field="l.price_total"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <t t-set="cont" t-value="cont + 1"/>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                    </t>
+
+                    <!--TOTALI-->
+                    <div class="row" name="total">
+                        <div class="col-xs-4 pull-right">
+                            <table class="table table-condensed">
+                                <tr>
+                                    <td><strong>Imponibile</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="doc.amount_untaxed"
+                                              t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <!--<t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">-->
+                                    <!--<tr>-->
+                                        <!--<td><span t-esc="amount_by_group[0] or 'Taxes'"/></td>-->
+                                        <!--<td class="text-right">-->
+                                            <!--<span t-esc="amount_by_group[1]"-->
+                                                  <!--t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                <!--</t>-->
+                                <t t-foreach="doc.amount_by_group" t-as="amount_by_group">
+                                    <tr style="">
+                                        <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
+                                            <td>
+                                                <span t-esc="amount_by_group[0]"/>
+                                                <span>&amp;nbsp;<span>on</span>&amp;nbsp;<t t-esc="amount_by_group[2]" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></span>
+                                            </td>
+                                            <td class="text-right o_price_total">
+                                                <span t-esc="amount_by_group[1]"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
+                                        </t>
+                                        <t t-else ="">
+                                            <td>
+                                                <span t-esc="amount_by_group[0]"/>
+                                            </td>
+                                            <td class="text-right o_price_total">
+                                                <span t-esc="amount_by_group[1]"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td><strong>Totale</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="doc.amount_total"
+                                              t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p t-field="doc.note" />
+
+                    <div style="page-break-inside:avoid;">
+                        <h4>
+                            <strong>
+                                Termini di Pagamento
+                            </strong>
+                        </h4>
+
+                        <p t-if="doc.payment_term_id.note">
+                            <span t-field="doc.payment_term_id.note"/>
+                        </p>
+
+                        <br/>
+                    </div>
+
+                    <div style="page-break-inside:avoid;">
+                        <h4>
+                            <strong>
+                                Coordinate Bancarie
+                            </strong>
+                        </h4>
+                        <strong>IBAN: </strong><span>IT73W0200832800000105404597</span><br/>
+                        <strong>FILIALE: </strong><span>UNICREDIT CASSANO D'ADDA</span><br/>
+                        <strong>BIC/SWIFT: </strong><span>UNCRITM1047</span><br/>
+                        <strong>CAUSALE PAGAMENTO: </strong><span>PAGAMENTO ORDINE DI VENDITA <span t-field="doc.name"/></span>
+                    </div>
+
+                    <t t-if="doc.extra_product_ids">
+                        <br/><br/>
+                        <div style="page-break-inside:avoid;">
+                            <h5>
+                                <strong style="color: #875a7b;">
+                                    Servizi Aggiuntivi
+                                </strong>
+                            </h5>
+                            <span>
+                                E' possibile richiedere l'aggiunta di uno o più servizi al preventivo.<br/>
+                                I pacchetti sono utilizzabili nell'anno di acquisto.
+                            </span>
+                            <br/><br/>
+                            <table class="table table-extra" style="width: 100%;">
+                                <thead>
+                                    <th width="60%">Servizio</th>
+                                    <th width="10%" class="text-right">Qt.</th>
+                                    <th width="10%" class="text-right">Pr.Unit.</th>
+                                    <th width="10%" t-if="display_discount" class="text-right">Sc.%</th>
+                                    <th width="10%" class="text-right">Totale</th>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.extra_product_ids" t-as="extra">
+                                        <tr>
+                                            <td>
+                                                <strong t-field="extra.product_id.name"/>
+                                                <t t-if="extra.description">
+                                                    <br/>
+                                                    <span t-field="extra.description"/>
+                                                </t>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="extra.qty"/>
+                                                <span t-field="extra.product_uom"/>
+                                            </td>
+                                            <td class="text-right"><span t-field="extra.unit_price" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></td>
+                                            <td class="text-right">
+                                                <t t-if="extra.discount > 0">
+                                                    <span t-field="extra.discount"/> %
+                                                </t>
+                                            </td>
+                                            <td class="text-right"><span t-field="extra.total" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </t>
+
+                    <div class="oe_structure"/>
+
+                    <div style="page-break-after:always;"/>
+
+                    <h3><strong>Descrizione Dettagliata</strong></h3>
+                    <br/>
+                    <t t-set="cont" t-value="1"/>
+                    <t t-foreach="doc.order_line" t-as="l">
+                        <t t-if="l.check_description() or l.deadline">
+                            <table class="table table-spec" style="page-break-inside:avoid;">
+                                <thead>
+                                    <th width="10%">Riga N°</th>
+                                    <th width="75%">Descrizione</th>
+                                    <th width="15%">Data Prevista</th>
+                                </thead>
+                                <tbody>
+                                    <td><t t-esc="cont"/></td>
+                                    <td><t t-raw="l.description_line"/></td>
+                                    <td><span t-field="l.deadline"/></td>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-set="cont" t-value="cont+1"/>
+                    </t>
+
+                    <t t-if="doc.contratto_sviluppo">
+                        <div style="page-break-after:always;"/>
+                        <h4><strong>CONTRATTO DI SVILUPPO ODOO10 E RELATIVA MANUTENZIONE ORDINARIA</strong></h4>
+                        <br/>
+                        <span class="contratto-sviluppo">
+                            N. CONTRATTO <span t-field="doc.name"/>
+                            <span t-field="doc.date_order"/>
+                            <br/>
+                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO ODOO 10 <span t-field="doc.name"/> (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
+                            E
+                            LA SOCIETÀ CLIENTE <span t-field="doc.partner_id.name"/>, IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN <span t-field="doc.partner_id.zip"/>, <span t-field="doc.partner_id.city"/>, <span t-field="doc.partner_id.street"/> (DETTO ANCHE LICENZIATARIO)
+
+                            <br/><br/>
+
+                            <strong>ART. 1) DEFINIZIONI. </strong><br/>
+                            AI FINI DEL PRESENTE CONTRATTO, I TERMINI SOTTO RIPORTATI HANNO IL SEGUENTE SIGNIFICATO: <br/>
+                            •	CODICE SORGENTE: IL CODICE SORGENTE È IL TESTO DI UN PROGRAMMA SCRITTO IN UN LINGUAGGIO DI PROGRAMMAZIONE. IL CODICE SORGENTE DEVE ESSERE OPPORTUNAMENTE ELABORATO PER DIVENIRE UN PROGRAMMA ESEGUIBILE; TALE ELABORAZIONE È NECESSARIA PER GIUNGERE ALL’ESECUZIONE DEL PROGRAMMA. <br/>
+                            •	HARDWARE: IL COMPLESSO DELLE APPARECCHIATURE TECNICHE, MECCANICHE, ELETTRICHE ED ELETTRONICHE DI UN SISTEMA DI ELABORATORE DATI ( PERSONAL COMPUTER)  SUL QUALE VIENE INSTALLATO IL SOFTWARE E ATTRAVERSO IL QUALE IL SOFTWARE È UTILIZZATO; <br/>
+                            •	MANUTENZIONE: SERVIZI DI MANUTENZIONE E AGGIORNAMENTO DELLE APPARECCHIATURE E DEL SOFTWARE PIÙ DETTAGLIATAMENTE INDICATI NELLE CLAUSOLE DEL PRESENTE CONTRATTO E DELLE CONDIZIONI SPECIFICHE DI CUI ALL’ALLEGATO A RELATIVO A LICENZA E MANUTENZIONE; <br/>
+                            •	SERVIZI DI ASSISTENZA: ATTIVITÀ, IN QUALSIASI FORMA, PRESTATA DALLO SVILUPPATORE PER COADIUVARE IL COMMITTENTE NELLO SVOLGIMENTO DI COMPITI REALIZZATIVI DEL PRODOTTO FORNITO; <br/>
+                            •	SOFTWARE: INSIEME ORGANIZZATO E STRUTTURATO DI ISTRUZIONI IN QUALSIASI FORMA O SU QUALUNQUE SUPPORTO CAPACE, DIRETTAMENTE O INDIRETTAMENTE, DI FAR ESEGUIRE O FAR OTTENERE UN RISULTATO PARTICOLARE PER MEZZO DI  UN SISTEMA DI ELABORAZIONE ELETTRONICA DELL’INFORMAZIONE; <br/>
+                            •	SUPPORTO DI MEMORIZZAZIONE: I SUPPORTI, FISSI O MOBILI, SUI QUALI RISIEDE IL PROGRAMMA; <br/>
+                            •	RESPONSABILE DEL PROGETTO: LA PERSONA CHE AVRÀ L’AUTORITÀ DI RAPPRESENTARE RISPETTIVAMENTE LO SVILUPPATORE IN TUTTE LE MATERIE ATTINENTI ALL’ESECUZIONE DEI PRODOTTI FORNITI; <br/>
+                            •	UNITÀ ASSOCIATE: L'UNITÀ VIDEO, WORKSTATION, PERSONAL COMPUTER, STAMPANTI, PERIFERICHE, SUPPORTI INTERNI; <br/>
+                            •	USO: L’ELABORAZIONE E L’UTILIZZO DEL PROGRAMMA PER ELABORATORE. <br/>
+
+                            <br/>
+                            <strong>ART. 2) OGGETTO DEL CONTRATTO.</strong><br/>
+                            CON IL PRESENTE CONTRATTO LO SVILUPPATORE SI OBBLIGA A SVILUPPARE E/O AD APPORTARE LE MODIFICHE NECESSARIE AL CODICE SORGENTE GPL FORNITO DA ODOO 10 SECONDO LE NECESSITÀ O RICHIESTE DEL COMMITENTE.
+                            IL COMMITENTE, PERTANTO, SARÀ L’ESCLUSIVO PROPRIETARIO DEL CODICE SORGENTE GPL FORNITO DA ODOO 10 COSI COME MODIFICATO E/O INTEGRATO DALLO SVILUPPATORE SULLA BASE DELLE RICHIESTE O NECESSITÀ DEL COMMITTENTE, AUTORIZZANDO SIN D’ORA ADDOONS AL RIUTILIZZO DELLE MODIFICHE APPORTATE AL CODICE SORGENTE.
+                            IL COMMITENTE, TUTTAVIA, SI OBBLIGA AD UTLIZZARE IL CODICE SORGENTE GPL FORNITO DA ODOO 10 COSÌ COME SVILUPPATO DALLO SVILUPPATORE, ESCLUSIVAMENTE PER FINI GESTIONALI INTERNI (ANCHE PER IL TRAMITE DI ULTERIORI SVILUPPATORI), OBBLIGANDOSI PERÒ A NON VENDERE E/O DIVULGARE DETTO CODICE MODIFICATO A SOGGETTI TERZI.
+                            NEL CASO IN CUI IL COMMITENTE – IN VIOLAZIONE DEL PRECEDENTE DISPOSTO - RIVENDA O DIVULGHI SENZA AUTORIZZAZIONE DI ADDOONS TALE CODICE MODIFICATO È PREVISTO IL PAGAMENTO A TITOLO DI PENALE DELLA SOMMA DI EURO … PER OGNI RIVENDITA O DIVULAGAZIONE NON AUTORIZZATA DA ADDOONS.
+
+                            <br/> <br/>
+                            <strong>ART. 2.1) OGGETTO DELLA MANUTENZIONE.</strong><br/>
+                            OLTRE A QUANTO PREVISTO DALL’ARTICOLO 2 DEL PRESENTE CONTRATTO, LO SVILUPPATORE METTE A DISPOSIZIONE DEL COMMITENTE IL SERVIZIO DI MANUTENZIONE ED ASSISTENZA, PER UN TOTALE COMPLESSIVO DI 30 ORE ANNUE (DA UTILIZZARE NEL TERMINE DI UN ANNO DALLA SOTTOSCRIZIONE DEL PRESENTE CONTRATTO), CHE PREVEDE:<br/>
+                            1.	GLI AGGIORNAMENTI DI LEGGE, SUL SOLO SOFTWARE LICENZIATO;<br/>
+                            2.	EVENTUALI AGGIORNAMENTI CHE LO SVILUPPATORE REALIZZERÀ NEL TEMPO, INCREMENTANDO E MIGLIORANDO IL SOFTWARE<br/>
+                            3.	SISTEMAZIONE DI EVENTUALI ERRORI SUL SOFTWARE RILEVATI DAL COMMITTENTE E RICONOSCIUTI TALI (A INSINDACABILE GIUDIZIO DELLO SVILUPPATORE).<br/>
+                            IN CASO DI RICHIESTA DI SERVIZI NON ELENCATI OPPURE NEL CASO IN CUI SI ESAURISCANO LE ORE ANNUE DI INTERVENTO DI CUI AL PRESENTE CONTRATTO, LO SVILUPPATORE SI RISERVA DI FORNIRE I RELATIVI SERVIZI PREVIA SOTTOSCRIZIONE DI APPOSITO ORDINE DA PARTE DEL COMMITTENTE.
+
+                            <br/> <br/>
+                            <strong>ART. 2.1.1) MODALITÀ DI ESPLICAZIONE DEL SERVIZIO DI MANUTENZIONE</strong><br/>
+                            IL SERVIZIO DI MANUTENZIONE DI CUI AL PRESENTE CONTRATTO (PER IL TOTALE DI ORE DI CUI AL PRECEDENTE ART.2.1) SI ESPLICHERÀ NEL SEGUENTE MODO:<br/>
+                            1.	LA REALIZZAZIONE DEL SERVIZIO DI MANUTENZIONE POTRÀ ESSERE EFFETTUATA SIA PRESSO GLI UFFICI DEL COMMITTENTE CHE IN MODALITÀ REMOTA DAGLI UFFICI DELLO SVILUPPATORE.<br/>
+                            2.	PER LA SISTEMAZIONE DI ERRORI CHE EVENTUALMENTE FOSSERO CONTENUTI NEL SOFTWARE, IL COMMITTENTE SI OBBLIGA A COMUNICARE AL SVILUPPATORE L'OPPORTUNA DOCUMENTAZIONE DEL MALFUNZIONAMENTO RISCONTRATO. LO SVILUPPATORE RICONOSCIUTO (A SUO INSINDACABILE GIUDIZIO), L’EFFETTIVO ERRORE, SI OBBLIGA AD ESPLICARE IL SERVIZIO DI MANUTENZIONE RILASCIANDO INFORMAZIONI PER LA CORREZIONE DEL DIFETTO, O RILASCIANDO UNA TEMPORANEA PROCEDURA DI ESCLUSIONE, OPPURE RILASCIANDO UNA VERSIONE CORRETTA DEL SOFTWARE.<br/>
+                            3.	LO SVILUPPATORE GARANTISCE CHE I SERVIZI SARANNO ESEGUITI DA PERSONALE DOTATO DI ADEGUATA PREPARAZIONE PROFESSIONALE. I SERVIZI SARANNO FORNITI AL COMMITTENTE (DURANTE IL NORMALE ORARIO DI LAVORO OSSERVATO DAL PERSONALE DELLO SVILUPPATORE, IL QUALE - PER LA PRESTAZIONE DEI SERVIZI STESSI - SARÀ LIBERO DI AVVALERSI ANCHE DI TECNICI ESTRANEI ALLA PROPRIA ORGANIZZAZIONE).<br/>
+                            4.	IL SERVIZIO DI MANUTENZIONE DI CUI AL PRESENTE CONTRATTO NON COMPRENDE LA CORREZIONE DI MALFUNZIONAMENTI DOVUTI ALL'UTILIZZO IMPROPRIO DEL SOFTWARE DA PARTE DEL COMMITTENTE O DEL SUO PERSONALE E/O DA EVENTUALI INTEGRAZIONI E/O MODIFICHE APPORTATE DA TERZI SVILUPPATORI.<br/>
+                            5.	LO SVILUPPATORE FORNIRÀ ALTRESÌ, SU RICHIESTA DEL COMMITTENTE, FORMAZIONE AL PERSONALE INDICATO DAL COMMITTENTE STESSO AFFINCHÉ POSSA APPRENDERE LE CARATTERISTICHE E LE FUNZIONALITÀ OGGETTO DEL PRESENTE SOFTWARE.
+                            <br/> <br/>
+                            <strong>ART. 3)  OBBLIGHI E RESPONSABILITÀ.</strong><br/>
+                            I VIZI E LE DIFFORMITÀ DOVRANNO ESSERE DENUNCIATI PER ISCRITTO DAL COMMITTENTE ENTRO 5 GIORNI DALLA SCOPERTA.
+                            A TAL FINE, LO SVILUPPATORE SI OBBLIGA AD INTERVENIRE, SIA DA REMOTO CHE DA LOCALE, PER LA PRONTA RISOLUZIONE DEL PROBLEMA ENTRO E NON OLTRE 5 GIORNI LAVORATIVI DECORRENTI DALLA RICHIESTA DI INTERVENTO INOLTRATA DAL COMMITTENTE ANCHE A MEZZO FAX O POSTA ELETTRONICA.
+                            IL COMMITTENTE SI OBBLIGA PER SÉ E PER I PROPRI DIPENDENTI, CONSULENTI E MANDATARI, CHE ABBIANO ACCESSO AL SOFTWARE, A NON CONSENTIRE A TERZI L’ESTRAZIONE DI COPIE ANCHE PARZIALI.
+                            LO SVILUPPATORE NON È RESPONSABILE DI ALCUN DANNO CAUSATO A COSE O PERSONE PER IL FUNZIONAMENTO DIFETTOSO DELLE APPARECCHIATURE O DEI SOFTWARE INSTALLATI, NON IMPUTABILI AL SUO INTERVENTO E IN CASO DI MANUTENZIONE EFFETTUATA DA TERZI NON AUTORIZZATI. ESSO RISPONDE DEI DANNI CAUSATI O SUBITI DAL PROPRIO PERSONALE TECNICO DURANTE LE OPERAZIONI DI MANUTENZIONE O DI ASSISTENZA PRESSO IL COMMITTENTE.
+                            NEL CASO DI INTERRUZIONI DI ESERCIZIO DEL SISTEMA O DELLA SINGOLA APPARECCHIATURA, SUCCESSIVE ALL’INTERVENTO DI MANUTENZIONE, LO SVILUPPATORE, SALVO DOLO O COLPA GRAVE, NON RISPONDE DI EVENTUALI PERDITE DEL COMMITTENTE O DI TERZI, TRA CUI SI CITANO, A MERO TITOLO ESEMPLIFICATIVO, LUCRO CESSANTE, SPESE PER RIPRISTINO DI ATTIVITÀ, RESPONSABILITÀ CIVILE VERSO TERZI, PERDITA DI AFFARI.
+                            IL COMMITTENTE, SALVO ALTRE INDICAZIONI, SI IMPEGNA A RICHIEDERE L’INTERVENTO DI MANUTENZIONE ORDINARIA E DI ASSISTENZA CON UN PREAVVISO DI CINQUE GIORNI LAVORATIVI, DA INOLTRARE A MEZZO RICHIESTA INVIATA VIA E-MAIL AL SVILUPPATORE, IL QUALE SI IMPEGNA AD INTERVENIRE NEL PIÙ BREVE TEMPO, EVITANDO CHE IL RITARDO NEL SUO INTERVENTO POSSA OLTREMODO TURBARE L’ATTIVITÀ LAVORATIVA DEL COMMITTENTE.
+                            <br/> <br/>
+
+                            <strong>ART. 4) INSTALLAZIONE ED ACCETTAZIONE DEL SOFTWARE.</strong><br/>
+                            IL COMMITTENTE METTERÀ A DISPOSIZIONE DELLO SVILUPPATORE GLI STRUMENTI TECNOLOGICI A CUI È DESTINATO IL PROGRAMMA, PER CONSENTIRNE L’INSTALLAZIONE. ESAURITA LA FASE DI INSTALLAZIONE IL PROGRAMMA DI LICENZA SOFTWARE SI INTENDERÀ, ACCETTATO. TRASCORSI TRENTA GIORNI DALLA DATA DI INSTALLAZIONE DEL PROGRAMMA SU LICENZA SENZA CHE SIANO PERVENUTE DA PARTE DEL COMMITTENTE DELLE LAMENTELE, IL PROGRAMMA SI INTENDERÀ ACCETTATO, RITENENDOSI IL PERIODO DI TEMPO SOPRA INDICATO ADEGUATO PER VERIFICARE L’IDONEITÀ DEL PROGRAMMA STESSO DA PARTE DELLO SVILUPPATORE.
+
+                            <br/> <br/>
+
+                            <strong>ART. 5) CONDIZIONI ECONOMICHE E CORRISPETTIVI.</strong><br/>
+                            PER LO SVILUPPO DI CUI AL PRESENTE ACCORDO E PER I SERVIZI DI MANUTENZIONE, IL COMMITTENTE SI IMPEGNA A VERSARE IL CORRISPETTIVO PATTUITO DI TOTALE OFFERTA €. <span t-field="doc.amount_total"/> COME SEGUE:
+                            MODALITÀ DI PAGAMENTO: 30% ACCONTO A MEZZO B.B. D.F. F.M., 40% PRIMA INSTALLAZIONE A MEZZO R.B. 30 GG D.F. F.M., SALDO A MEZZO R.B. 30 GG D.F. F.M.
+                            EVENTUALI ORE DI SERVIZIO DI MANUTENZIONE CHE NON DOVESSERO ESSERE UTILIZZATE NELL’ARCO DELL’ANNO ANDRANNO PERDUTE E NON POTRANNO ESSERE UTILIZZATE NEL SUCCESSIVO ANNO CON CONSEGUENTE DIVIETO DI RECUPERO NEGLI ANNI SUCCESSIVI.
+                            TUTTI GLI IMPORTI E I PREZZI INDICATI NEL CONTRATTO O NEGLI EVENTUALI ALLEGATI SI INTENDONO AL NETTO DI IVA.
+                            IN CASO DI RITARDO NEI PAGAMENTI RISPETTO ALLE CONCORDATE SCADENZE SARANNO DOVUTI - SENZA NECESSITÀ DI MESSA IN MORA – GLI INTERESSI DI MORA EX D.LGS 231/02, A VALERE DALLA DATA DI PAGAMENTO INDICATA IN FATTURA SINO ALL’AVVENUTO PAGAMENTO, SALVI I MAGGIORI DANNI.
+
+                            <br/> <br/>
+
+                            <strong>ART. 6) RISERVATEZZA E PROTEZIONE DEI DATI.</strong><br/>
+                            I TERMINI E LE CONDIZIONI (COMPRESO IL PREZZO) DEL CONTRATTO, UNITAMENTE A QUALSIASI ALTRA INFORMAZIONE ESPLICITAMENTE DEFINITA COME “RISERVATA” E FORNITA IN BASE ALL’ACCORDO, SONO CONFIDENZIALI E NON SARANNO RIVELATI, ORALMENTE O PER ISCRITTO, DAL COMMITTENTE A TERZI SENZA IL PREVIO CONSENSO SCRITTO DELLO SVILUPPATORE.
+                            IL COMMITTENTE DICHIARA CHE I SUOI SISTEMI HARDWARE E SOFTWARE CONTENGONO DELLE INFORMAZIONI RISERVATE DI VALORE CONFIDENZIALE; LO SVILUPPATORE SI IMPEGNA A PROTEGGERE I DATI E LE INFORMAZIONI CON CUI VERRÀ A CONTATTO A SEGUITO DEI SUOI INTERVENTI CON ALMENO LO STESSO GRADO DI CURA E RISERVATEZZA, MA COMUNQUE CON CURA NON INFERIORE A QUELLA ORDINARIA, CHE USA PER LE PROPRIE INFORMAZIONI CHE NON DESIDERI RIVELARE AL PUBBLICO.
+                            È FATTA SALVA LA FACOLTÀ DELLO SVILUPPATORE DI TRASMETTERE I DATI O LE INFORMAZIONI A SOGGETTI DA LUI DELEGATI AD ESPLETARE I SERVIZI CONNESSI CON L'OGGETTO DEL PRESENTE CONTRATTO E COMUNICATI ESCLUSIVAMENTE NELL'AMBITO DELLE FINALITÀ DEL SERVIZIO RESO..
+                            LE PARTI CONTRAENTI, RICEVUTA L’UNA DALL’ALTRA IDONEA INFORMATIVA EX ART. 13 D. LGS. 196/03, DICHIARANO, AI SENSI DEL PREDETTO TESTO DI LEGGE, DI CONSENTIRE RECIPROCAMENTE AL TRATTAMENTO DEI DATI PERSONALI CHE LE RIGUARDANO, PER FINALITÀ INERENTI ALL’ESECUZIONE DEL PRESENTE CONTRATTO ED ALL’ADEMPIMENTO DEGLI OBBLIGHI LEGALI E CONTRATTUALI DALLO STESSO DERIVANTI.
+                            I DATI VERRANNO TRATTATI PER TUTTA LA DURATA DEL RAPPORTO CONTRATTUALE IN ESSERE, NONCHÉ ANCHE SUCCESSIVAMENTE, PER L’ESPLETAMENTO DEGLI ADEMPIMENTI DI LEGGE E PER FUTURE FINALITÀ DI CARATTERE COMMERCIALE.
+                            ALLE PARTI COMPETONO I DIRITTI DI CUI ALL’ART. 7 D.LGS. 196/03 E, IN PARTICOLARE, IL DIRITTO DI CONOSCERE I PROPRI DATI, DI FARLI INTEGRARE, MODIFICARE, CANCELLARE PER VIOLAZIONE DI LEGGE E/O DI OPPORSI AL LORO TRATTAMENTO.
+
+                            <br/> <br/>
+
+                            <strong>ART. 7) GARANZIE PER IL COMMITTENTE.</strong><br/>
+                            LO SVILUPPATORE NON PUÒ, COMUNQUE, RITENERSI RESPONSABILE PER OGNI TIPO DI DANNO DEL SOFTWARE DERIVANTE DA CASO FORTUITO O FORZA MAGGIORE E NON FORNISCE PER ESSI ALCUNA GARANZIA.
+                            LO SVILUPPATORE GARANTISCE CHE IL SOFTWARE ALL’ATTO DELL’INSTALLAZIONE E DEL CARICAMENTO SARÀ NELLE PERFETTE CONDIZIONI DI FUNZIONAMENTO E GARANTISCE LA SUA REALIZZAZIONE SECONDO LA REGOLA DELL’ARTE. TALE GARANZIA È SUBORDINATA ALLO STATO ATTUALE DEL SOFTWARE, QUELLO ATTUALMENTE UTILIZZATO DALLA STAZIONE DI LAVORO SU CUI VIENE INSTALLATO IL PROGRAMMA SECONDO LE COMPATIBILITÀ TECNICHE DELLO STESSO SOFTWARE.
+                            LA GARANZIA PRESTATA DAL SVILUPPATORE, INOLTRE, È CONDIZIONATA AL CORRETTO FUNZIONAMENTO DELLE MACCHINE E DEL RELATIVO PROGRAMMA DI SISTEMA IN USO DAL COMMITTENTE O DAI TERZI SOGGETTI FRUITORI, NONCHÉ AL CORRETTO USO DEL SISTEMA DA PARTE DEGLI STESSI.
+                            LO SVILUPPATORE NON POTRÀ IN ALCUN MODO ESSERE RITENUTO RESPONSABILE PER DISSERVIZI E/O DANNI CAUSATI DALL'USO DEL SOFTWARE OGGETTO DEL PRESENTE CONTRATTO IN CASO DI:<br/>
+                            A) MANOMISSIONI O INTERVENTI CHE COMPROMETTANO IL CORRETTO FUNZIONAMENTO DEL SOFTWARE EFFETTUATI DA PERSONALE DEL COMMITTENTE O DA TERZI NON AUTORIZZATI DAL SVILUPPATORE;<br/>
+                            B) ERRATA UTILIZZAZIONE DEL SOFTWARE DA PARTE DEL COMMITTENTE O DI OPERATORI O TERZI UTILIZZATORI AUTORIZZATI DAL COMMITTENTE;<br/>
+                            C) NON REGOLARE FUNZIONAMENTO DI HARDWARE O SOFTWARE UTILIZZATI DAL COMMITTENTE, LA CUI MANUTENZIONE NON È ESEGUITA DIRETTAMENTE DAL SVILUPPATORE;<br/>
+                            D) UTILIZZO DA PARTE DEL COMMITTENTE DI HARDWARE O SOFTWARE INDISPENSABILI PER LO SVILUPPO E L’UTILIZZO DEL SOFTWARE SVILUPPATO NON FORNITI E/O CONSIGLIATI DAL SVILUPPATORE, E PRIVI DELLE NECESSARIE OMOLOGAZIONI E/O LICENZE;<br/>
+                            E) INTERRUZIONE TOTALE O PARZIALE DEL SERVIZIO DI ACCESSO LOCALE O DI TERMINAZIONE DELLA CHIAMATA FORNITO DA OPERATORE DI TELECOMUNICAZIONE E/O DELLA RETE INTERNET;<br/>
+                            F) INOSSERVANZE, INADEMPIMENTI E VIOLAZIONI DI LEGGE IMPUTABILI AL COMMITTENTE, QUALI, A MERO TITOLO ESEMPLIFICATIVO, MA NON ESAUSTIVO, VIOLAZIONI DELLA D.LGS. 81/08 O DEL CODICE DELLA PRIVACY.<br/>
+                            RESTA PERALTRO INTESO CHE EVENTUALI MODIFICHE APPORTATE DIRETTAMENTE DAL COMMITTENTE AL SOFTWARE COMPORTERANNO LA IMMEDIATA CESSAZIONE DI OGNI GARANZIA DA PARTE DELLO SVILUPPATORE.
+
+                            <br/> <br/>
+
+                            <strong>ART. 8) MODIFICA DELLE CONDIZIONI CONTRATTUALI.</strong><br/>
+                            OGNI MODIFICA, AL PRESENTE ACCORDO E AI SUOI ALLEGATI, DOVRÀ ESSERE STIPULATA E APPROVATA PER ISCRITTO DA ENTRAMBE LE PARTI.
+
+                            <br/> <br/>
+
+                            <strong>ART. 9) CLAUSOLA RISOLUTIVA ESPRESSA.</strong><br/>
+                            FATTO SALVO QUANTO PREVISTO DALLA LEGGE, IL CONTRATTO SARÀ RISOLTO DI DIRITTO AI SENSI E PER GLI EFFETTI DELL’ART. 1456 COD. CIV. IN CASO DI INADEMPIMENTO DI UNO DEGLI OBBLIGHI PREVISTI DAGLI ARTT. 2, 3, 4 E 5 DEL PRESENTE CONTRATTO.
+                            LA RISOLUZIONE È COMUNICATA PER RACCOMANDATA CON RICEVUTA DI RITORNO. GLI EFFETTI DELLA RISOLUZIONE DECORRONO DALLA DATA DI RICEZIONE DI TALE COMUNICAZIONE.
+                            NEL CASO DI RISOLUZIONE ANTICIPATA DA PARTE DEL COMMITTENTE O DETERMINATO DA VIOLAZIONE, DA PARTE DEL COMMITTENTE, DEGLI ARTICOLI SOPRA CITATI LO SVILUPPATORE NON RIMBORSERÀ ALCUNCHÉ.
+
+                            <br/> <br/>
+
+                            <strong>ART. 10) LEGGE APPLICABILE.</strong><br/>
+                            IL PRESENTE CONTRATTO È REGOLATO DALLE LEGGI DELLO STATO IN CUI RISIEDE LO SVILUPPATORE (ITALIA), ANCHE PER EVENTUALI CONTROVERSIE RELATIVE A COPYRIGHT E BREVETTO.
+
+                            <br/> <br/>
+
+                            <strong>ART. 11) FORO COMPETENTE.</strong><br/>
+                            PER OGNI CONTROVERSIA CONSEGUENTE, CONNESSA, COLLEGATA O DIPENDENTE DAL PRESENTE CONTRATTO LE PARTI DEROGANO LA COMPETENZA ESCLUSIVA AL FORO DI MILANO, ESCLUDENDO OGNI ALTRA COMPETENZA CONCORRENTE
+
+                            <br/><br/>
+
+                            TREVIGLIO, DATA <span t-field="doc.date_order"/>
+
+                            <br/><br/><br/>
+
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <strong>ADDOONS S.R.L.</strong>
+                                    <br/>
+                                    <hr/>
+                                </div>
+                                <div class="col-xs-4">
+
+                                </div>
+                                <div class="col-xs-4">
+                                    <strong><strong t-field="doc.partner_id.name"/></strong>
+                                    <br/>
+                                    <hr/>
+                                </div>
+                            </div>
+
+                            <br/> <br/><br/>
+
+                            AI SENSI E PER GLI EFFETTI DEGLI ARTT. 1341 E 1342 C.C. LE PARTI DICHIARANO DI APPROVARE ESPRESSAMENTE I SEGUENTI ARTICOLI DEL PRESENTE CONTRATTO: ART.3) (OBBLIGHI E RESPONSABILITÀ); ART.4) (INSTALLAZIONE ED ACCETTAZIONE DEL SOFTWARE); ART.6) (RISERVATEZZA E PROTEZIONE DEI DATI); ART.7) (GARANZIE PER IL COMMITTENTE); ART.8) (MODIFICHE ALLE CONDIZIONI CONTRATTUALI); ART.9) (CLAUSOLA RISOLUTIVA ESPRESSA); ART.10) (LEGGE APPLICABILE); ART.11) (FORO COMPETENTE).
+
+                            <br/> <br/>
+
+                            TREVIGLIO, DATA <span t-field="doc.date_order"/>
+
+                            <br/><br/><br/>
+
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <strong>ADDOONS S.R.L.</strong>
+                                    <br/>
+                                    <hr/>
+                                </div>
+                                <div class="col-xs-4">
+
+                                </div>
+                                <div class="col-xs-4">
+                                    <strong><strong t-field="doc.partner_id.name"/></strong>
+                                    <br/>
+                                    <hr/>
+                                </div>
+                            </div>
+
+                        </span>
+                    </t>
+
+                    <t t-if="doc.contratto_licenza">
+                        <div style="page-break-after:always;"/>
+                        <h4><strong>CONTRATTO DI LICENZA D’USO E RELATIVA MANUTENZIONE ORDINARIA </strong></h4>
+                        <br/><h4><strong>N. CONTRATTO <strong t-field="doc.name"/> DEL
+                        <strong t-field="doc.date_order" t-field-options='{"format": "dd/MM/yyyy"}'/></strong></h4>
+                        <span class="contratto-sviluppo">
+
+                            <br/><br/>
+                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO "ODOO 10 <span t-field="doc.name"/> SOPRA ESPOSTO" (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
+                            E
+                            LA SOCIETÀ CLIENTE <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>, IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN <span t-field="doc.partner_id.zip"  style="text-transform:uppercase;"/>, <span  t-field="doc.partner_id.city"  style="text-transform:uppercase;"/>, <span t-field="doc.partner_id.street"  style="text-transform:uppercase;"/> (DETTO ANCHE LICENZIATARIO)
+
+                            <br/><br/>
+
+                            <strong>ART. 1) DEFINIZIONI. </strong><br/>
+                            AI FINI DEL PRESENTE CONTRATTO, I TERMINI SOTTO RIPORTATI HANNO IL SEGUENTE SIGNIFICATO: <br/>
+                            •	CODICE SORGENTE: IL CODICE SORGENTE È IL TESTO DI UN PROGRAMMA SCRITTO IN UN LINGUAGGIO DI PROGRAMMAZIONE. IL CODICE SORGENTE DEVE ESSERE OPPORTUNAMENTE ELABORATO PER DIVENIRE UN PROGRAMMA ESEGUIBILE; TALE ELABORAZIONE È NECESSARIA PER GIUNGERE ALL’ESECUZIONE DEL PROGRAMMA. <br/>
+                            •	HARDWARE: IL COMPLESSO DELLE APPARECCHIATURE TECNICHE, MECCANICHE, ELETTRICHE ED ELETTRONICHE DI UN SISTEMA DI ELABORATORE DATI ( PERSONAL COMPUTER)  SUL QUALE VIENE INSTALLATO IL SOFTWARE E ATTRAVERSO IL QUALE IL SOFTWARE È UTILIZZATO; <br/>
+                            •	MANUTENZIONE: SERVIZI DI MANUTENZIONE E AGGIORNAMENTO DELLE APPARECCHIATURE E DEL SOFTWARE PIÙ DETTAGLIATAMENTE INDICATI NELLE CLAUSOLE DEL PRESENTE CONTRATTO E DELLE CONDIZIONI SPECIFICHE DI CUI ALL’ALLEGATO A RELATIVO A LICENZA E MANUTENZIONE; <br/>
+                            •	SERVIZI DI ASSISTENZA: ATTIVITÀ, IN QUALSIASI FORMA, PRESTATA DALLO SVILUPPATORE PER COADIUVARE IL COMMITTENTE NELLO SVOLGIMENTO DI COMPITI REALIZZATIVI DEL PRODOTTO FORNITO; <br/>
+                            •	SOFTWARE: INSIEME ORGANIZZATO E STRUTTURATO DI ISTRUZIONI IN QUALSIASI FORMA O SU QUALUNQUE SUPPORTO CAPACE, DIRETTAMENTE O INDIRETTAMENTE, DI FAR ESEGUIRE O FAR OTTENERE UN RISULTATO PARTICOLARE PER MEZZO DI  UN SISTEMA DI ELABORAZIONE ELETTRONICA DELL’INFORMAZIONE; <br/>
+                            •	SUPPORTO DI MEMORIZZAZIONE: I SUPPORTI, FISSI O MOBILI, SUI QUALI RISIEDE IL PROGRAMMA; <br/>
+                            •	RESPONSABILE DEL PROGETTO: LA PERSONA CHE AVRÀ L’AUTORITÀ DI RAPPRESENTARE RISPETTIVAMENTE LO SVILUPPATORE IN TUTTE LE MATERIE ATTINENTI ALL’ESECUZIONE DEI PRODOTTI FORNITI; <br/>
+                            •	UNITÀ ASSOCIATE: L'UNITÀ VIDEO, WORKSTATION, PERSONAL COMPUTER, STAMPANTI, PERIFERICHE, SUPPORTI INTERNI; <br/>
+                            •	USO: L’ELABORAZIONE E L’UTILIZZO DEL PROGRAMMA PER ELABORATORE. <br/>
+
+                            <br/><br/>
+
+                            <strong>ART. 2) OGGETTO DEL CONTRATTO.</strong>
+                            CON IL PRESENTE CONTRATTO IL LICENZIANTE CONCEDE AL LICENZIATARIO UNA LICENZA D’USO NON TRASFERIBILE, DEL SOFTWARE DEL QUALE È LEGITTIMO TITOLARE, IN FORMA OGGETTO, PER EROGAZIONE DEL PRESENTE <span t-field="doc.name"/> (DI CUI SOPRA).
+                            LA LICENZA D’USO AUTORIZZA IL LICENZIATARIO A UTILIZZARE E VISUALIZZARE IL SOFTWARE SOLTANTO NEI MODI PREVISTI DALLA DOCUMENTAZIONE FORNITA CON IL SOFTWARE STESSO SOLO PER USI COMMERCIALI INTERNI.
+
+                            <br/><br/>
+
+                            <strong>ART. 2.1) OGGETTO DELLA MANUTENZIONE.</strong>
+                            OLTRE ALLA LICENZA D’USO IL LICENZIANTE METTE A DISPOSIZIONE DEL LICENZIATARIO IL SERVIZIO DI MANUTENZIONE ED ASSISTENZA, PER UN TOTALE COMPLESSIVO DI 30 ORE ANNUE, CHE PREVEDE:<br/>
+                            1. GLI AGGIORNAMENTI DI LEGGE, SUL SOLO SOFTWARE LICENZIATO;<br/>
+                            2. EVENTUALI NUOVI RILASCI DEL SOFTWARE OGGETTO DEL PRESENTE CONTRATTO CHE IL LICENZIANTE REALIZZERÀ NEL TEMPO INCREMENTANDO E MIGLIORANDO IL SOFTWARE CONCESSO IN LICENZA D’USO CON IL PRESENTE CONTRATTO;<br/>
+                            3. SISTEMAZIONE DI EVENTUALI ERRORI SUL SOFTWARE CONCESSO IN LICENZA D’USO MEDIANTE IL PRESENTE CONTRATTO RILEVATI DAL LICENZIATARIO E RICONOSCIUTI TALI (A INSINDACABILE GIUDIZIO DEL LICENZIANTE).<br/>
+                            IN CASO DI RICHIESTA DI SERVIZI NON ELENCATI OPPURE NEL CASO IN CUI SI ESAURISCANO LE ORE ANNUE DI INTERVENTO DI CUI AL PRESENTE CONTRATTO, IL LICENZIANTE SI RISERVA DI FORNIRE I RELATIVI SERVIZI PREVIA SOTTOSCRIZIONE DI APPOSITO ORDINE DA PARTE DEL LICENZIATARIO.
+
+                            <br/><br/>
+
+                            <strong>ART. 2.1.1) MODALITÀ DI ESPLICAZIONE DEL SERVIZIO DI MANUTENZIONE</strong>
+                            IL SERVIZIO DI MANUTENZIONE DI CUI AL PRESENTE CONTRATTO (PER IL TOTALE DI ORE DI CUI AL PRECEDENTE ART.2.1) SI ESPLICHERÀ NEL SEGUENTE MODO:<br/>
+                            1. LA REALIZZAZIONE DEL SERVIZIO DI MANUTENZIONE POTRÀ EFFETTUATA SIA PRESSO GLI UFFICI DEL LICENZIATARIO CHE IN MODALITÀ REMOTA DAGLI UFFICI DEL LICENZIANTE.<br/>
+                            2. PER LA SISTEMAZIONE DI ERRORI CHE EVENTUALMENTE FOSSERO CONTENUTI NEL SOFTWARE, IL LICENZIATARIO SI OBBLIGA A COMUNICARE AL LICENZIANTE L'OPPORTUNA DOCUMENTAZIONE DEL MALFUNZIONAMENTO RISCONTRATO. IL LICENZIANTE RICONOSCIUTO (A SUO INSINDACABILE GIUDIZIO), L’EFFETTIVO ERRORE, SI OBBLIGA AD ESPLICARE IL SERVIZIO DI MANUTENZIONE RILASCIANDO INFORMAZIONI PER LA CORREZIONE DEL DIFETTO, O RILASCIANDO UNA TEMPORANEA PROCEDURA DI ESCLUSIONE, OPPURE RILASCIANDO UNA VERSIONE CORRETTA DEL SOFTWARE.<br/>
+                            3. IL LICENZIANTE METTERÀ A DISPOSIZIONE DEL LICENZIATARIO EVENTUALI NUOVE VERSIONI DEL SOFTWARE MEDESIMO IN SEGUITO A VARIAZIONI DI NORME DI LEGGE CHE INDUCANO CAMBIAMENTI NELL’AMBITO DELLE ELABORAZIONI OPERATE SUL SOFTWARE.<br/>
+                            4. LE IMPLEMENTAZIONI E MIGLIORIE VENGONO EFFETTUATE E INSERITE SUL SOFTWARE (A DISCREZIONE ED INSINDACABILE GIUDIZIO DEL LICENZIANTE).<br/>
+                            5. GLI AGGIORNAMENTI SARANNO EFFETTUATI A SCADENZE DETERMINATE A INSINDACABILE GIUDIZIO DEL LICENZIANTE.<br/>
+                            6. IL LICENZIANTE GARANTISCE CHE I SERVIZI SARANNO ESEGUITI DA PERSONALE DOTATO DI ADEGUATA PREPARAZIONE PROFESSIONALE. I SERVIZI SARANNO FORNITI AL LICENZIATARIO (DURANTE IL NORMALE ORARIO DI LAVORO OSSERVATO DAL PERSONALE DEL LICENZIANTE, IL QUALE - PER LA PRESTAZIONE DEI SERVIZI STESSI - SARÀ LIBERO DI AVVALERSI ANCHE DI TECNICI ESTRANEI ALLA PROPRIA ORGANIZZAZIONE).<br/>
+                            7. IL SERVIZIO DI MANUTENZIONE DI CUI AL PRESENTE CONTRATTO NON COMPRENDE LA CORREZIONE DI MALFUNZIONAMENTI DOVUTI ALL'UTILIZZO IMPROPRIO DEL SOFTWARE DA PARTE DEL LICENZIATARIO O DEL SUO PERSONALE.<br/>
+                            8. IL LICENZIANTE FORNIRÀ ALTRESÌ, SU RICHIESTA DEL LICENZIATARIO, FORMAZIONE AL PERSONALE INDICATO DAL LICENZIATARIO STESSO AFFINCHÉ POSSA APPRENDERE LE CARATTERISTICHE E LE FUNZIONALITÀ OGGETTO DEL PRESENTE SOFTWARE.
+
+                            <br/><br/>
+
+                            <strong>ART. 3) PROPRIETÀ DEL SOFTWARE.</strong>
+                            IL LICENZIANTE DETIENE LA TITOLARITÀ DEL SOFTWARE ORIGINALE E DI TUTTE LE COPIE INDIPENDENTEMENTE DAL SUPPORTO UTILIZZATO O DALLA FORMA.
+                            TUTTI I MARCHI REGISTRATI E NON, COME OGNI E QUALSIASI SEGNO DISTINTIVO O DENOMINAZIONE APPOSTI SUL PROGRAMMA E SULLA RELATIVA DOCUMENTAZIONE, RESTANO DI PROPRIETÀ DEL LICENZIANTE, SENZA CHE DALLA STIPULAZIONE DEL PRESENTE CONTRATTO DERIVI AL LICENZIATARIO ALCUN DIRITTO SUI MEDESIMI. IL LICENZIATARIO SI IMPEGNA A NON DISTRUGGERE, ALTERARE O SPOSTARE TALI MARCHI, SEGNI DISTINTIVI E DENOMINAZIONI E SI IMPEGNA A RIPRODURLI SULLE COPIE DI BACK UP.
+
+                            <br/><br/>
+                            <strong>ART. 3.1) CODICI SORGENTE.</strong>
+                            LA LICENZA D’USO NON CONCEDE ALCUN DIRITTO SUL CODICE SORGENTE ORIGINALE. TUTTE LE TECNICHE, GLI ALGORITMI E I PROCEDIMENTI CONTENUTI NEL SOFTWARE E NELLA RELATIVA DOCUMENTAZIONE SONO INFORMAZIONI PROTETTE DAL DIRITTO D’AUTORE E SONO DI PROPRIETÀ DEL LICENZIANTE, PERTANTO, NON POSSONO ESSERE USATI IN ALCUN MODO DAL LICENZIATARIO PER SCOPI DIVERSI DA QUELLI INDICATI NEL PRESENTE CONTRATTO.
+
+                            <br/><br/>
+
+                            <strong>ART. 4) DURATA E DECORRENZA.</strong>
+                            IL PRESENTE CONTRATTO DI LICENZA D’USO È A TEMPO INDETERMINATO E DECORRE DALLA DATA DI SOTTOSCRIZIONE DELLO STESSO.
+                            LE PARTI POTRANNO ESERCITARE LA FACOLTÀ DI RECESSO MEDIANTE L’INVIO DI LETTERA RACCOMANDATA CON UN PREAVVISO DI 30 GIORNI LAVORATIVI.
+
+                            <br/><br/>
+
+                            <strong>ART. 5) OBBLIGHI E RESPONSABILITÀ.</strong>
+                            I VIZI E LE DIFFORMITÀ DOVRANNO ESSERE DENUNCIATI PER ISCRITTO DAL LICENZIATARIO ENTRO 5 GIORNI DALLA SCOPERTA.
+                            A TAL FINE, IL LICENZIANTE SI OBBLIGA AD INTERVENIRE, SIA DA REMOTO CHE DA LOCALE, PER LA PRONTA RISOLUZIONE DEL PROBLEMA ENTRO E NON OLTRE 5 GIORNI LAVORATIVI DECORRENTI DALLA RICHIESTA DI INTERVENTO INOLTRATA DAL LICENZIATARIO ANCHE A MEZZO FAX O POSTA ELETTRONICA.
+                            IL LICENZIATARIO SI OBBLIGA PER SÉ E PER I PROPRI DIPENDENTI, CONSULENTI E MANDATARI, CHE ABBIANO ACCESSO AL SOFTWARE, A PRENDERE OGNI MISURA IDONEA E NECESSARIA PER GARANTIRE IL REGIME DI RISERVATEZZA DEL SOFTWARE E DELLA DOCUMENTAZIONE RELATIVA E SI IMPEGNA A NON CONSENTIRE A TERZI L’UTILIZZO ANCHE OCCASIONALE, L’ESTRAZIONE DI COPIE ANCHE PARZIALI, NONCHÉ LA CONSULTAZIONE.
+                            IL LICENZIANTE NON È RESPONSABILE DI ALCUN DANNO CAUSATO A COSE O PERSONE PER IL FUNZIONAMENTO DIFETTOSO DELLE APPARECCHIATURE O DEI SOFTWARE INSTALLATI, NON IMPUTABILI AL SUO INTERVENTO E IN CASO DI MANUTENZIONE EFFETTUATA DA TERZI NON AUTORIZZATI. ESSO RISPONDE DEI DANNI CAUSATI O SUBITI DAL PROPRIO PERSONALE TECNICO DURANTE LE OPERAZIONI DI MANUTENZIONE O DI ASSISTENZA PRESSO IL LICENZIATARIO.
+                            NEL CASO DI INTERRUZIONI DI ESERCIZIO DEL SISTEMA O DELLA SINGOLA APPARECCHIATURA, SUCCESSIVE ALL’INTERVENTO DI MANUTENZIONE, IL LICENZIANTE, SALVO DOLO O COLPA GRAVE, NON RISPONDE DI EVENTUALI PERDITE DEL LICENZIATARIO O DI TERZI, TRA CUI SI CITANO, A MERO TITOLO ESEMPLIFICATIVO, LUCRO CESSANTE, SPESE PER RIPRISTINO DI ATTIVITÀ, RESPONSABILITÀ CIVILE VERSO TERZI, PERDITA DI AFFARI.
+                            IL LICENZIATARIO, SALVO ALTRE INDICAZIONI, SI IMPEGNA A RICHIEDERE L’INTERVENTO DI MANUTENZIONE ORDINARIA E DI ASSISTENZA CON UN PREAVVISO DI CINQUE GIORNI LAVORATIVI, DA INOLTRARE A MEZZO RICHIESTA INVIATA VIA E-MAIL AL LICENZIANTE, IL QUALE SI IMPEGNA AD INTERVENIRE NEL PIÙ BREVE TEMPO, EVITANDO CHE IL RITARDO NEL SUO INTERVENTO POSSA OLTREMODO TURBARE L’ATTIVITÀ LAVORATIVA DEL LICENZIATARIO.
+
+                            <br/><br/>
+
+                            <strong>ART. 6) INSTALLAZIONE ED ACCETTAZIONE DEL SOFTWARE.</strong>
+                            IL LICENZIATARIO METTERÀ A DISPOSIZIONE DEL LICENZIANTE GLI STRUMENTI TECNOLOGICI A CUI È DESTINATO IL PROGRAMMA, PER CONSENTIRNE L’INSTALLAZIONE. ESAURITA LA FASE DI INSTALLAZIONE IL PROGRAMMA DI LICENZA SOFTWARE SI INTENDERÀ, ACCETTATO. TRASCORSI TRENTA GIORNI DALLA DATA DI INSTALLAZIONE DEL PROGRAMMA SU LICENZA SENZA CHE SIANO PERVENUTE DA PARTE DEL LICENZIATARIO DELLE LAMENTELE, IL PROGRAMMA SI INTENDERÀ ACCETTATO, RITENENDOSI IL PERIODO DI TEMPO SOPRA INDICATO ADEGUATO PER VERIFICARE L’IDONEITÀ DEL PROGRAMMA STESSO DA PARTE DEL LICENZIANTE.
+
+                            <br/><br/>
+
+                            <strong>ART. 7) CONDIZIONI ECONOMICHE E CORRISPETTIVI.</strong><br/>
+                            PER LO SVILUPPO DI CUI AL PRESENTE ACCORDO E PER I SERVIZI DI MANUTENZIONE, IL COMMITTENTE SI IMPEGNA A VERSARE IL CORRISPETTIVO PATTUITO DI TOTALE OFFERTA €. <span t-field="doc.amount_total"/> COME SEGUE:
+                            MODALITÀ DI PAGAMENTO: 30% ACCONTO A MEZZO B.B. D.F. F.M., 40% PRIMA INSTALLAZIONE A MEZZO R.B. 30 GG D.F. F.M., SALDO A MEZZO R.B. 30 GG D.F. F.M.
+                            EVENTUALI ORE DI SERVIZIO DI MANUTENZIONE CHE NON DOVESSERO ESSERE UTILIZZATE NELL’ARCO DELL’ANNO ANDRANNO PERDUTE E NON POTRANNO ESSERE UTILIZZATE NEL SUCCESSIVO ANNO CON CONSEGUENTE DIVIETO DI RECUPERO NEGLI ANNI SUCCESSIVI.
+                            TUTTI GLI IMPORTI E I PREZZI INDICATI NEL CONTRATTO O NEGLI EVENTUALI ALLEGATI SI INTENDONO AL NETTO DI IVA.
+                            IN CASO DI RITARDO NEI PAGAMENTI RISPETTO ALLE CONCORDATE SCADENZE SARANNO DOVUTI - SENZA NECESSITÀ DI MESSA IN MORA – GLI INTERESSI DI MORA EX D.LGS 231/02, A VALERE DALLA DATA DI PAGAMENTO INDICATA IN FATTURA SINO ALL’AVVENUTO PAGAMENTO, SALVI I MAGGIORI DANNI.
+
+                            <br/><br/>
+
+                            <strong>ART. 8) RISERVATEZZA E PROTEZIONE DEI DATI.</strong>
+                            I TERMINI E LE CONDIZIONI (COMPRESO IL PREZZO) DEL CONTRATTO, UNITAMENTE A QUALSIASI ALTRA INFORMAZIONE ESPLICITAMENTE DEFINITA COME “RISERVATA” E FORNITA IN BASE ALL’ACCORDO, SONO CONFIDENZIALI E NON SARANNO RIVELATI, ORALMENTE O PER ISCRITTO, DAL LICENZIATARIO A TERZI SENZA IL PREVIO CONSENSO SCRITTO DEL LICENZIANTE.
+                            IL LICENZIATARIO DICHIARA CHE I SUOI SISTEMI HARDWARE E SOFTWARE CONTENGONO DELLE INFORMAZIONI RISERVATE DI VALORE CONFIDENZIALE; IL LICENZIANTE SI IMPEGNA A PROTEGGERE I DATI E LE INFORMAZIONI CON CUI VERRÀ A CONTATTO A SEGUITO DEI SUOI INTERVENTI CON ALMENO LO STESSO GRADO DI CURA E RISERVATEZZA, MA COMUNQUE CON CURA NON INFERIORE A QUELLA ORDINARIA, CHE USA PER LE PROPRIE INFORMAZIONI CHE NON DESIDERI RIVELARE AL PUBBLICO.
+                            È FATTA SALVA LA FACOLTÀ DEL LICENZIANTE DI TRASMETTERE I DATI O LE INFORMAZIONI A SOGGETTI DA LUI DELEGATI AD ESPLETARE I SERVIZI CONNESSI CON L'OGGETTO DEL PRESENTE CONTRATTO E COMUNICATI ESCLUSIVAMENTE NELL'AMBITO DELLE FINALITÀ DEL SERVIZIO RESO..
+                            LE PARTI CONTRAENTI, RICEVUTA L’UNA DALL’ALTRA IDONEA INFORMATIVA EX ART. 13 D. LGS. 196/03, DICHIARANO, AI SENSI DEL PREDETTO TESTO DI LEGGE, DI CONSENTIRE RECIPROCAMENTE AL TRATTAMENTO DEI DATI PERSONALI CHE LE RIGUARDANO, PER FINALITÀ INERENTI ALL’ESECUZIONE DEL PRESENTE CONTRATTO ED ALL’ADEMPIMENTO DEGLI OBBLIGHI LEGALI E CONTRATTUALI DALLO STESSO DERIVANTI.
+                            I DATI VERRANNO TRATTATI PER TUTTA LA DURATA DEL RAPPORTO CONTRATTUALE IN ESSERE, NONCHÉ ANCHE SUCCESSIVAMENTE, PER L’ESPLETAMENTO DEGLI ADEMPIMENTI DI LEGGE E PER FUTURE FINALITÀ DI CARATTERE COMMERCIALE.
+                            ALLE PARTI COMPETONO I DIRITTI DI CUI ALL’ART. 7 D.LGS. 196/03 E, IN PARTICOLARE, IL DIRITTO DI CONOSCERE I PROPRI DATI, DI FARLI INTEGRARE, MODIFICARE, CANCELLARE PER VIOLAZIONE DI LEGGE E/O DI OPPORSI AL LORO TRATTAMENTO.
+
+                            <br/><br/>
+
+                            <strong>ART. 9) GARANZIE PER IL LICENZIATARIO.</strong>
+                            IL LICENZIANTE GARANTISCE IL LICENZIATARIO CONTRO TUTTE LE EVENTUALI RIVENDICAZIONI DI TERZI AVENTI AD OGGETTO, PRETESI DIRITTI D’AUTORE SUL SOFTWARE DI CUI AL PRESENTE CONTRATTO.
+                            IL LICENZIANTE NON PUÒ, COMUNQUE, RITENERSI RESPONSABILE PER OGNI TIPO DI DANNO DEL SOFTWARE DERIVANTE DA CASO FORTUITO O FORZA LUGLIORE E NON FORNISCE PER ESSI ALCUNA GARANZIA.
+                            IL LICENZIANTE GARANTISCE CHE IL SOFTWARE ALL’ATTO DELL’INSTALLAZIONE E DEL CARICAMENTO SARÀ NELLE PERFETTE CONDIZIONI DI FUNZIONAMENTO E GARANTISCE LA SUA REALIZZAZIONE SECONDO LA REGOLA DELL’ARTE. TALE GARANZIA È SUBORDINATA ALLO STATO ATTUALE DEL SOFTWARE, QUELLO ATTUALMENTE UTILIZZATO DALLA STAZIONE DI LAVORO SU CUI VIENE INSTALLATO IL PROGRAMMA SECONDO LE COMPATIBILITÀ TECNICHE DELLO STESSO SOFTWARE.
+                            LA GARANZIA PRESTATA DAL LICENZIANTE, INOLTRE, È CONDIZIONATA AL CORRETTO FUNZIONAMENTO DELLE MACCHINE E DEL RELATIVO PROGRAMMA DI SISTEMA IN USO DAL LICENZIATARIO O DAI TERZI SOGGETTI FRUITORI, NONCHÉ AL CORRETTO USO DEL SISTEMA DA PARTE DEGLI STESSI.
+                            IL LICENZIANTE NON POTRÀ IN ALCUN MODO ESSERE RITENUTO RESPONSABILE PER DISSERVIZI E/O DANNI CAUSATI DALL'USO DEL SOFTWARE OGGETTO DEL PRESENTE CONTRATTO IN CASO DI:<br/>
+                            A) MANOMISSIONI O INTERVENTI CHE COMPROMETTANO IL CORRETTO FUNZIONAMENTO DEL SOFTWARE EFFETTUATI DA PERSONALE DEL LICENZIATARIO O DA TERZI NON AUTORIZZATI DAL LICENZIANTE;<br/>
+                            B) ERRATA UTILIZZAZIONE DEL SOFTWARE DA PARTE DEL LICENZIATARIO O DI OPERATORI O TERZI UTILIZZATORI AUTORIZZATI DAL LICENZIATARIO;<br/>
+                            C) NON REGOLARE FUNZIONAMENTO DI HARDWARE O SOFTWARE UTILIZZATI DAL LICENZIATARIO, LA CUI MANUTENZIONE NON È ESEGUITA DIRETTAMENTE DAL LICENZIANTE;<br/>
+                            D) UTILIZZO DA PARTE DEL LICENZIATARIO DI HARDWARE O SOFTWARE INDISPENSABILI PER LO SVILUPPO E L’UTILIZZO DEL SOFTWARE SVILUPPATO NON FORNITI E/O CONSIGLIATI DAL LICENZIANTE, E PRIVI DELLE NECESSARIE OMOLOGAZIONI E/O LICENZE;<br/>
+                            E) INTERRUZIONE TOTALE O PARZIALE DEL SERVIZIO DI ACCESSO LOCALE O DI TERMINAZIONE DELLA CHIAMATA FORNITO DA OPERATORE DI TELECOMUNICAZIONE E/O DELLA RETE INTERNET;<br/>
+                            F) INOSSERVANZE, INADEMPIMENTI E VIOLAZIONI DI LEGGE IMPUTABILI AL LICENZIATARIO, QUALI, A MERO TITOLO ESEMPLIFICATIVO, MA NON ESAUSTIVO, VIOLAZIONI DELLA D.LGS. 81/08 O DEL CODICE DELLA PRIVACY.<br/>
+                            RESTA PERALTRO INTESO CHE EVENTUALI MODIFICHE APPORTATE DIRETTAMENTE DAL LICENZIATARIO AL SOFTWARE COMPORTERANNO LA IMMEDIATA CESSAZIONE DI OGNI GARANZIA DA PARTE DEL LICENZIANTE.
+
+                            <br/><br/>
+
+                            <strong>ART. 10) MODIFICA DELLE CONDIZIONI CONTRATTUALI.</strong>
+                            IL LICENZIANTE SI RISERVA IL DIRITTO DI MODIFICARE LE CONDIZIONI DEL CONTRATTO DI LICENZA D’USO E/O LICENZA D’USO E MANUTENZIONE A MEZZO DI LETTERA RACCOMANDATA DA INVIARE AL LICENZIATARIO, CON PREAVVISO DI ALMENO DUE MESI, SALVO FACOLTÀ DI RECESSO DEL LICENZIATARIO, DA ESERCITARSI, A PENA DI DECADENZA, CON LETTERA RACCOMANDATA ED ENTRO TRENTA GIORNI LAVORATIVI DECORRENTI DALLA DATA DI RICEVIMENTO DELLA COMUNICAZIONE DELLE MODIFICHE.
+                            OGNI MODIFICA, AL PRESENTE ACCORDO E AI SUOI ALLEGATI, DOVRÀ ESSERE STIPULATA E APPROVATA PER ISCRITTO DA ENTRAMBE LE PARTI.
+
+                            <br/><br/>
+
+                            <strong>ART. 11) CLAUSOLA RISOLUTIVA ESPRESSA.</strong>
+                            FATTO SALVO QUANTO PREVISTO DALLA LEGGE, IL CONTRATTO SARÀ RISOLTO DI DIRITTO AI SENSI E PER GLI EFFETTI DELL’ART. 1456 COD. CIV. IN CASO DI INADEMPIMENTO DI UNO DEGLI OBBLIGHI PREVISTI DAGLI ARTT. 2, 3, 5 E 6 DEL PRESENTE CONTRATTO.
+                            LA RISOLUZIONE È COMUNICATA PER RACCOMANDATA CON RICEVUTA DI RITORNO. GLI EFFETTI DELLA RISOLUZIONE DECORRONO DALLA DATA DI RICEZIONE DI TALE COMUNICAZIONE.
+
+                            ALL’ATTO DELL’EFFICACIA DELLA RISOLUZIONE DEL PRESENTE CONTRATTO, IL LICENZIATARIO RESTITUIRÀ AL LICENZIANTE TUTTE LE COPIE DEL SOFTWARE IN SUO POSSESSO OPPURE, OVE CIÒ NON SIA POSSIBILE, PROVVEDERÀ A DISTRUGGERE TUTTO QUANTO SOPRA INDICATO.
+                            IN CASO DI RISOLUZIONE, ANTICIPATA IL RIMBORSO DEL CORRISPETTIVO GIÀ PAGATO SARÀ REGOLATO COME DI SEGUITO:
+                            NEL CASO DI RISOLUZIONE ANTICIPATA DA PARTE DEL LICENZIATARIO O DETERMINATO DA VIOLAZIONE, DA PARTE DEL LICENZIATARIO, DEGLI ARTICOLI SOPRA CITATI IL LICENZIANTE NON RIMBORSERÀ ALCUNCHÉ.
+
+                            <br/><br/>
+
+                            <strong>ART. 12) LEGGE APPLICABILE.</strong>
+                            IL PRESENTE CONTRATTO È REGOLATO DALLE LEGGI DELLO STATO IN CUI RISIEDE IL LICENZIANTE (ITALIA), ANCHE PER EVENTUALI CONTROVERSIE RELATIVE A COPYRIGHT E BREVETTO.
+
+                            <br/><br/>
+
+                            <strong>ART. 13) FORO COMPETENTE.</strong>
+                            PER OGNI CONTROVERSIA CONSEGUENTE, CONNESSA, COLLEGATA O DIPENDENTE DAL PRESENTE CONTRATTO LE PARTI DEROGANO LA COMPETENZA ESCLUSIVA AL FORO DI BERGAMO, ESCLUDENDO OGNI ALTRA COMPETENZA CONCORRENTE
+
+                            <br/><br/>
+
+                            TREVIGLIO, <span t-field="doc.date_order" t-field-options='{"format": "dd/MM/yyyy"}'/>
+
+                            <br/><br/><br/>
+
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <strong>ADDOONS S.R.L.</strong>
+                                    <br/><br/><br/>
+                                    <hr/>
+                                </div>
+                                <div class="col-xs-4">
+
+                                </div>
+                                <div class="col-xs-4">
+                                    <strong><strong style="text-transform:uppercase;" t-field="doc.partner_id.name"/></strong>
+                                    <br/><br/><br/>
+                                    <hr/>
+                                </div>
+                            </div>
+
+                            AI SENSI E PER GLI EFFETTI DEGLI ARTT. 1341 E 1342 C.C. LE PARTI DICHIARANO DI APPROVARE ESPRESSAMENTE I SEGUENTI ARTICOLI DEL PRESENTE CONTRATTO: ART.5) (OBBLIGHI E RESPONSABILITÀ); ART.6) (INSTALLAZIONE ED ACCETTAZIONE DEL SOFTWARE); ART.9) (GARANZIE PER IL LICENZIATARIO); ART.10) (MODIFICHE ALLE CONDIZIONI CONTRATTUALI); ART.11) (CLAUSOLA RISOLUTIVA ESPRESSA); ART.12) (LEGGE APPLICABILE); ART.13) (FORO COMPETENTE).
+
+                            <br/><br/>
+
+                            TREVIGLIO, <span t-field="doc.date_order" t-field-options='{"format": "dd/MM/yyyy"}'/>
+
+                            <br/><br/><br/>
+
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <strong>ADDOONS S.R.L.</strong>
+                                    <br/><br/><br/>
+                                    <hr/>
+                                </div>
+                                <div class="col-xs-4">
+
+                                </div>
+                                <div class="col-xs-4">
+                                    <strong><strong style="text-transform:uppercase;" t-field="doc.partner_id.name"/></strong>
+                                    <br/><br/><br/>
+                                    <hr/>
+                                </div>
+                            </div>
+                        </span>
+                    </t>
+
+
+                </div>
+            </t>
+        </template>
+
+
+    </data>
+</odoo>
