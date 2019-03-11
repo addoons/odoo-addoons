@@ -1,0 +1,87 @@
+<odoo>
+    <data>
+
+        <!--Aggiunta Template Grafico Alpha-->
+        <template id="addoons_report_report_assets_common" inherit_id="web.report_assets_common">
+            <xpath expr="." position="inside">
+                <link href="/addoons_report_template/static/src/less/layout_alpha.less" rel="stylesheet" type="text/less"/>
+            </xpath>
+        </template>
+
+
+
+        <template id="external_layout_addoons">
+
+
+            <div class="header">
+                <div class="row" style="border-bottom: solid 1px #e6e6e6; padding-bottom: 20px;">
+                    <div class="col-3">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo" style="max-height: 80px;"/>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="article">
+                <t t-raw="0" />
+            </div>
+
+
+            <div class="footer" style="margin:0 !important; padding:0 !important;">
+                <div id="ad_footer" style="background-color:red; width:100%; height: 450px; background: url('/addoons_report_template/static/src/img/footer.png') no-repeat; background-position:center; background-size: 100%;">
+                    <div style="padding-top: 170px; padding-left: 20px; width:550px; margin:auto; ">
+                        <div class="row">
+                            <div class="col-4" style="font-size: 12px; font-weight: 200;">
+                                <span style="color: white;">
+                                    <strong style="color: white; font-size: 14px;">addOons srl</strong><br/>
+                                    Via Camillo Terni 26/A<br/>
+                                    24047 Treviglio (BG)<br/>
+                                    P.Iva/CF IT 04321130165<br/>
+                                    Rea BG 429764<br/>
+                                    Cap. Soc. 10.000 euro<br/>
+                                    addoons@pec.addoons.it
+                                </span>
+                            </div>
+                            <div class="col-4" style="font-size: 12px;">
+                                <span style="color: white;">
+                                    <br/><strong style="color:white;">Sede Milano</strong><br/>
+                                    Via Secco d’Aragona 30<br/>
+                                    20065 Inzago (MI)<br/>
+                                    T. +39 02 84161324<br/>
+                                    F. +39 02 95479340<br/>
+                                    milano@addoons.it
+                                </span>
+                            </div>
+                            <div class="col-4" style="font-size: 12px;">
+                                <span style="color: white;">
+                                    <br/><strong style="color:white;">Sede Parma</strong><br/>
+                                    Via Aldo Moro 10/D<br/>
+                                    43035 Felino (PR)<br/>
+                                    T. +39 0521 337232<br/>
+                                    F. +39 02 95479340<br/>
+                                    parma@addoons.it
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="float:right; margin-right: 15px; margin-bottom: 35px;  color:white; font-size:13px;">
+                        <span>Pag: </span><span class="page"/> / <span class="topage"/>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+
+
+
+        <record id="report_layout_addoons" model="report.layout">
+            <field name="view_id" ref="external_layout_addoons"/>
+            <field name="image">/addoons_report_template/static/src/img/preview_background.png</field>
+            <field name="pdf">/addoons_report_template/static/src/img/preview_background.png</field>
+        </record>
+
+
+
+
+    </data>
+</odoo>

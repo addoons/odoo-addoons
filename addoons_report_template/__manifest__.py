@@ -10,6 +10,7 @@
     'description': """
     """,
     'data': [
+        'report/addoons_res_company.xml',
         'report/addoons_report_layout.xml',
         'report/addoons_report_sale.xml',
         'report/addoons_report_invoice.xml',

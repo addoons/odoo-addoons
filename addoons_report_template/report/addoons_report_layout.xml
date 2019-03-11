@@ -14,79 +14,9 @@
             <field name="margin_right">5</field>
             <field name="header_line" eval="False"/>
             <field name="header_spacing">30</field>
-            <field name="dpi">150</field>
+            <field name="dpi">90</field>
         </record>
 
-        <template id="external_layout">
-            <!-- Multicompany -->
-            <t t-if="not o and doc">
-                <t t-set="o" t-value="doc"/>
-            </t>
-            <t t-if="o and 'company_id' in o">
-                <t t-set="company" t-value="o.company_id"></t>
-            </t>
-            <t t-if="not o or not 'company_id' in o">
-                <t t-set="company" t-value="res_company"></t>
-            </t>
-
-            <t t-call="addoons_report_template.external_layout_header" />
-            <t t-raw="0" />
-            <t t-call="addoons_report_template.external_layout_footer" />
-        </template>
-
-        <template id="external_layout_header">
-            <div class="header">
-                <div class="row" style="border-bottom: solid 1px #e6e6e6; padding-bottom: 20px;">
-                    <div class="col-xs-3">
-                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 80px;"/>
-                    </div>
-                </div>
-            </div>
-        </template>
-
-
-        <template id="external_layout_footer">
-            <div class="footer" style="margin:0 !important; padding:0 !important;">
-                <div id="ad_footer" style="background-color:red; width:100%; height: 450px; background: url('/addoons_report_template/static/src/img/footer.png') no-repeat; background-position:center; background-size: 100%;">
-                    <div style="padding-top: 170px; padding-left: 20px; width:550px; margin:auto; ">
-                        <div class="col-xs-4" style="font-size: 12px; font-weight: 200;">
-                            <span style="color: white;">
-                                <strong style="color: white; font-size: 14px;">addOons srl</strong><br/>
-                                Via Camillo Terni 26/A<br/>
-                                24047 Treviglio (BG)<br/>
-                                P.Iva/CF IT 04321130165<br/>
-                                Rea BG 429764<br/>
-                                Cap. Soc. 10.000 euro<br/>
-                                addoons@pec.addoons.it
-                            </span>
-                        </div>
-                        <div class="col-xs-4" style="font-size: 12px;">
-                            <span style="color: white;">
-                                <br/><strong style="color:white;">Sede Milano</strong><br/>
-                                Via Secco d’Aragona 30<br/>
-                                20065 Inzago (MI)<br/>
-                                T. +39 02 84161324<br/>
-                                F. +39 02 95479340<br/>
-                                milano@addoons.it
-                            </span>
-                        </div>
-                        <div class="col-xs-4" style="font-size: 12px;">
-                            <span style="color: white;">
-                                <br/><strong style="color:white;">Sede Parma</strong><br/>
-                                Via Aldo Moro 10/D<br/>
-                                43035 Felino (PR)<br/>
-                                T. +39 0521 337232<br/>
-                                F. +39 02 95479340<br/>
-                                parma@addoons.it
-                            </span>
-                        </div>
-                    </div>
-                    <div style="float:right; margin-top: 100px; margin-right: 15px; color:white; font-size:13px;">
-                        <span>Pag: </span><span class="page"/> / <span class="topage"/>
-                    </div>
-                </div>
-            </div>
-        </template>
 
     </data>
 </odoo>

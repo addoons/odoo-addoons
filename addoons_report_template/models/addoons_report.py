@@ -1,6 +1,12 @@
 from odoo import models, fields, api
 from itertools import groupby
 
+# class AlphaResCompany(models.Model):
+#     _inherit = 'res.company'
+#
+#     external_report_layout_id = fields.Selection(selection_add=[('addoons', 'Addoons')])
+
+
 class AddoonsReportSaleOrder(models.Model):
     _inherit = 'sale.order'
 
