@@ -47,6 +47,7 @@
                         padding: 10px !important;
                         font-size: 14px;
                         border:none;
+                        border-bottom: solid 1px #e6e6e6;
                         }
                         .table-extra th{
                         background-color:#e6e6e6;
@@ -154,7 +155,7 @@
                                         <th width="10%" class="text-right">Pr. Unit.</th>
                                         <th width="10%" t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">Sc.%</th>
                                         <th width="10%" class="text-right">Tasse</th>
-                                        <th width="10%" class="text-right" groups="sale.group_show_price_subtotal">Pr. Tot.</th>
+                                        <th width="10%" class="text-right">Pr. Tot.</th>
                                         <th width="10%" class="text-right price_tax_included" groups="sale.group_show_price_total">Totale</th>
                                     </tr>
                                 </thead>
@@ -166,7 +167,9 @@
                                             </td>
                                         </tr>
                                     </t>
+                                    <t t-set="group_price" t-value="0"/>
                                     <t t-foreach="layout_category['lines']" t-as="l">
+                                        <t t-set="group_price" t-value="group_price + l.price_subtotal"/>
                                         <tr>
                                             <td><t t-esc="cont"/></td>
                                             <td><span t-field="l.name"/></td>
@@ -185,7 +188,7 @@
                                             <td class="text-right">
                                                 IVA <span t-esc="int(l.tax_id.amount)"/>%
                                             </td>
-                                            <td class="text-right" groups="sale.group_show_price_subtotal">
+                                            <td class="text-right">
                                                 <span t-field="l.price_subtotal"
                                                       t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
                                             </td>
@@ -196,6 +199,23 @@
                                         </tr>
                                         <t t-set="cont" t-value="cont + 1"/>
                                     </t>
+                                    <tr style="page-break-inside:avoid;">
+                                        <td colspan="3" style="background-color: #e6e6e6;">
+                                            <span/>
+                                        </td>
+                                        <td groups="sale.group_discount_per_so_line" style="background-color: #e6e6e6;">
+
+                                        </td>
+                                        <td groups="sale.group_show_price_total" style="background-color: #e6e6e6;">
+
+                                        </td>
+                                        <td style="text-align:right; background-color: #e6e6e6;">
+                                            <strong>Totale: </strong>
+                                        </td>
+                                        <td style="text-align:right; background-color: #e6e6e6;">
+                                            <span t-esc="group_price" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </t>
@@ -204,7 +224,7 @@
                     <br/>
 
                     <!--TOTALI-->
-                    <div class="row" name="total">
+                    <div class="row" name="total" style="page-break-inside:avoid;">
                         <div class="col-4" />
                         <div class="col-4" />
                         <div class="col-4 pull-right">

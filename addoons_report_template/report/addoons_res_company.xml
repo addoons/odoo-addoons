@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-4" style="font-size: 12px; font-weight: 200;">
                                 <span style="color: white;">
-                                    <strong style="color: white; font-size: 14px;">addOons srl</strong><br/>
+                                    <strong style="color: white; font-size: 14px; font-weight:bolder;">addOons srl</strong><br/>
                                     Via Camillo Terni 26/A<br/>
                                     24047 Treviglio (BG)<br/>
                                     P.Iva/CF IT 04321130165<br/>
@@ -64,7 +64,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="float:right; margin-right: 15px; margin-bottom: 35px;  color:white; font-size:13px;">
+                    <div style="float:right; margin-right: 35px; margin-bottom: 55px;  color:white; font-size:13px;">
                         <span>Pag: </span><span class="page"/> / <span class="topage"/>
                     </div>
                 </div>
