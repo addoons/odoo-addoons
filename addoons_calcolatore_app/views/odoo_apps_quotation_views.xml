@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="addoons_quotation_apps" model="ir.ui.view">
+        <field name="name">addoons.quotation.apps</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- add state field in header -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Calcolatore app">
+                    <group>
+                        <group>
+                            <field name="users_count" string="Number of users"/>
+                        </group>
+                    </group>
+
+                    <field name="odoo_app_ids">
+                        <tree editable="top">
+                            <field name="name" readonly="1"></field>
+                            <field name="monthly_price" readonly="1"></field>
+                            <field name="include"></field>
+                        </tree>
+                    </field>
+
+                    <button type="object" name="create_app_orderlines" string="aggiungi a righe preventivo" class="btn btn-primary" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

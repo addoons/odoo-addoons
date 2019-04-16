@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="App_1" model="odoo.app.lines">
+            <field name="name">CRM</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_2" model="odoo.app.lines">
+            <field name="name">Invoicing</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_3" model="odoo.app.lines">
+            <field name="name">Sales</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_4" model="odoo.app.lines">
+            <field name="name">Website</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_5" model="odoo.app.lines">
+            <field name="name">eCommerce</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_6" model="odoo.app.lines">
+            <field name="name">Point of Sale</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_7" model="odoo.app.lines">
+            <field name="name">Accounting</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_8" model="odoo.app.lines">
+            <field name="name">Project</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_9" model="odoo.app.lines">
+            <field name="name">Inventory</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_10" model="odoo.app.lines">
+            <field name="name">Manufacturing</field>
+            <field name="monthly_price">32</field>
+        </record>
+        <record id="App_11" model="odoo.app.lines">
+            <field name="name">Purchase</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_12" model="odoo.app.lines">
+            <field name="name">Timesheet</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_13" model="odoo.app.lines">
+            <field name="name">Email Marketing</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_14" model="odoo.app.lines">
+            <field name="name">Expenses</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_15" model="odoo.app.lines">
+            <field name="name">Events</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_16" model="odoo.app.lines">
+            <field name="name">Leaves</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_17" model="odoo.app.lines">
+            <field name="name">Recruitment</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_18" model="odoo.app.lines">
+            <field name="name">Appraisal</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_19" model="odoo.app.lines">
+            <field name="name">Subscription</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_20" model="odoo.app.lines">
+            <field name="name">Sign</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_21" model="odoo.app.lines">
+            <field name="name">Maintenance</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_22" model="odoo.app.lines">
+            <field name="name">Quality</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_23" model="odoo.app.lines">
+            <field name="name">Studio</field>
+            <field name="monthly_price">48</field>
+        </record>
+        <record id="App_24" model="odoo.app.lines">
+            <field name="name">Helpdesk</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_25" model="odoo.app.lines">
+            <field name="name">PLM</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_26" model="odoo.app.lines">
+            <field name="name">Appointment</field>
+            <field name="monthly_price">8</field>
+        </record>
+        <record id="App_27" model="odoo.app.lines">
+            <field name="name">Marketing Automation</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_28" model="odoo.app.lines">
+            <field name="name">Documents</field>
+            <field name="monthly_price">16</field>
+        </record>
+        <record id="App_29" model="odoo.app.lines">
+            <field name="name">IoT</field>
+            <field name="monthly_price">20</field>
+        </record>
+        <record id="App_30" model="odoo.app.lines">
+            <field name="name">DHL Express</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_31" model="odoo.app.lines">
+            <field name="name">UPS</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_32" model="odoo.app.lines">
+            <field name="name">USPS</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_33" model="odoo.app.lines">
+            <field name="name">FedEx</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_34" model="odoo.app.lines">
+            <field name="name">Ebay</field>
+            <field name="monthly_price">64</field>
+        </record>
+        <record id="App_35" model="odoo.app.lines">
+            <field name="name">VoIP (Asterisk)</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_36" model="odoo.app.lines">
+            <field name="name">Bpost</field>
+            <field name="monthly_price">24</field>
+        </record>
+        <record id="App_37" model="odoo.app.lines">
+            <field name="name">Easypost</field>
+            <field name="monthly_price">24</field>
+        </record>
+
+    </data>
+</odoo>
+
+
