@@ -20,7 +20,7 @@
                         <tree editable="top">
                             <field name="name" readonly="1"></field>
                             <field name="monthly_price" readonly="1"></field>
-                            <field name="include"></field>
+                            <field name="include" widget="boolean_toggle"></field>
                         </tree>
                     </field>
 

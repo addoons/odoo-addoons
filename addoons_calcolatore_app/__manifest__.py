@@ -16,6 +16,7 @@
 		'data/odoo_apps_data.xml'
 
     ],
+	
     'installable': True,
 
 }
