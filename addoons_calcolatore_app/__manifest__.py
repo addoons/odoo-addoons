@@ -13,11 +13,9 @@
     'data': [
         'views/odoo_apps_quotation_views.xml',
         'security/ir.model.access.csv',
-
+		'data/odoo_apps_data.xml'
 
     ],
-    'demo': ['data/odoo_apps_data.xml'],
-
     'installable': True,
 
 }
