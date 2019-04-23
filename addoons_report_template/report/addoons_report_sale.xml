@@ -215,7 +215,7 @@
                                         <td groups="sale.group_show_price_total" style="background-color: #e6e6e6;">
 
                                         </td>
-                                        <td t-if="l.discount > 0" style="background-color: #e6e6e6;">
+                                        <td t-if="display_discount" style="background-color: #e6e6e6;">
                                         </td>
                                         <td style="text-align:right; background-color: #e6e6e6;">
                                             <strong>Totale: </strong>
