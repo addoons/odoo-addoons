@@ -559,7 +559,7 @@
                         <span class="contratto-sviluppo">
 
                             <br/><br/>
-                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO "ODOO 10 <span t-field="doc.name"/> SOPRA ESPOSTO" (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
+                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO "ODOO 12 <span t-field="doc.name"/> SOPRA ESPOSTO" (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
                             E
                             LA SOCIETÀ CLIENTE <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>, IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN <span t-field="doc.partner_id.zip"  style="text-transform:uppercase;"/>, <span  t-field="doc.partner_id.city"  style="text-transform:uppercase;"/>, <span t-field="doc.partner_id.street"  style="text-transform:uppercase;"/> (DETTO ANCHE LICENZIATARIO)
 
