@@ -151,7 +151,8 @@
                                     <tr style="border: none !important;">
                                         <th width="5%">#</th>
                                         <th width="35%">Descrizione</th>
-                                        <th width="10%" class="text-right">Qt.</th>
+                                        <th width="5%" class="text-right">Qt.</th>
+                                        <th width="5%" class="text-right">Unit.</th>
                                         <th width="10%" class="text-right">Pr. Unit.</th>
                                         <th width="10%" t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">Sc.%</th>
                                         <th width="10%" class="text-right">Tasse</th>
@@ -176,6 +177,9 @@
                                             <td class="text-right">
                                                 <span t-field="l.product_uom_qty"/>
                                                 <span t-field="l.product_uom" groups="product.group_uom"/>
+                                            </td>
+                                             <td class="text-right">
+                                                <span t-field="l.product_uom"/>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="l.price_unit"/>
@@ -206,8 +210,12 @@
                                         <td groups="sale.group_discount_per_so_line" style="background-color: #e6e6e6;">
 
                                         </td>
+                                        <td style="background-color: #e6e6e6;">
+                                        </td>
                                         <td groups="sale.group_show_price_total" style="background-color: #e6e6e6;">
 
+                                        </td>
+                                        <td t-if="l.discount > 0" style="background-color: #e6e6e6;">
                                         </td>
                                         <td style="text-align:right; background-color: #e6e6e6;">
                                             <strong>Totale: </strong>
@@ -218,6 +226,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <strong>Tutto quanto non espressamente indicato nel presente documento:  Da definire</strong>
                         </t>
                     </t>
 
