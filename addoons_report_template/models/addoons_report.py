@@ -17,7 +17,7 @@ class AddoonsReportSaleOrder(models.Model):
 
     def check_description(self):
         if self.full_description:
-            if len(self.full_description) > 15:
+            if len(self.full_description) > 35:
                 return True
         return False
 
