@@ -15,6 +15,7 @@
         'report/addoons_report_sale.xml',
         'report/addoons_report_invoice.xml',
         'views/addoons_sale_view.xml',
+        'views/addoons_crm_lead.xml',
         'security/ir.model.access.csv'
     ],
     'installable': True,
