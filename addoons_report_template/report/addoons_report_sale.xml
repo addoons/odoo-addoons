@@ -151,7 +151,8 @@
                                     <tr style="border: none !important;">
                                         <th width="5%">#</th>
                                         <th width="35%">Descrizione</th>
-                                        <th width="10%" class="text-right">Qt.</th>
+                                        <th width="5%" class="text-right">Qt.</th>
+                                        <th width="5%" class="text-right">Unit.</th>
                                         <th width="10%" class="text-right">Pr. Unit.</th>
                                         <th width="10%" t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">Sc.%</th>
                                         <th width="10%" class="text-right">Tasse</th>
@@ -176,6 +177,9 @@
                                             <td class="text-right">
                                                 <span t-field="l.product_uom_qty"/>
                                                 <span t-field="l.product_uom" groups="product.group_uom"/>
+                                            </td>
+                                             <td class="text-right">
+                                                <span t-field="l.product_uom"/>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="l.price_unit"/>
@@ -206,8 +210,12 @@
                                         <td groups="sale.group_discount_per_so_line" style="background-color: #e6e6e6;">
 
                                         </td>
+                                        <td style="background-color: #e6e6e6;">
+                                        </td>
                                         <td groups="sale.group_show_price_total" style="background-color: #e6e6e6;">
 
+                                        </td>
+                                        <td t-if="display_discount" style="background-color: #e6e6e6;">
                                         </td>
                                         <td style="text-align:right; background-color: #e6e6e6;">
                                             <strong>Totale: </strong>
@@ -344,6 +352,7 @@
                                     </t>
                                 </tbody>
                             </table>
+                            <strong>Tutto quanto non espressamente indicato nel presente documento:  Da definire</strong>
 
                         </div>
                     </t>
@@ -364,9 +373,9 @@
                                     <th width="15%">Data Prevista</th>
                                 </thead>
                                 <tbody>
-                                    <td><t t-esc="cont"/></td>
-                                    <td><t t-raw="l.description_line"/></td>
-                                    <td><span t-field="l.deadline"/></td>
+                                    <td style="padding-top: 20px;"><t t-esc="cont"/></td>
+                                    <td style="padding-top: 20px;"><t t-raw="l.description_line"/></td>
+                                    <td style="padding-top: 20px;"><span t-field="l.deadline"/></td>
                                 </tbody>
                             </table>
                         </t>
@@ -381,7 +390,7 @@
                             N. CONTRATTO <span t-field="doc.name"/>
                             <span t-field="doc.date_order"/>
                             <br/>
-                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO ODOO 10 <span t-field="doc.name"/> (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
+                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO ODOO 12 <span t-field="doc.name"/> (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
                             E
                             LA SOCIETÀ CLIENTE <span t-field="doc.partner_id.name"/>, IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN <span t-field="doc.partner_id.zip"/>, <span t-field="doc.partner_id.city"/>, <span t-field="doc.partner_id.street"/> (DETTO ANCHE LICENZIATARIO)
 
@@ -550,7 +559,7 @@
                         <span class="contratto-sviluppo">
 
                             <br/><br/>
-                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO "ODOO 10 <span t-field="doc.name"/> SOPRA ESPOSTO" (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
+                            IL PRESENTE CONTRATTO DI “LICENZA D’USO” DI SVILUPPO "ODOO 12 <span t-field="doc.name"/> SOPRA ESPOSTO" (DI SEGUITO SOFTWARE ) È CONCLUSO TRA LA SOCIETÀ ADDOONS S.R.L., (C.F. E P.I. 04321130165), IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN 20135 TREVIGLIO (BG), VIA CAMILLO TERNI N. 26/A (DETTO ANCHE LICENZIANTE)
                             E
                             LA SOCIETÀ CLIENTE <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>, IN PERSONA DEL LEGALE RAPPRESENTANTE PRO TEMPORE, CON SEDE LEGALE IN <span t-field="doc.partner_id.zip"  style="text-transform:uppercase;"/>, <span  t-field="doc.partner_id.city"  style="text-transform:uppercase;"/>, <span t-field="doc.partner_id.street"  style="text-transform:uppercase;"/> (DETTO ANCHE LICENZIATARIO)
 
