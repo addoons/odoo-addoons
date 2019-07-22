@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 Simone Rubino - Agile Business Group
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+    <record id="invoice_form_view_ddt" model="ir.ui.view">
+        <field name="name">account.invoice.form.ddt</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Spedizione">
+                    <div>
+                        <group>
+                            <group string="Informazioni Spedizione">
+                                <field name="goods_description_id" widget="selection" string="Descrizione Beni"/>
+                                <field name="carriage_condition_id" widget="selection" string="Condizioni Trasporto"/>
+                                <field name="transportation_reason_id" widget="selection" string="Causale Trasporto"/>
+                                <field name="transportation_method_id" widget="selection" string="Metodo Trasporto"/>
+                                <field name="carrier_id" string="Vettore"/>
+                                <field name="parcels" string="Pacchi"/>
+                                <field name="weight" string="Peso"/>
+                                <field name="gross_weight" string="Peso Lordo"/>
+                                <field name="volume" string="Volume"/>
+                            </group>
+                            <group string="Documenti di Trasporto" name="ddt">
+                                <field name="ddt_ids" nolabel="1">
+                                    <tree>
+                                        <field name="ddt_type_id" string="Tipo"/>
+                                        <field name="ddt_number" string="Numero"/>
+                                        <field name="partner_shipping_id" string="Partner"/>
+                                        <field name="to_be_invoiced" string="Da Fatturare"/>
+                                        <field name="invoice_id" string="Fattura"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                    </div>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+</odoo>
