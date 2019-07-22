@@ -1,0 +1,161 @@
+<head>
+    <meta charset="utf-8" />
+</head>
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="color:#875A7B;">Fattura elettronica</h2>
+        <h3 class="oe_slogan">Funzionalita per gestire le fatture elettroniche e l'invio al Sistema di Interscambio.</h3>
+    </div>
+</section>
+
+<section class="oe_container">
+
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Split Payment</b>
+        </h4>
+        <p class="text-justify">
+        <ul>
+            <li><strong>Fatture</strong>: aggiunto il campo per specificare l'ammontare dello split payment</li>
+            <li><strong>Posizione Fiscale</strong>: aggiunta la checkbox per abilitare lo split payment.</li>
+            <li><strong>Configurazione</strong>: aggiunta la configurazione per selezionare il conto relativo allo split payment.</li>
+        </ul>
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>SdI</b>
+        </h4>
+        <p class="text-justify">
+        <ul>
+            <li><strong>Company</strong>: ggiunge alla company e alle impostazioni generali i campi necessari alla
+                configurazione del canale di comunicazione con lo SdI.</li>
+            <li><strong>SdI</strong>: aggiunge la voce di menu "Canali SdI" al menu "Configurazioni" dell'app "Contabilita".
+                Una volta cliccata la voce di menu, si apre una vista ad elenco contenente i canali SdI configurati.
+                Cliccando su una riga si apre la vista form per il canale SdI cliccato contenente:
+                nome, tipo di canale, server PEC in uscita, indirizzo mail SdI, Server PEC in ingresso.</li>
+        </ul>
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>IPA, Pubblica Amministrazione</b>
+        </h4>
+        <p class="text-justify">
+            Aggiunto al partner il campo "Codice IPA" nel tab "Fattura elettronica", con relativo controllo per mostrarlo:
+            ovvero solo se il partner e' una Pubblica Amministrazione'.
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Bollo Virtuale</b>
+        </h4>
+        <p class="text-justify">
+        <ul>
+            <li><strong>Fatture</strong>: aggiunge il bottone per inserire automaticamente il bollo nella fattura,
+                con i relativi controlli sull'applicazione del bollo virtuale.</li>
+            <li><strong>Company</strong>: aggiunge l'impostazione che permette di selezionare un prodotto di default per l'imposta di bollo.</li>
+            <li><strong>Anagrafica Prodotto</strong>: aggiunge una checkbox per indicare che il prodotto e' un bollo,
+                una checkbox per indicare la volonta' di calcolare in automatico il bollo e, se abilitata, altri due
+                campi relativi all'importo minimo a cui applicare il bollo virtuale e le eventuali imposte.</li>
+        </ul>
+        Aggiunge al file xml della fattura elettronica in esportazione l'area del bollo virtuale
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>DDT</b>
+        </h4>
+        <p class="text-justify">
+            Aggiunge un campo a selezione che permette di scegliere se includere i dati del ddt o dei trasferimenti e
+            contiene l'automatismo per inserire i dati dei ddt all'interno della fattura elettronica.
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Fattura elettronica vendite</b>
+        </h4>
+        <p class="text-justify">
+            Contiene le funzionalita' per l'esportazione delle fatture elettroniche, in particolare convertendo i dati in xml
+        <ul>
+            <li><strong>Fatture</strong>: Aggiunge un bottone che mostra l'anteprima della fattura elettronica e
+                un ulteriore pagina per i documenti collegati.</li>
+        </ul>
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Fattura elettronica acquisti</b>
+        </h4>
+        <p class="text-justify">
+            Contiene le funzionalita' per l'esportazione delle fatture elettroniche, in particolare convertendo i dati in xml
+        <ul>
+            <li><strong>Fatture fornitore</strong>: aggiunge i campi necessari alla fatturazione elettronica all'interno della fattura,
+                visibili se e' configurata la fattura elettronica importata che ha generato la fattura fornitore.</li>
+            <li><strong>Company</strong>: aggiunge il campo per scegliere il prodotto per lo sconto maggiorazione.</li>
+            <li><strong>Partner</strong>: aggiunge dettagli per la fatturazione elettronica all'interno della form nel tab "Fattura elettronica",
+                visibili solo se il partner e' fornitore.</li>
+        </ul>
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>PEC</b>
+        </h4>
+        <p class="text-justify">
+            Aggiunge lo stato della fattura elettronica nella form della fattura. Aggiunge la funzionalita' per inviare
+            la fattura elettronica via PEC e i relativi controlli per verificare le eventuali risposte e lo stato di avanzamento dell'invio.
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Aruba</b>
+        </h4>
+        <p class="text-justify">
+            Offre la possibilità di gestire l'import/export delle fatture elettroniche tramite Aruba. Infatti sono aggiunti i campi
+            di riepilogo per la comunicazione con Aruba nell'expot delle fatture:
+        <ul>
+            <li>Stato dell'invio</li>
+            <li>Stato del Sistema di Interscambio</li>
+            <li>Nome del file</li>
+            <li>Codice e descrizione di un eventuale errore</li>
+        </ul>
+        Nel caso di Import è aggiunta la funzionalità per effettuare l'importazione direttamente da Aruba.
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Corrispettivi</b>
+        </h4>
+        <p class="text-justify">
+            Aggiunta la voce di menu "Esporta fattura elettronica" all'action menu della vista ad elenco dei corrispettivi.
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Termini di pagamento</b>
+        </h4>
+        <p class="text-justify">
+            Crea i modelli relativi a metodi e termini di pagamento per la fattura elettronica.
+            Inserisce due campi relazionali relativi a termini e metodi all'interno della form dei termini di pagamento generali (account.payment.term).
+        </p>
+    </div>
+    <div class="oe_span12">
+        <h4 class="oe_mt32 oe_mb8 text-center">
+            <b>Altre aggiunte</b>
+        </h4>
+        <p class="text-justify">
+        <ul>
+            <li><strong>Fatture</strong>: aggiunge i campi necessari alla fatturazione elettronica all'interno della riga di fattura nelle sezioni
+                "Fattura Elettronica" e "Documenti Collegati"</li>
+            <li><strong>Company</strong>: aggiunge i campi necessari alla fatturazione elettronica all'interno della form e le configurazioni relative alla
+                fattura elettronica all'interno delle configurazioni dell'app "Contabilita", sezione "Fatture elettroniche".</li>
+            <li><strong>Partner</strong>: aggiunge i campi necessari alla fatturazione elettronica all'interno della form nel tab "Fattura elettronica".</li>
+        </ul>
+        Contiene le funzionalita' per la creazione del file xml e la conversione dei dati da e verso il formato xml
+        </p>
+    </div>
+</section>
+
+<section class="oe_container oe_separator">
+</section>

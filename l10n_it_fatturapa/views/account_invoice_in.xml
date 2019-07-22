@@ -1,0 +1,96 @@
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+    <record id="view_invoice_form_fatturapa_in" model="ir.ui.view">
+        <field name="name">account.invoice.fatturapa_in</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+            <!--<xpath expr="//field[@name='date_invoice']" position="after">-->
+            <!--<field name="fatturapa_state" string="Stato e-Fattura"/>-->
+            <!--</xpath>-->
+
+            <field name="move_id" position="after">
+                <field name="split_payment" invisible="1"/>
+            </field>
+            <field name="amount_tax" position="after">
+                <field name="amount_sp" widget="monetary"
+                       options="{'currency_field': 'currency_id'}"
+                       attrs="{'invisible': [('split_payment', '=', False)]}"/>
+            </field>
+
+            <button name="%(account.action_account_invoice_payment)d" position="before">
+                <button name="%(l10n_it_fatturapa.action_wizard_export_fatturapa)d"
+                        type="action" string="Esporta e-Fattura" class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('fatturapa_attachment_out_id', '!=', False), ('state' ,'not in', ['open', 'paid']), ('electronic_invoice_subjected', '=', False)]}"/>
+            </button>
+
+            <field name="partner_id" position="after">
+                <field name="electronic_invoice_subjected" invisible="1"/>
+            </field>
+
+            <field name="analytic_tag_ids" position="after">
+                <field name="admin_ref" string="Riferimento Amministrazione"/>
+            </field>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Documenti Collegati" attrs="{'invisible': [('electronic_invoice_subjected', '=', False)]}">
+                    <field name="related_documents" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="type" string="Tipo"/>
+                            <field name="name" string="Nome"/>
+                            <field name="lineRef" readonly="1" string="Rif."/>
+                            <field name="date" string="Data"/>
+                            <field name="numitem" string="Numero"/>
+                            <field name="code" string="Codice"/>
+                            <field name="cig" string="CIG"/>
+                            <field name="cup" string="CUP"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Fattura Elettronica" attrs="{'invisible': [('electronic_invoice_subjected', '=', False)]}">
+                    <group>
+                        <field name="fatturapa_attachment_out_id" string="XML Generato"/>
+                        <field name="has_pdf_invoice_print" attrs="{'invisible': [('fatturapa_attachment_out_id', '=', False)]}"/>
+                    </group>
+                    <field name="fatturapa_doc_attachments" nolabel="1" >
+                        <tree string="Allegati">
+                            <field name="ir_attachment_id" string="ID"/>
+                            <field name="datas_fname" string="Nome"/>
+                            <field name="description" string="Descrizione"/>
+                            <field name="is_pdf_invoice_print" string="PDF"/>
+                        </tree>
+                        <form string="Allegati">
+                            <group>
+                                <group>
+                                    <field name="name" string="Nome"/>
+                                    <field name="description" string="Descrizione"/>
+                                    <field name="is_pdf_invoice_print" string="PDF"/>
+                                </group>
+                                <group>
+                                    <field name="datas" filename="datas_fname" string="Dati"/>
+                                    <field name="datas_fname" string="Nome"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_invoice_line_form_fatturapa_in" model="ir.ui.view">
+        <field name="name">account.invoice.line.fatturapa.in</field>
+        <field name="model">account.invoice.line</field>
+        <field name="inherit_id" ref="l10n_it_fatturapa.view_invoice_line_form_fatturapa"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="fatturapa_attachment_in_id" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

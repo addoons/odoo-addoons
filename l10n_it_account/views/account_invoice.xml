@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+    <!--Form Fatture Fornitori-->
+    <record model="ir.ui.view" id="view_withholding_invoice_supplier_form">
+        <field name="name">view.withholding.invoice.supplier.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='move_id']" position="before">
+                <field name="fiscal_document_type_id" class="oe_inline" string="Tipo Documento"/>
+            </xpath>
+
+            <xpath expr="//field[@name='reference']" position="after">
+                <field name="withholding_tax" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                <attribute name="context">{'fiscal_position_id': fiscal_position_id, 'type': type, 'journal_id': journal_id}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='invoice_line_tax_ids']" position="after">
+                <field name="invoice_line_tax_wt_ids" widget="many2many_tags" options="{'no_create': True}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='tax_line_ids']" position="after">
+                <field name="withholding_tax_line_ids" attrs="{'invisible': [('withholding_tax', '=', False)]}">
+                    <tree>
+                        <field name="withholding_tax_id"/>
+                        <field name="base"/>
+                        <field name="tax"/>
+                    </tree>
+                    <form>
+                        <group colspan="2">
+                            <field name="withholding_tax_id" />
+                            <field name="base"/>
+                            <field name="tax"/>
+                        </group>
+                    </form>
+
+                    <tree  editable="bottom" string="Withholding Taxes">
+                        <field name="withholding_tax_id"/>
+                        <field name="base"/>
+                        <field name="tax"/>
+                    </tree>
+
+                </field>
+            </xpath>
+
+            <xpath expr="//group[hasclass('oe_subtotal_footer', 'oe_right')]/field[@name='amount_total']" position="after">
+                <field name="withholding_tax_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
+                       attrs="{'invisible': [('withholding_tax', '=', False)]}"/>
+                <field name="amount_net_pay" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_subtotal_footer_separator"
+                       attrs="{'invisible': [('withholding_tax', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='residual']" position="after">
+                <field name="amount_net_pay_residual" widget="monetary" options="{'currency_field': 'currency_id'}"
+                       attrs="{'invisible': ['|', ('state', '=', 'draft'), ('withholding_tax', '=', False)]}" class="oe_subtotal_footer_separator"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!-- Form Fatture Clienti -->
+    <record id="invoice_form" model="ir.ui.view">
+        <field name="name">account.invoice.form</field>
+        <field name="model">account.invoice</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_id']" position="before">
+                <field name="fiscal_document_type_id" class="oe_inline" string="Tipo Documento"/>
+            </xpath>
+            <field name="fiscal_position_id" position="after">
+                <field name="corrispettivo" string="Ricevuta"/>
+            </field>
+        </field>
+    </record>
+
+    <!--FormView Fattura di tipo "Corrispettivo"-->
+    <record id="corrispettivi_form" model="ir.ui.view">
+        <field name="name">account.corrispettivi.form</field>
+        <field name="model">account.invoice</field>
+        <field name="type">form</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="corrispettivo_print" string="Stampa Ricevuta"
+                        type="object" class="oe_highlight" groups="base.group_user"
+                        attrs="{'invisible':['|',('sent','=',True), ('state', 'not in', ('open', 'in_payment', 'paid'))]}"/>
+                <button name="corrispettivo_print" string="Stampa Ricevuta"
+                        type="object" groups="base.group_user"
+                        attrs="{'invisible':['|',('sent','=',False), ('state', 'not in', ('open', 'in_payment', 'paid'))]}"/>
+            </header>
+            <xpath expr="//button[@name='action_invoice_sent' and hasclass('oe_highlight')]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_invoice_sent' and not(hasclass('oe_highlight'))]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account.action_invoice_tree" model="ir.actions.act_window">
+        <field name="domain">[('corrispettivo', '=', False)]</field>
+    </record>
+
+    <record id="account.action_invoice_tree1" model="ir.actions.act_window">
+        <field name="domain">[('type', 'in', ('out_invoice', 'out_refund')), ('corrispettivo', '=', False)]</field>
+    </record>
+
+    <record id="action_corrispettivi_tree1" model="ir.actions.act_window">
+        <field name="name">Ricevute/Corrispettivi</field>
+        <field name="res_model">account.invoice</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+        <field eval="False" name="view_id"/>
+        <field name="domain">[('type','in',('out_invoice', 'out_refund')), ('corrispettivo', '=', True)]</field>
+        <field name="context">{'type':'out_invoice', 'journal_type': 'sale', 'default_corrispettivi': True}</field>
+    </record>
+
+    <record id="action_corrispettivi_tree1_view1" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="account.invoice_tree"/>
+        <field name="act_window_id" ref="action_corrispettivi_tree1"/>
+    </record>
+
+    <record id="action_corrispettivi_tree1_view2" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="l10n_it_account.corrispettivi_form"/>
+        <field name="act_window_id" ref="action_corrispettivi_tree1"/>
+    </record>
+
+    <menuitem action="action_corrispettivi_tree1" id="menu_action_corrispettivi_tree"
+              parent="account.menu_finance_receivables"/>
+
+
+    <!--Form Righe Fattura-->
+    <record model="ir.ui.view" id="view_wt_invoice_line_form">
+        <field name="name">view.withholding.invoice.supplier.form</field>
+        <field name="model">account.invoice.line</field>
+        <field name="inherit_id" ref="account.view_invoice_line_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='invoice_line_tax_ids']" position="after">
+                <field name="invoice_line_tax_wt_ids" widget="many2many_tags" options="{'no_create': True}"
+                       invisible="context.get('type', 'out_invoice') not in ['in_invoice', 'in_refund']"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

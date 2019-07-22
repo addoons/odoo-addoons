@@ -1,0 +1,27 @@
+<odoo>
+
+    <record id="wizard_fatturapa_send_aruba_view" model="ir.ui.view">
+        <field name="name">wizard_fatturapa_send_aruba_view</field>
+        <field name="model">wizard.fatturapa.send.aruba</field>
+        <field name="arch" type="xml">
+            <form string="Send Electronic Invoice (ARUBA)">
+                <sheet string="Selected files will be sent to the Exchange System"/>
+                <footer>
+                    <button name="send_aruba" string="Send"
+                            type="object" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="action_wizard_fatturapa_send_aruba"
+                key2="client_action_multi"
+                name="Send Electronic Invoice (ARUBA)"
+                res_model="wizard.fatturapa.send.aruba"
+                src_model="fatturapa.attachment.out"
+                target="new"
+                view_id="wizard_fatturapa_send_aruba_view"
+                view_mode="form"/>
+
+</odoo>

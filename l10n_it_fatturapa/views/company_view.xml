@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+
+    <record id="view_account_config_settings" model="ir.ui.view">
+        <field name="name">view_account_config_settings</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@id='analytic']" position="after">
+                <h2>Electronic Invoices</h2>
+                <div class="row mt16 o_settings_container" id="fatturapa_settings">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="fatturapa_fiscal_position_id" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_fiscal_position_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_sequence_id" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_sequence_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_tax_representative" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_tax_representative"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_stabile_organizzazione" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_stabile_organizzazione"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_sender_partner" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_sender_partner"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="fatturapa_art73" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_art73"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_rea_office" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_rea_office"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_rea_number" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_rea_number"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_rea_capital" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_rea_capital"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_rea_partner" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_rea_partner"/>
+                                </div>
+                                <div class="row">
+                                    <label for="fatturapa_rea_liquidation" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_rea_liquidation"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//div[@id='fatturapa_settings']" position="after">
+                <div class="row mt16 o_settings_container" id="supplier_fatturapa_settings">
+                    <div class="col-12 col-lg-12 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">ES Channel</span>
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                  aria-label="Values set here are company-specific."
+                                  groups="base.group_multi_company" role="img"/>
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <field name="sdi_channel_id" class="col-lg-6"/>
+                                    <field name="sdi_channel_type" invisible="1"/>
+                                </div>
+                                <div class="row">
+                                    <label for="email_from_for_fatturaPA" class="col-lg-6 o_form_label"/>
+                                    <field name="email_from_for_fatturaPA" class="col-lg-6"/>
+                                </div>
+                                <div class="row">
+                                    <label for="email_exchange_system" class="col-lg-6 o_form_label"/>
+                                    <field name="email_exchange_system" class="col-lg-6"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_config_settings2" model="ir.ui.view">
+        <field name="name">view_account_config_settings2</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div id="eu_service" position="after">
+                <div class="col-12 col-lg-6 o_setting_box"
+                     title="Configuration for Split Payment module">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">Configuration for Split Payment module</span>
+                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                              aria-label="Values set here are company-specific."
+                              groups="base.group_multi_company" role="img"/>
+                        <div class="text-muted">
+                            Split Payment Write-off account
+                        </div>
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label string="SP account" for="sp_account_id" class="col-lg-3 o_light_label"/>
+                                <field name="sp_account_id"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </field>
+    </record>
+
+    <record id="view_company_form_e_invoice" model="ir.ui.view">
+        <field name="name">view_company_form_e_invoice</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="E-invoice">
+                    <group>
+                        <group>
+                            <field name="fatturapa_fiscal_position_id" required="1"/>
+                            <field name="fatturapa_sequence_id" required="1"
+                                   domain="[('code', '=', 'account.invoice.fatturapa')]"/>
+                        </group>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <record id="view_account_config_settings_ftpa_in" model="ir.ui.view">
+        <field name="name">view_account_config_settings_ftpa_in</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="view_account_config_settings"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='fatturapa_settings']" position="after">
+                <div class="row mt16 o_settings_container" id="supplier_fatturapa_settings">
+                    <div class="col-12 col-lg-12 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Supplier Invoices</span>
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                  aria-label="Values set here are company-specific."
+                                  groups="base.group_multi_company" role="img"/>
+                            <div class="text-muted">
+                                Default products used in electronic supplier invoices
+                            </div>
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="sconto_maggiorazione_product_id" class="col-lg-6 o_light_label"/>
+                                    <field name="sconto_maggiorazione_product_id" class="col-lg-6"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_account_config_settings_stamp">
+        <field name="name">view_account_config_settings_stamp</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div id="eu_service" position="after">
+                <div class="col-12 col-lg-6 o_setting_box"
+                     title="Configuration for Tax stamp">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">Configuration for Tax stamp</span>
+                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                              aria-label="Values set here are company-specific."
+                              groups="base.group_multi_company" role="img"/>
+                        <div class="text-muted">
+                            Product used as Tax Stamp in customer invoices
+                        </div>
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label string="Tax Stamp Product" for="tax_stamp_product_id" class="col-lg-3 o_light_label"/>
+                                <field name="tax_stamp_product_id"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+
+
+    <record id="view_company_form_e_invoice_sdi" model="ir.ui.view">
+        <field name="name">view_company_form_e_invoice_sdi</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="view_company_form_e_invoice"/>
+        <field name="arch" type="xml">
+            <field name="fatturapa_fiscal_position_id" position="after">
+                <field name="sdi_channel_id" required="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>

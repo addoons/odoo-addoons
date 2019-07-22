@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+
+    <record id="view_partner_form_inherit_ateco" model="ir.ui.view" >
+        <field name="name">partner.form.ateco</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Ateco">
+                    <div>
+                        <field name="ateco_category_ids" nolabel="1" />
+                    </div>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <record id="view_partner_fiscal_document_type" model="ir.ui.view">
+        <field name="name">res.partner.fiscal.document.type.form</field>
+        <field name="model">res.partner</field>
+        <field name="groups_id" eval="[(6, 0, [ref('account.group_account_invoice')])]"/>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_payment_term_id']" position="before">
+                <field name="out_fiscal_document_type" class="oe_inline" string="Tipo Documento"/>
+            </xpath>
+            <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
+                <field name="in_fiscal_document_type" class="oe_inline" string="Tipo Documento"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_pec_form" model="ir.ui.view">
+        <field name="name">res.partner.pec.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="mail.res_partner_view_form_inherit_mail"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='email']/ancestor::div" position="after">
+                <field name="pec_mail" widget="email" string="PEC"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_pec_tree" model="ir.ui.view">
+        <field name="name">res.partner.pec.tree</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <field name="email" position="after">
+                <field name="pec_mail" />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="res_partner_kanban_pec_view">
+        <field name="name">res.partner.pec.kanban</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+        <field name="arch" type="xml">
+            <field name="email" position="after">
+                <field name="pec_mail"/>
+            </field>
+            <xpath expr="//div[hasclass('oe_kanban_details')]/ul" position="inside">
+                <li t-if="record.pec_mail.raw_value">
+                    <a t-attf-href="mailto:#{record.pec_mail.raw_value}"><field name="pec_mail"/></a><span> (PEC)</span>
+                </li>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_rea_partner_form">
+        <field name="name">view_rea_partner_form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <group name="accounting_entries" position="after">
+                <newline/>
+                <group string="Registrazione REA" name="rea_data">
+                    <field name="rea_office" string="Ufficio" />
+                    <field name="rea_code" string="Codice"/>
+                    <field name="rea_capital" string="Capitale Sociale"/>
+                    <field name="rea_member_type" string="Soci"/>
+                    <field name="rea_liquidation_state" string="Stato Liquidazione"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+    <record id="view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="groups_id" eval="[(4, ref('account.group_account_manager'))]"/>
+        <field name="arch" type="xml">
+            <field name="vat" position="after">
+                <field name="use_corrispettivi"/>
+            </field>
+            <!--<group name="accounting_entries" position="inside">-->
+                <!---->
+            <!--</group>-->
+        </field>
+    </record>
+
+
+    <record id="view_partner_form_fiscalcode_data" model="ir.ui.view">
+        <field name="name">res.partner.fiscalcode.data</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base_vat.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="type" position="after">
+                <label for="fiscalcode" />
+                <div name="fiscalcode_info" class="o_row">
+                    <field name="fiscalcode" class="oe_inline" />
+                </div>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_res_partner_filter_fiscalcode_data" model="ir.ui.view">
+        <field name="name">res.partner.fiscalcode.filter</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <search>
+                <field name="fiscalcode"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">res.partner.inherit.view.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <page name="accounting" position="attributes">
+                <attribute name="string">Accounting</attribute>
+            </page>
+        </field>
+    </record>
+
+
+
+
+</odoo>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+    <!--Layout Scheda Contabile-->
+    <template id="report_scheda_contabile">
+        <t t-call="web.basic_layout">
+            <t t-call="addoons_reports.internal_layout">
+                <div class="page">
+                    <style>
+                        .saldo_iniziale td, .saldo_finale td{
+                        background-color: #875A7B;
+                        color: white;
+                        text-align: right;
+                        }
+                        .table th, .table thead{
+                        border:none !important;
+                        border-bottom: none !important;
+                        }
+                    </style>
+                    <div class="row">
+                        <div class="col-xs-4 text-left">
+                            <t t-if="type == 'conto'">
+                                <strong>SCHEDA CONTO</strong>
+                            </t>
+                            <t t-if="type == 'partner'">
+                                <strong>SCHEDA PARTNER</strong>
+                            </t>
+                        </div>
+                        <div class="col-xs-4 text-center">
+                            <strong>DAL </strong><t t-esc="from_date" t-options="{'widget': 'date', 'format': 'dd/MM/yy'}"/> <strong> AL </strong> <t t-esc="to_date" t-options="{'widget': 'date', 'format': 'dd/MM/yy'}"/>
+                        </div>
+                        <div class="col-xs-4 text-right">
+                            <strong>DEL </strong><span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                        </div>
+                    </div>
+                    <br/><br/>
+                    <div class="row">
+                        <t t-foreach="lines_account" t-as="group">
+                            <t t-set="key" t-value="group"/>
+                            <t t-set="value" t-value="group_value"/>
+                            <strong t-esc="key" style="font-size: 18px; margin-left: 18px;"/>
+                            <div style="width:96%; border-bottom:solid 1px #e6e6e6; margin:auto;"/>
+                            <br/><br/>
+                            <table class="table table-bordered" style="margin:auto; width:96%;">
+                                <thead>
+                                    <tr>
+                                        <th width="15%">Data</th>
+                                        <th width="25%">Registr.</th>
+                                        <th width="30%" t-if="type == 'partner' ">Conto</th>
+                                        <th width="30%" t-if="type == 'conto' ">Partner</th>
+                                        <th style="text-align: center" width="10%">Dare</th>
+                                        <th style="text-align: center" width="10%">Avere</th>
+                                        <th style="text-align: center" width="10%">Saldo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--AGGIUNTA RIGA SALDO INIZIALE-->
+                                    <tr class="saldo_iniziale">
+                                        <td colspan="1"/>
+                                        <td colspan="2" style="text-align:right;">Saldo Iniziale</td>
+                                        <t t-if="key in saldo_precedente">
+                                            <td><span t-esc="saldo_precedente[key]['saldo_dare_prec']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                            <td><span t-esc="saldo_precedente[key]['saldo_avere_prec']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                            <td><span t-esc="saldo_precedente[key]['saldo_prec']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                        </t>
+                                        <t t-if="key not in saldo_precedente">
+                                            <td><span>0 €</span></td>
+                                            <td><span>0 €</span></td>
+                                            <td><span>0 €</span></td>
+                                        </t>
+                                    </tr>
+                                    <!--AGGIUNTA MOVIMENTAZIONI CONTABILI-->
+                                    <t t-set="totale_dare" t-value="0"/>
+                                    <t t-set="totale_avere" t-value="0"/>
+                                    <t t-set="totale_saldo" t-value="0"/>
+                                    <tr t-foreach="value" t-as="elem">
+                                        <t t-if="elem['journal_id'] in journal_ids">
+                                            <td><span t-esc="elem['date']" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                                            <td><span t-esc="elem['move_id']"/></td>
+                                            <td t-if="type == 'partner' "><span t-esc="elem['account_id']"/></td>
+                                            <td t-if="type == 'conto' ">
+                                                <span t-if="elem['partner']" t-esc="elem['partner']"/>
+                                                <span t-if="not elem['partner']" t-esc="elem['name']"/>
+                                            </td>
+                                            <td style="text-align: right;"><span t-if="elem['debit'] != 0" t-esc="elem['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                            <td style="text-align: right;"><span t-if="elem['credit'] != 0" t-esc="elem['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                            <td style="text-align: right;">
+                                                <strong t-if="elem['balance'] != 0">
+                                                    <span t-esc="elem['balance']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                </strong>
+                                                <span t-if="elem['balance'] == 0" t-esc="elem['balance']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </td>
+                                            <t t-set="totale_dare" t-value="totale_dare + elem['debit']"/>
+                                            <t t-set="totale_avere" t-value="totale_avere + elem['credit']"/>
+                                            <t t-set="totale_saldo" t-value="elem['balance']"/>
+                                        </t>
+                                    </tr>
+                                    <!--AGGIUNTA SALDO FINALE-->
+                                    <tr class="saldo_finale">
+                                        <td colspan="1"/>
+                                        <td colspan="2"><span><strong>Saldo Finale</strong></span></td>
+                                        <td><span><strong t-esc="totale_dare" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></span></td>
+                                        <td><span><strong t-esc="totale_avere" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></span></td>
+                                        <td>
+                                            <span>
+                                                <strong t-if="totale_saldo != 0" t-esc="totale_saldo" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                <span t-if="totale_saldo == 0" t-esc="totale_saldo" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <t t-if="not group_last">
+                                <p style="page-break-before:always;"> </p>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="wizard_export_fatturapa_form_view" model="ir.ui.view">
+        <field name="name">Export Electronic Invoice</field>
+        <field name="model">wizard.export.fatturapa</field>
+        <field name="arch" type="xml">
+            <form string="Esporta Fattura Elettronica">
+                <sheet>
+                    <group>
+                        <separator colspan="2" string="Se vuoi allegare un report PDF selezionalo nel campo qui sotto."/>
+                        <field name="report_print_menu" string="Report da Allegare" widget="selection"/>
+                        <field name="include_ddt_data" string="Dati DDT da Allegare"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="exportFatturaPA" string="Esporta" type="object" class="oe_highlight"/>
+                    <button special="cancel" string="Chiudi"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="action_wizard_export_fatturapa"
+                key2="client_action_multi"
+                name="Esporta Fattura Elettronica"
+                res_model="wizard.export.fatturapa"
+                src_model="account.invoice"
+                target="new"
+                view_id="wizard_export_fatturapa_form_view"
+                view_mode="form"/>
+</odoo>
