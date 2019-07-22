@@ -48,13 +48,17 @@
                     <sheet>
                         <group>
                             <group>
+                                <field  name="name" string="Nome" required="1"/>
                                 <field  name="partner_id" string="Cliente" required="1"/>
                                 <field  name="start_date" string="Inizio validità" />
-                                <field  name="end_date" string="Fine validità"/>
                             </group>
                             <group>
                                 <field  name="hours" string="Ore" required="1"/>
                                 <field  name="type" string="tipo" required="1"/>
+                                <field  name="end_date" string="Fine validità"/>
+                            </group>
+                            <group>
+                                <field  name="order_id" string="Ordine di Vendita"/>
                             </group>
                         </group>
                         <notebook>

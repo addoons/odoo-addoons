@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class pacchettoOre(models.Model):
     _name = 'pacchetti.ore'
+    name = fields.Char()
     partner_id = fields.Many2one('res.partner')
     description = fields.Text()
     start_date = fields.Date()
@@ -13,3 +14,4 @@ class pacchettoOre(models.Model):
         ('developing', 'Sviluppo'),
         ('training', 'Formazione/consulenza')
     ])
+    order_id = fields.Many2one('sale.order')

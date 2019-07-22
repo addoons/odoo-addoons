@@ -1,0 +1,106 @@
+<odoo>
+    <template id="report_task_list_tmpl">
+        <t t-call="web.basic_layout">
+            <t t-call="addoons_reports.internal_layout">
+                <div class="page">
+<!--                    <h4 t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"></h4>-->
+                    <span><strong><h2>Riepilogo Progetto</h2></strong></span>
+                    <span><h4>Nome Progetto: <t t-esc="docs[0].project_id.name"/></h4></span>
+                    <div class="row">
+                        <div class="col-6">Attività Pianificate</div>
+                        <div class="col-6" style="text-align:right">Stampato il <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"/>
+                        </div>
+                    </div>
+                    <table style="width:100%; font-size: medium;page-break-after:always" cellspacing="0" cellpadding="0" class="table table-bordered">
+                        <thead>
+                            <tr class="first_th_row" style="background-color:lightgrey; text-align:center">
+                                <th>#</th>
+                                <th>TITOLO</th>
+                                <th>SCADENZA</th>
+                                <th>TAGS</th>
+                                <th>ORE</th>
+                                <th>TOT. ORE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="cont" t-value="1"/>
+                            <t t-set="tot_ore_svil" t-value="0"/>
+                            <t t-set="tot_ore_form" t-value="0"/>
+                            <t t-set="tot_ore" t-value="0"/>
+                            <t t-foreach="docs" t-as="doc">
+                                <tr>
+                                    <td t-esc="cont"/>
+                                    <td t-esc="doc.name"/>
+                                    <td t-esc="doc.date_deadline"/>
+                                    <t t-set="tag_list" t-value="''"/>
+                                    <t t-foreach="doc.tag_ids" t-as="tag">
+                                        <t t-set="tag_list" t-value="tag_list + ' ' + tag.name"/>
+                                    </t>
+                                    <td t-esc="tag_list"/>
+                                    <td>
+                                        <t t-set="ore_task" t-value="0"/>
+                                        <t t-if="len(doc.ore_lines) > 0">
+                                            <table style="width:100%; font-size: medium;" cellspacing="0" cellpadding="0" class="table table-bordered">
+                                                <thead>
+                                                    <th>Ore</th>
+                                                    <th>Tipo</th>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="doc.ore_lines" t-as="ore_line">
+                                                        <tr>
+                                                            <td t-esc="ore_line.requested_hours" style="text-align:right"/>
+                                                            <td t-esc="ore_line.type"/>
+                                                            <t t-if="ore_line.type == 'training'">
+                                                                <t t-set="tot_ore_svil" t-value="tot_ore_svil + ore_line.requested_hours"/>
+                                                            </t>
+                                                            <t t-if="ore_line.type == 'developing'">
+                                                                <t t-set="tot_ore_form" t-value="tot_ore_form + ore_line.requested_hours"/>
+                                                            </t>
+                                                        </tr>
+                                                        <t t-set="ore_task" t-value="ore_task + ore_line.requested_hours"/>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </t>
+                                    </td>
+                                    <td t-esc="ore_task" style="text-align:right"/>
+                                    <t t-set="tot_ore" t-value="tot_ore + ore_task"/>
+                                </tr>
+                                <t t-set="cont" t-value="cont + 1"/>
+                            </t>
+                            <tr>
+                                <td colspan="5" style="text-align:right"><strong>TOT. ORE SVILUPPO</strong></td>
+                                <td t-esc="tot_ore_svil" style="text-align:right"/>
+                            </tr>
+                            <tr>
+                                <td colspan="5" style="text-align:right"><strong>TOT. ORE FORMAZIONE</strong></td>
+                                <td t-esc="tot_ore_form" style="text-align:right"/>
+                            </tr>
+                            <tr>
+                                <td colspan="5" style="text-align:right"><strong>TOT. ORE COMPLESSIVO</strong></td>
+                                <td t-esc="tot_ore" style="text-align:right"/>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table style="width:100%; font-size: medium;page-break:after" cellspacing="0" cellpadding="0" class="table table-bordered">
+                        <thead class="first_th_row" style="background-color:lightgrey; text-align:center">
+                            <th>#</th>
+                            <th>Descrizione Task</th>
+                        </thead>
+                        <tbody>
+                            <t t-set="cont" t-value="1"/>
+                            <t t-foreach="docs" t-as="doc">
+                                <tr>
+                                    <td t-esc="cont"/>
+                                    <td t-raw="doc.description"/>
+                                </tr>
+                                <t t-set="cont" t-value="cont + 1"/>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
