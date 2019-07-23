@@ -1,7 +1,7 @@
 <odoo>
     <template id="report_task_list_tmpl">
         <t t-call="web.basic_layout">
-            <t t-call="addoons_reports.internal_layout">
+            <t t-call="addoons_reports.internal_minimal_layout">
                 <div class="page">
                     <span><strong><h2>Analisi Progetto</h2></strong></span>
                     <span><h4>Nome Progetto: <t t-esc="docs[0].project_id.name"/></h4></span>
@@ -17,7 +17,7 @@
                         }
 
                         td, th {
-                        border: 1px solid black;
+                        border: 1px solid #e6e6e6;
                         padding: 5px;
                         }
                     </style>
@@ -28,8 +28,8 @@
                                 <th width="30%">TITOLO</th>
                                 <th width="10%">SCADENZA</th>
                                 <th width="15%">TAGS</th>
-                                <th width="30%">ORE</th>
-                                <th width="10%">TOT. ORE</th>
+                                <th width="25%">ORE</th>
+                                <th width="15%">TOT. ORE</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -67,7 +67,7 @@
                                                 <tbody>
                                                     <t t-foreach="doc.ore_lines" t-as="ore_line">
                                                         <tr>
-                                                            <td t-esc="ore_line.requested_hours" style="text-align:right"/>
+                                                            <td t-esc="str(ore_line.requested_hours) + ' h'" style="text-align:right"/>
                                                             <t t-if="ore_line.type == 'training'">
                                                                 <td>Consulenza</td>
                                                                 <t t-set="tot_ore_svil" t-value="tot_ore_svil + ore_line.requested_hours"/>
@@ -83,24 +83,24 @@
                                             </table>
                                         </t>
                                     </td>
-                                    <td t-esc="ore_task" style="text-align:right"/>
+                                    <td t-esc="str(ore_task) + ' h'" style="text-align:right"/>
                                     <t t-set="tot_ore" t-value="tot_ore + ore_task"/>
                                 </tr>
                                 <t t-set="cont" t-value="cont + 1"/>
                             </t>
                             <tr>
                                 <td colspan="4" style="border: none !important;"/>
-                                <td style="text-align:right"><strong>TOT. ORE SVILUPPO</strong></td>
+                                <td style="text-align:right;font-size: 13px">TOT. ORE SVILUPPO</td>
                                 <td t-esc="tot_ore_svil" style="text-align:right"/>
                             </tr>
                             <tr>
                                 <td colspan="4" style="border: none !important;"/>
-                                <td style="text-align:right"><strong>TOT. ORE FORMAZIONE</strong></td>
+                                <td style="text-align:right;font-size: 13px">TOT. ORE FORMAZIONE</td>
                                 <td t-esc="tot_ore_form" style="text-align:right"/>
                             </tr>
                             <tr>
                                 <td colspan="4" style="border: none !important;"/>
-                                <td style="text-align:right"><strong>TOT. ORE COMPLESSIVO</strong></td>
+                                <td style="text-align:right;font-size: 15px"><strong>TOT. ORE COMPLESSIVO</strong></td>
                                 <td t-esc="tot_ore" style="text-align:right"/>
                             </tr>
                         </tbody>
