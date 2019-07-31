@@ -68,11 +68,11 @@
                                                     <t t-foreach="doc.ore_lines" t-as="ore_line">
                                                         <tr>
                                                             <td t-esc="str(ore_line.requested_hours) + ' h'" style="text-align:right"/>
-                                                            <t t-if="ore_line.type == 'training'">
+                                                            <t t-if="ore_line.type == 'developing'">
                                                                 <td>Consulenza</td>
                                                                 <t t-set="tot_ore_svil" t-value="tot_ore_svil + ore_line.requested_hours"/>
                                                             </t>
-                                                            <t t-if="ore_line.type == 'developing'">
+                                                            <t t-if="ore_line.type == 'training'">
                                                                 <td>Sviluppo</td>
                                                                 <t t-set="tot_ore_form" t-value="tot_ore_form + ore_line.requested_hours"/>
                                                             </t>
