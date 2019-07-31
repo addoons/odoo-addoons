@@ -14,11 +14,15 @@
                     <style>
                         table {
                         border-collapse: collapse;
+                        font-size: 11px;
+                        padding: 5px;
                         }
 
                         td, th {
                         border: 1px solid #e6e6e6;
                         padding: 5px;
+                        font-size: 11px;
+                        padding: 0px;
                         }
                     </style>
                     <table style="width:100%; font-size: medium;page-break-after:always;" cellspacing="0" cellpadding="0">
@@ -59,7 +63,8 @@
                                     <td>
                                         <t t-set="ore_task" t-value="0"/>
                                         <t t-if="len(doc.ore_lines) > 0">
-                                            <table style="width:100%;">
+                                            <span>
+                                                <table style="width:100%;">
                                                 <thead>
                                                     <th>Ore</th>
                                                     <th>Tipo</th>
@@ -81,6 +86,7 @@
                                                     </t>
                                                 </tbody>
                                             </table>
+                                            </span>
                                         </t>
                                     </td>
                                     <td t-esc="str(ore_task) + ' h'" style="text-align:right"/>
