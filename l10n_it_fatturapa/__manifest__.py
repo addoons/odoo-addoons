@@ -15,7 +15,6 @@
         'document',
         'base_iban',
         'partner_firstname',
-        "l10n_it_ddt",
         'product',
         'fetchmail',
     ],
