@@ -964,9 +964,12 @@ class WizardExportFatturapa(models.TransientModel):
         invoices = self.env['account.invoice'].browse(invoice_ids)
         for invoice in invoices:
             for line in invoice.invoice_line_ids:
-                if line.ddt_line_id:
-                    res['include_ddt_data'] = 'dati_ddt'
-                    return res
+                #Aggiunto questo IF per verificare se l'app DDT e' installata sull'istanza
+                #Altrimenti non vengono inseriti i dati DDT nella fattura elettronica
+                if 'ddt_line_id' in self.env['account.invoice.line']._fields:
+                    if line.ddt_line_id:
+                        res['include_ddt_data'] = 'dati_ddt'
+                        return res
         return res
 
     include_ddt_data = fields.Selection([
