@@ -92,21 +92,6 @@
         </field>
     </record>
 
-    <!--TREE-->
-    <record model="ir.ui.view" id="view_fatturapa_in_attachment_tree">
-        <field name="name">fatturapa.attachment.in.tree</field>
-        <field name="model">fatturapa.attachment.in</field>
-        <field name="arch" type="xml">
-            <tree string="File e-Fattura" create="false">
-                <field name="name" string="File"/>
-                <field name="xml_supplier_id" string="Fornitore"/>
-                <field name="in_invoice_ids" string="Fatture" widget="many2many_tags"/>
-                <!--<field name="state" string="Stato"/>-->
-                <!--<field name="sending_date" string="Data Invio"/>-->
-                <!--<field name="delivered_date" string="Data Consegna"/>-->
-            </tree>
-        </field>
-    </record>
 
     <record id="action_fatturapa_attachment_vendor" model="ir.actions.act_window">
         <field name="name">File e-Fattura</field>
