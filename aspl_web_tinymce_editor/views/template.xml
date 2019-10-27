@@ -71,9 +71,7 @@
                 <link rel="stylesheet" type="text/css"
                       href="/aspl_web_tinymce_editor/static/lib/tinymce/skins/lightgray/content.min.css"
                       X-Content-Type-Options="nosniff"/>
-                <link rel="stylesheet" type="text/css"
-                      href="/aspl_web_tinymce_editor/static/lib/tinymce/skins/lightgray/skin.min.css"
-                      X-Content-Type-Options="nosniff"/>
+               
                 <script type="text/javascript" src="/aspl_web_tinymce_editor/static/src/js/web_tinymce.js"/>
             </xpath>
         </template>
