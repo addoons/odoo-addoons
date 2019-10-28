@@ -24,7 +24,7 @@
 
 
         <template id="addoons_report_template.invoice_document">
-            <t t-call="addoons_report_template.external_layout">
+            <t t-call="addoons_report_template.external_layout_addoons">
                 <t t-set="o" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
                 <div class="page">
 
