@@ -90,10 +90,6 @@
                             <strong>Codice Cliente:</strong>
                             <p t-field="o.partner_id.ref"/>
                         </div>
-                        <div name="reference" class="col-2" t-if="o.reference">
-                            <strong>Referenza:</strong>
-                            <p t-field="o.reference"/>
-                        </div>
                     </div>
 
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
@@ -102,7 +98,6 @@
                         <thead>
                             <tr>
                                 <th>Descrizione</th>
-                                <th class="hidden">Documento Sorgente</th>
                                 <th class="text-right">Qt.</th>
                                 <th class="text-right">Pr. Unit.</th>
                                 <th t-if="display_discount" class="text-right">Sconto.(%)</th>
@@ -113,7 +108,6 @@
                         <tbody class="invoice_tbody">
                             <tr t-foreach="o.invoice_line_ids" t-as="l">
                                 <td><span t-field="l.name"/></td>
-                                <td class="hidden"><span t-field="l.origin"/></td>
                                 <td class="text-right">
                                     <span t-field="l.quantity"/>
                                     <span t-field="l.uom_id"  groups="product.group_uom"/>
@@ -125,7 +119,7 @@
                                     <span t-field="l.discount"/>
                                 </td>
                                 <td class="text-right">
-                                    IVA <span t-esc="int(l.invoice_line_tax_ids.amount)"/>%
+                                    <span t-field="l.invoice_line_tax_ids.description"/>
                                 </td>
                                 <td class="text-right">
                                     <span t-field="l.price_subtotal"
@@ -178,36 +172,31 @@
                         </div>
                     </div>
 
-                    <!-- DO NOT REMOVE THIS TABLE. MANDATORY IN SOME COUNTRIES -->
-                    <!--<div class="row" t-if="len(o.tax_line_ids) > 0">-->
-                    <!--<div class="col-xs-6">-->
-                    <!--<table class="table table-condensed">-->
-                    <!--<thead>-->
-                    <!--<tr>-->
-                    <!--<th>Tax</th>-->
-                    <!--<th class="text-right">Imponibile</th>-->
-                    <!--<th class="text-right">Totale</th>-->
-                    <!--</tr>-->
-                    <!--</thead>-->
-                    <!--<tbody>-->
-                    <!--<tr t-foreach="o.tax_line_ids" t-as="t">-->
-                    <!--<td><span t-field="t.tax_id.description"/></td>-->
-                    <!--<td class="text-right">-->
-                    <!--<span t-field="t.base" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                    <!--</td>-->
-                    <!--<td class="text-right">-->
-                    <!--<span t-field="t.amount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                    <!--</td>-->
-                    <!--</tr>-->
-                    <!--</tbody>-->
-                    <!--</table>-->
-                    <!--</div>-->
-                    <!--</div>-->
+
 
                     <p t-if="o.comment">
                         <strong>Note:</strong>
                         <span t-field="o.comment"/>
                     </p>
+
+                    <div class="col-4">
+                        <strong>Imposte</strong><br/>
+                        <table class="table table-condensed">
+                            <tr>
+                                <th>Imposta</th>
+                                <th>Nome</th>
+                                <th>Importo</th>
+                            </tr>
+                            <t t-foreach="o.tax_line_ids" t-as="tax">
+                                <tr>
+                                    <td><t t-esc="tax.tax_id.description"/></td>
+                                    <td><t t-esc="tax.name"/></td>
+                                    <td><t t-esc="tax.amount_total"/></td>
+                                </tr>
+                            </t>
+                        </table>
+                    </div>
+                    <br/>
 
                     <div style="page-break-inside:avoid;">
                         <br/>
