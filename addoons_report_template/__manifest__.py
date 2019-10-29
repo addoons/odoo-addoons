@@ -6,7 +6,7 @@
     'version': '1.1',
     'website' : '',
     'category': '',
-    'depends' : ['base', 'sale', 'web'],
+    'depends' : ['base', 'sale', 'web', 'crm'],
     'description': """
     """,
     'data': [
