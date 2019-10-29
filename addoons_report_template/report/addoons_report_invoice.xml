@@ -179,8 +179,7 @@
                         <span t-field="o.comment"/>
                     </p>
 
-                    <div class="col-4">
-                        <strong>Imposte</strong><br/>
+                    <div class="col-8">
                         <table class="table table-condensed">
                             <tr>
                                 <th>Imposta</th>
@@ -191,7 +190,7 @@
                                 <tr>
                                     <td><t t-esc="tax.tax_id.description"/></td>
                                     <td><t t-esc="tax.name"/></td>
-                                    <td><t t-esc="tax.amount_total"/></td>
+                                    <td><t t-esc="tax.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                                 </tr>
                             </t>
                         </table>
