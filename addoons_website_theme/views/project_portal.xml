@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="addoons_portal_my_tasks" inherit_id="project.portal_my_tasks" name="My Tasks">
+
+            <xpath expr="//thead" position="replace">
+                <thead>
+                    <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                        <th t-if="groupby == 'none'">Name</th>
+                        <th t-else="">
+                            <em class="font-weight-normal text-muted"><span t-field="tasks[0].sudo().project_id.label_tasks"/> for project:</em>
+                            <span t-field="tasks[0].sudo().project_id.name"/></th>
+                        <th class="text-center">Stage</th>
+                        <th class="text-left">Ref</th>
+                        <th class="text-center ">Data Scadenza</th>
+                    </tr>
+                </thead>
+            </xpath>
+            <xpath expr="//tbody" position="replace">
+                <tbody>
+                    <t t-foreach="tasks" t-as="task">
+                        <tr>
+                            <td>
+                                <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}"><span t-field="task.name"/></a>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge badge-pill badge-info" title="Current stage of the task" t-esc="task.stage_id.name" />
+                            </td>
+                            <td class="text-left">
+                                #<span t-esc="task.id"/>
+                            </td>
+                            <td class="text-center" style="color: #A61300; font-weight: bold;">
+                                <span t-esc="task.date_deadline"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </xpath>
+
+        </template>
+
+        <template id="addoons_portal_my_task" inherit_id="project.portal_my_task" name="My Task">
+            <xpath expr="//t[@t-set='card_body']" position="inside">
+                <div class="row" t-if="task.ore_lines" style="margin-top: 40px;">
+                    <div class="col-12 col-lg-7 mb-4 mb-md-0 col-lg-12">
+
+
+                        <div t-if="task.ore_lines" >
+                            <strong class="d-block mb-2">Ore di Lavoro</strong>
+                        </div>
+                        <table class="table rounded mb-0 bg-white o_portal_my_doc_table">
+                            <thead>
+                                <tr class="thead-light">
+                                    <th class="text-left">Ore</th>
+                                    <th class="text-left">Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="task.ore_lines" t-as="ora_line">
+                                    <tr>
+                                        <td class="text-left">
+                                            <span t-esc="ora_line.requested_hours"/>
+                                        </td>
+                                        <td  class="text-left">
+                                            <span t-esc="{False: False, 'developing': 'Sviluppo', 'training': 'Formazione/Consulenza'}[ora_line.type]"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

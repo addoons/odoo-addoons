@@ -14,6 +14,7 @@
         'views/ore_snippet.xml',
         'views/snippet_options.xml',
         'views/assets.xml',
+        'views/project_portal.xml',
 
     ],
 
