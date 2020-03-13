@@ -14,6 +14,8 @@
                         <th class="text-center">Stage</th>
                         <th class="text-left">Ref</th>
                         <th class="text-center ">Data Scadenza</th>
+                        <th class="text-center">Data Pubblicazione</th>
+                        <th class="text-center">Rispettata Consegna</th>
                     </tr>
                 </thead>
             </xpath>
@@ -30,8 +32,23 @@
                             <td class="text-left">
                                 #<span t-esc="task.id"/>
                             </td>
-                            <td class="text-center" style="color: #A61300; font-weight: bold;">
-                                <span t-esc="task.date_deadline"/>
+                            <td class="text-center" style="font-weight: bold;">
+                                <span t-field="task.date_deadline" t-options='{"format": "dd/MM/yyyy"}'/>
+                            </td>
+                            <td class="text-center" style="font-weight: bold;">
+                                <span t-field="task.date_end" t-options='{"format": "dd/MM/yyyy"}'/>
+                            </td>
+                            <td class="text-center" style="font-weight: bold;">
+                                <t t-if="task.date_end and task.date_deadline and task.date_end.date() &lt;= task.date_deadline">
+                                    <img src="/addoons_website_theme/static/src/img/tick.png" style="height:22px; width:22px;"/>
+                                </t>
+
+                                <t t-else="">
+                                    <t t-if="task.date_end and task.date_deadline and task.date_end.date() &gt; task.date_deadline">
+                                        <img src="/addoons_website_theme/static/src/img/cross.png" style="height:22px; width:22px;"/>
+                                    </t>
+
+                                </t>
                             </td>
                         </tr>
                     </t>
