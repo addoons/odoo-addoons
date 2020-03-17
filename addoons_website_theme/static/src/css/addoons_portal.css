@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+
 .metro-button-container{
     padding:10px;
     text-align:center;
@@ -19,37 +20,27 @@
 }
 
 .table .thead-light th, .o_portal_wrap .o_portal_my_doc_table th{
-    font-family: 'Poppins';
-    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
     color: white;
     background-color: #855471;
     border-color: #855471;
-    padding-top: 19px;
-    padding-bottom: 19px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     font-weight: unset!important;
+    border: solid 1px #855471;
+}
+
+.badge-info{
+    background-color: #9a9a9a;
+}
+
+.badge-pill{
+    border-radius: 10px;
 }
 
 tbody tr td{
-    font-family: 'Poppins';
-    font-size: 15px;
-    color: #666;
-    line-height: 1.2;
-    font-weight: unset!important;
-    padding-top: 20px !important;
-    padding-bottom: 20px !important;
-    border-bottom: 1px solid #f2f2f2;
-}
-
-.table.rounded, .table-responsive.rounded{
-    border-radius: 10px !important;
-}
-
-#wrapwrap.o_portal .text-muted{
-    color: rgba(255,255,255, 0.5) !important;
-}
-
-.o_portal_wrap .o_portal_navbar{
-    font-family: 'Poppins';
+    font-family: 'Roboto', sans-serif;
     font-size: 15px;
     color: #666;
     line-height: 1.2;
@@ -57,4 +48,75 @@ tbody tr td{
     padding-top: 10px !important;
     padding-bottom: 10px !important;
     border-bottom: 1px solid #f2f2f2;
+}
+
+.table.rounded, .table-responsive.rounded{
+    border-radius: 0px !important;
+}
+
+#wrapwrap.o_portal .text-muted{
+    color: rgba(255,255,255, 0.5) !important;
+}
+
+.o_portal_wrap .o_portal_navbar{
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    color: #666;
+    line-height: 1.2;
+    font-weight: unset!important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    border: none !important;
+    margin-bottom: 50px !important;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.o_portal_navbar i{
+    color: #855471;
+    font-size: 29px;
+}
+
+.o_portal_navbar li{
+    font-size: 26px;
+}
+
+.o_portal_navbar .nav button{
+    border-radius: 0px;
+    padding: 5px;
+}
+
+.o_portal_navbar .nav span{
+    border-radius: 0px;
+    padding: 5px;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 15px;
+}
+
+.dropdown-item.active, .dropdown-item:active{
+    background-color: #855471;
+}
+
+.o_portal_search_panel button,.o_portal_search_panel input{
+    border-radius: 0px !important;
+    height: 30px !important;
+}
+
+
+
+/*Form Registrazione*/
+.form-control {
+    display: block;
+    width: 100%;
+    height: 43px;
+    padding: 11px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #e9ecef;
+    background-clip: padding-box;
+    border: none;
+    border-radius: 0px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }

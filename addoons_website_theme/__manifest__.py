@@ -16,6 +16,7 @@
         'views/assets.xml',
         'views/project_portal.xml',
         'views/customer_portal.xml',
+        'views/login_portal.xml',
 
     ],
 
