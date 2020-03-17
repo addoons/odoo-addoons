@@ -8,13 +8,14 @@
     'website': 'www.hexcode.it',
     'support': 'federico@hexcode.it',
     'depends': [
-        'base', 'website', 'website_blog', 'sale', 'project', 'addoons_pacchetto_ore',
+        'base', 'website', 'website_blog', 'sale', 'project', 'addoons_pacchetto_ore','portal',
     ],
     'data': [
         'views/ore_snippet.xml',
         'views/snippet_options.xml',
         'views/assets.xml',
         'views/project_portal.xml',
+        'views/customer_portal.xml',
 
     ],
 

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="addoons_customer_portal"  >
+            <t t-call="portal.portal_layout">
+                <t t-set="my_details" t-value="True"/>
+                <div class="o_portal_my_home" style="font-family: 'Roboto';">
+                    <div class="oe_structure" id="oe_structure_portal_my_home_1"/>
+                    <div class="row" style="padding:10px;margin-top: 10px; margin-bottom: 50px;">
+                        <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">Buongiorno, </b><t t-esc="user_id.name"/></span>
+                    </div>
+                    <div class="row" style="text-align:center">
+                        <div class="col-lg-3 metro-button-container text-center" >
+                            <a href="/my/quotes/" style="text-decoration:none;">
+                                <div class="metro-button purple">
+                                    <img src="/addoons_website_theme/static/src/img/contract.png" style="margin-bottom:20px"/>
+                                    <br/>Preventivi
+                                </div>
+                            </a>
+
+                        </div>
+                        <div class="col-lg-3 metro-button-container" >
+                            <a href="/my/orders/" style="text-decoration:none;">
+                                <div class="metro-button">
+                                    <img src="/addoons_website_theme/static/src/img/stonks-black.png" style="margin-bottom:20px"/>
+                                    <br/>Ordini Vendita
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 metro-button-container" >
+                            <a href="/my/leads" style="text-decoration:none;">
+                                <div class="metro-button purple">
+                                    <img src="/addoons_website_theme/static/src/img/contract.png" style="margin-bottom:20px"/>
+                                    <br/>Leads
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 metro-button-container" >
+                            <a href="/my/opportunities" style="text-decoration:none;">
+                                <div class="metro-button">
+                                    <img src="/addoons_website_theme/static/src/img/stonks-black.png" style="margin-bottom:20px"/>
+                                    <br/>Opportunità
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 metro-button-container" >
+                            <a href="/my/projects" style="text-decoration:none;">
+                                <div class="metro-button">
+                                    <img src="/addoons_website_theme/static/src/img/stonks-black.png" style="margin-bottom:20px"/>
+                                    <br/>Progetti
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 metro-button-container" >
+                            <a href="/my/tasks" style="text-decoration:none;">
+                                <div class="metro-button purple">
+                                    <img src="/addoons_website_theme/static/src/img/contract.png" style="margin-bottom:20px"/>
+                                    <br/>Attività
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 metro-button-container" >
+                            <a href="/my/invoices" style="text-decoration:none;">
+                                <div class="metro-button">
+                                    <img src="/addoons_website_theme/static/src/img/stonks-black.png" style="margin-bottom:20px"/>
+                                    <br/>Fatture Vendita
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-lg-3 metro-button-container" >
+                            <a href="/my/tickets" style="text-decoration:none;">
+                                <div class="metro-button purple" style="padding:30px 17px 20px 17px;">
+                                    <img src="/addoons_website_theme/static/src/img/contract.png" style="margin-bottom:20px"/>
+                                    <br/>Ticket Supporto
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                    <div class="row" style="padding:10px;margin-top: 130px;">
+                        <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">/Area Personale</b></span>
+                    </div>
+
+                    <form action="/my/account" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="row o_portal_details">
+                            <div class="col-lg-11">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div t-if="error_message" class="alert alert-danger" role="alert">
+                                            <t t-foreach="error_message" t-as="err"><t t-esc="err"/><br /></t>
+                                        </div>
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('name') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label" for="name">Your Name</label>
+                                        <input type="text" name="name" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="name or partner.name" />
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('email') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label" for="email">Email</label>
+                                        <input type="email" name="email" t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}" t-att-value="email or partner.email" />
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label" for="phone">Phone</label>
+                                        <input type="tel" name="phone" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="phone or partner.phone" />
+                                    </div>
+
+                                    <div class="clearfix" />
+                                    <div t-attf-class="form-group #{error.get('company_name') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label label-optional" for="company_name">Company Name</label>
+                                        <!-- The <input> is replace by a <p> to avoid sending an unauthorized value on form submit.
+                                             The user might not have rights to change company_name but should still be able to see it.
+                                        -->
+                                        <p t-if="not partner.can_edit_vat()" t-attf-class="form-control" readonly="1" t-esc="partner.commercial_company_name" title="Changing company name is not allowed once document(s) have been issued for your account. Please contact us directly for this operation."/>
+                                        <input t-else="" type="text" name="company_name" t-attf-class="form-control #{error.get('company_name') and 'is-invalid' or ''}" t-att-value="company_name or partner.commercial_company_name"/>
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('vat') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label label-optional" for="vat">VAT Number</label>
+                                        <input type="text" name="vat" t-attf-class="form-control #{error.get('vat') and 'is-invalid' or ''}" t-att-value="vat or partner.vat" t-att-readonly="None if partner.can_edit_vat() else '1'" t-att-title="None if partner.can_edit_vat() else 'Changing VAT number is not allowed once document(s) have been issued for your account. Please contact us directly for this operation.'" />
+                                    </div>
+
+                                    <div class="clearfix" />
+                                    <div t-attf-class="form-group #{error.get('street') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label" for="street">Street</label>
+                                        <input type="text" name="street" t-attf-class="form-control #{error.get('street') and 'is-invalid' or ''}" t-att-value="street or partner.street"/>
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('city') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label" for="city">City</label>
+                                        <input type="text" name="city" t-attf-class="form-control #{error.get('city') and 'is-invalid' or ''}" t-att-value="city or partner.city" />
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('zip') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label label-optional" for="zipcode">Zip / Postal Code</label>
+                                        <input type="text" name="zipcode" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="zipcode or partner.zip" />
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('country_id') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label" for="country_id">Country</label>
+                                        <select name="country_id" t-attf-class="form-control #{error.get('country_id') and 'is-invalid' or ''}">
+                                            <option value="">Country...</option>
+                                            <t t-foreach="countries or []" t-as="country">
+                                                <option t-att-value="country.id" t-att-selected="country.id == int(country_id) if country_id else country.id == partner.country_id.id">
+                                                    <t t-esc="country.name" />
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div t-attf-class="form-group #{error.get('state_id') and 'o_has_error' or ''} col-xl-6">
+                                        <label class="col-form-label label-optional" for="state_id">State / Province</label>
+                                        <select name="state_id" t-attf-class="form-control #{error.get('state_id') and 'is-invalid' or ''}">
+                                            <option value="">select...</option>
+                                            <t t-foreach="states or []" t-as="state">
+                                                <option t-att-value="state.id" style="display:none;" t-att-data-country_id="state.country_id.id" t-att-selected="state.id == partner.state_id.id">
+                                                    <t t-esc="state.name" />
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <input type="hidden" name="redirect" t-att-value="redirect"/>
+                                </div>
+                                <div class="clearfix">
+                                    <button type="submit" class="btn btn-primary float-right mb32 purple" style="border-radius:0; border-color:#855471">
+                                        Confirm
+                                        <span class="fa fa-long-arrow-right" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row" style="padding:10px;margin-top: 80px; ">
+                        <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">/Pacchetti e Contratti</b></span>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-lg-6">
+                            <div class="row" style="margin-top: 50px">
+                                <div class="col-lg-12" style="font-size:22px; font-style:italic;">DISPONIBILI</div>
+                            </div>
+                            <div class="row" >
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
+                                        <span ><h1 class="text-center ore_sv" style="font-size: 60px;margin-bottom:15px;">0</h1></span>
+                                        Ore Sviluppo
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button" style="padding:40px 0px 30px 0px;" >
+                                        <span ><h1 class="text-center ore_fc" style="font-size: 60px;  margin-bottom:15px;">0</h1></span>
+                                        Ore Formazione
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row" style="margin-top: 50px">
+                                <div class="col-lg-12" style="font-size:22px; font-style:italic;">UTILIZZATE</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
+                                        <span ><h1 class="text-center" style="font-size: 60px;  margin-bottom:15px;"><t t-esc="ore_sv_utilizzate"/></h1></span>
+                                        Ore Sviluppo
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button" style="padding:40px 0px 30px 0px;">
+                                        <span ><h1 class="text-center" style="font-size: 60px;margin-bottom:15px;"><t t-esc="ore_fc_utilizzate"/></h1></span>
+                                        Ore Formazione
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </t>
+        </template>
+
+        <template inherit_id="portal.portal_layout" id="addoons_portal_layout">
+            <xpath expr="//div[@id='wrap']" position="replace">
+                <div id="wrap" class='o_portal_wrap' style="background-color:white;">
+                    <div class="container mb64"  style="font-family: 'Roboto';">
+                        <t t-if="my_details">
+                            <div class="row justify-content-between mt-4">
+                                <div t-attf-class="col-12 col-md">
+                                    <t t-raw="0"/>
+                                </div>
+                                <div id="o_my_sidebar" class="col-12 col-md col-lg-4 col-xl-3 o_my_sidebar">
+                                    <div class="o_my_contact" t-if="sales_user">
+                                        <t t-call="portal.portal_contact"/>
+                                    </div>
+                                    <div class="o_portal_my_details" style="margin-top: 35px; font-size:13px;">
+                                        <div class="row">
+                                            <div class="col-8" style="text-align:right; font-weight: 400; padding-right: 0;">
+                                                <t t-esc="user_id.partner_id.street"/><br/>
+                                                <t t-esc="user_id.partner_id.zip"/>
+                                                <t t-esc="user_id.partner_id.city"/>
+                                                <t t-esc="user_id.partner_id.country_id.name"/><br/>
+                                                <t t-esc="user_id.partner_id.vat"/><br/>
+                                                <t t-esc="user_id.partner_id.email"/><br/>
+                                            </div>
+                                            <div class="col-4">
+                                                <img class="img img-responsive" style="float:right; display: inline-block; border-radius: 100%;"
+                                                     t-attf-src="/web/image?model=res.users&amp;field=image_small&amp;id={{user_id.id}}" />
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="o_my_archives" t-if="archive_groups">
+                                        <t t-call="portal.portal_archive_groups"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <t t-raw="0"/>
+                        </t>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+
+</odoo>
