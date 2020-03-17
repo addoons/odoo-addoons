@@ -30,7 +30,7 @@
                         <div class="col-lg-3 metro-button-container" >
                             <a href="/my/leads" style="text-decoration:none;">
                                 <div class="metro-button purple">
-                                    <img src="/addoons_website_theme/static/src/img/contract.png" style="margin-bottom:20px"/>
+                                    <img src="/addoons_website_theme/static/src/img/leads.png" style="margin-bottom:20px"/>
                                     <br/>Leads
                                 </div>
                             </a>
@@ -38,7 +38,7 @@
                         <div class="col-lg-3 metro-button-container" >
                             <a href="/my/opportunities" style="text-decoration:none;">
                                 <div class="metro-button">
-                                    <img src="/addoons_website_theme/static/src/img/stonks-black.png" style="margin-bottom:20px"/>
+                                    <img src="/addoons_website_theme/static/src/img/opportunity.png" style="margin-bottom:20px"/>
                                     <br/>Opportunità
                                 </div>
                             </a>
@@ -49,7 +49,7 @@
                         <div class="col-lg-3 metro-button-container" >
                             <a href="/my/projects" style="text-decoration:none;">
                                 <div class="metro-button">
-                                    <img src="/addoons_website_theme/static/src/img/stonks-black.png" style="margin-bottom:20px"/>
+                                    <img src="/addoons_website_theme/static/src/img/project.png" style="margin-bottom:20px"/>
                                     <br/>Progetti
                                 </div>
                             </a>
@@ -57,7 +57,7 @@
                         <div class="col-lg-3 metro-button-container" >
                             <a href="/my/tasks" style="text-decoration:none;">
                                 <div class="metro-button purple">
-                                    <img src="/addoons_website_theme/static/src/img/contract.png" style="margin-bottom:20px"/>
+                                    <img src="/addoons_website_theme/static/src/img/task.png" style="margin-bottom:20px"/>
                                     <br/>Attività
                                 </div>
                             </a>
@@ -65,7 +65,7 @@
                         <div class="col-lg-3 metro-button-container" >
                             <a href="/my/invoices" style="text-decoration:none;">
                                 <div class="metro-button">
-                                    <img src="/addoons_website_theme/static/src/img/stonks-black.png" style="margin-bottom:20px"/>
+                                    <img src="/addoons_website_theme/static/src/img/invoice.png" style="margin-bottom:20px"/>
                                     <br/>Fatture Vendita
                                 </div>
                             </a>
@@ -73,7 +73,7 @@
                         <div class="col-lg-3 metro-button-container" >
                             <a href="/my/tickets" style="text-decoration:none;">
                                 <div class="metro-button purple" style="padding:30px 17px 20px 17px;">
-                                    <img src="/addoons_website_theme/static/src/img/contract.png" style="margin-bottom:20px"/>
+                                    <img src="/addoons_website_theme/static/src/img/ticket.png" style="margin-bottom:20px"/>
                                     <br/>Ticket Supporto
                                 </div>
                             </a>
@@ -245,7 +245,7 @@
                                                 <t t-esc="user_id.partner_id.email"/><br/>
                                             </div>
                                             <div class="col-4">
-                                                <img class="img img-responsive" style="float:right; display: inline-block; border-radius: 100%;"
+                                                <img class="img img-responsive" style="float:right; display: inline-block; border-radius: 100%; border: solid 2px #855471;"
                                                      t-attf-src="/web/image?model=res.users&amp;field=image_small&amp;id={{user_id.id}}" />
                                             </div>
 

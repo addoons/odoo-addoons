@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap');
-
+@import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
 .metro-button-container{
     padding:10px;
     text-align:center;
@@ -18,3 +18,43 @@
     color:white;
 }
 
+.table .thead-light th, .o_portal_wrap .o_portal_my_doc_table th{
+    font-family: 'Poppins';
+    font-size: 18px;
+    color: white;
+    background-color: #855471;
+    border-color: #855471;
+    padding-top: 19px;
+    padding-bottom: 19px;
+    font-weight: unset!important;
+}
+
+tbody tr td{
+    font-family: 'Poppins';
+    font-size: 15px;
+    color: #666;
+    line-height: 1.2;
+    font-weight: unset!important;
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.table.rounded, .table-responsive.rounded{
+    border-radius: 10px !important;
+}
+
+#wrapwrap.o_portal .text-muted{
+    color: rgba(255,255,255, 0.5) !important;
+}
+
+.o_portal_wrap .o_portal_navbar{
+    font-family: 'Poppins';
+    font-size: 15px;
+    color: #666;
+    line-height: 1.2;
+    font-weight: unset!important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid #f2f2f2;
+}
