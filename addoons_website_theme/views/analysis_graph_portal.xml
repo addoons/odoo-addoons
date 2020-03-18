@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="addoons_analysis_portal"  >
+            <t t-call="portal.portal_layout">
+                <div class="row mb-5">
+                    <canvas id="grafico-fatture" width="800" height="450"></canvas>
+                </div>
+
+                <div class="row mt-5">
+                    <canvas id="grafico-task" width="800" height="450"></canvas>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

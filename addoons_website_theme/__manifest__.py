@@ -17,6 +17,7 @@
         'views/project_portal.xml',
         'views/customer_portal.xml',
         'views/login_portal.xml',
+        'views/analysis_graph_portal.xml',
 
     ],
 
