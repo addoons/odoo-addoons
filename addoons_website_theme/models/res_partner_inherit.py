@@ -1,3 +1,5 @@
+from datetime import date
+import datetime
 from odoo import models,api,fields,_
 
 class PartnerInherit(models.Model):
@@ -22,19 +24,22 @@ class PartnerInherit(models.Model):
         fatturato_mensile = [0 for i in range(12)]
         task_aperte_mensili = [0 for i in range(12)]
         task_completate_mensili = [0 for i in range(12)]
+        start_date = datetime.datetime(data['year'], 1, 1).strftime('%Y-%m-%d')
+        end_date = datetime.datetime(data['year'], 12, 31).strftime('%Y-%m-%d')
+
         invoices = self.env['account.invoice'].sudo().search([('type', '=', 'out_invoice'), ('state', '!=', 'cancel'), ('partner_id', 'in', partners),
-                                                       ('date_invoice', '>=', '01/01/'+str(data['year'])),('date_invoice', '<=', '31/12/'+str(data['year']))])
+                                                       ('date_invoice', '>=',  start_date),('date_invoice', '<=', end_date)])
 
 
         tasks_aperte = self.env['project.task'].sudo().search([
              ('partner_id', 'in', partners),
-             ('create_date', '>=', '01/01/' + str(data['year'])),
-             ('create_date', '<=', '31/12/' + str(data['year']))])
+             ('create_date', '>=', start_date),
+             ('create_date', '<=', end_date)])
 
         tasks_completate = self.env['project.task'].sudo().search([
             ('partner_id', 'in', partners),
-            ('date_end', '>=', '01/01/' + str(data['year'])),
-            ('date_end', '<=', '31/12/' + str(data['year']))])
+            ('date_end', '>=', start_date),
+            ('date_end', '<=', end_date)])
         for invoice in invoices:
             mese = invoice.date_invoice.month - 1
             fatturato_mensile[mese] += invoice.amount_total

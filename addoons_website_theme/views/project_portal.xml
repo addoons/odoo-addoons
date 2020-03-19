@@ -3,7 +3,72 @@
     <data>
 
         <template id="addoons_portal_my_tasks" inherit_id="project.portal_my_tasks" name="My Tasks">
+            <xpath expr="//t[@t-call='portal.portal_searchbar']" position="after">
 
+                <div class="row">
+                    <div class="col-lg-10">
+
+                    </div>
+                    <div class="col-lg-2 mb-2">
+                        <a role="button" class="btn btn-block purple" style="border-radius:0px" data-toggle="modal" data-target="#modalCreaTask" href="#">CREA TASK</a>
+                    </div>
+                    <div class="modal fade modal_new_opp" role="form" id="modalCreaTask">
+                        <div class="modal-dialog">
+                            <form t-attf-action="/my/tasks/create_task" method="POST" enctype="multipart/form-data" class="s_accept_json modal-content">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <header class="modal-header">
+                                    <h4 class="modal-title">Nuova Attività</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&amp;times;</button>
+                                </header>
+                                <main class="modal-body" id="new-opp-dialog">
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="name">Nome Attività</label>
+                                        <input type='text' name="name" class="form-control"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="description">Descrizione</label>
+                                        <textarea rows="3" name="description" class="form-control description"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="attachments">File</label>
+                                        <input type="file" class="form-control o_website_form_input" name="attachments" multiple="1"/>
+                                    </div>
+                                </main>
+                                <footer class="modal-footer">
+                                    <button t-attf-class="btn btn-primary new_opp_confirm">Confirm</button> or
+                                    <button type="button" class="btn btn-link" data-dismiss="modal" style="padding: 0">Cancel</button>
+                                </footer>
+
+                            </form>
+                        </div>
+                    </div>
+                    <!--                    <div role="dialog" class="modal fade" id="modalCreaTask">-->
+                    <!--                        <div class="modal-dialog" >-->
+                    <!--                            <form t-attf-action="/opportunity/upload/documents" class="s_accept_json modal-content" enctype="multipart/form-data" method="post" role="form">-->
+                    <!--                                <header class="modal-header">-->
+                    <!--                                    <h4 class="modal-title">Carica Zip Documenti</h4>-->
+                    <!--                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&amp;times;</button>-->
+                    <!--                                </header>-->
+                    <!--                                <main class="modal-body">-->
+                    <!--                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>-->
+                    <!--                                    <input type="hidden" name="redirect" t-att-value="opportunity.website_link"/>-->
+                    <!--                                    <input type="hidden" name="opp_id" t-att-value="opportunity.id"/>-->
+                    <!--                                    <input type="file" class="form-control o_website_form_input" name="documenti" multiple="1"/>-->
+
+                    <!--                                </main>-->
+                    <!--                                <footer class="model-footer">-->
+                    <!--                                    <button type="submit" name="Upload" style="margin:20px;" class="fa fa-upload btn btn-primary">-->
+                    <!--                                        Upload-->
+                    <!--                                    </button>-->
+                    <!--                                </footer>-->
+                    <!--                            </form>-->
+
+
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                </div>
+            </xpath>
             <xpath expr="//thead" position="replace">
                 <thead>
                     <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">

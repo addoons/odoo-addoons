@@ -151,5 +151,18 @@ tbody tr td{
     margin-right: 1rem;
     border: solid 2px #855471;
     border-radius: 50%;
-    
+
+}
+
+
+@media (max-width: 1200px){
+    #dati-profilo, #immagine-profilo{
+        max-width: 50% !important;
+    }
+
+}
+@media (max-width: 1200px){
+    #immagine-profilo img{
+        float:left !important;
+    }
 }

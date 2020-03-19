@@ -1,3 +1,4 @@
+import datetime
 from collections import OrderedDict
 from operator import itemgetter
 
@@ -5,7 +6,7 @@ from odoo import http, _
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
-from odoo.tools import groupby as groupbyelem
+from odoo.tools import groupby as groupbyelem, base64
 
 from odoo.osv.expression import OR
 
@@ -104,6 +105,7 @@ class CustomerPortal(CustomerPortal):
             grouped_tasks = [tasks]
 
         values.update({
+            'today': datetime.datetime.today(),
             'date': date_begin,
             'date_end': date_end,
             'grouped_tasks': grouped_tasks,
@@ -121,3 +123,30 @@ class CustomerPortal(CustomerPortal):
             'filterby': filterby,
         })
         return request.render("project.portal_my_tasks", values)
+
+    @http.route(['/my/tasks/create_task'], type='http', auth="user", website=True)
+    def crea_task(self, redirect=None, **post):
+
+        task = request.env['project.task'].sudo().create({
+            'name': post['name'],
+            'description': post['description'],
+            'user_id': False,
+            'partner_id': request.env.user.partner_id.id,
+        })
+
+        for data in request.httprequest.files.getlist('attachments'):
+
+            file = base64.b64encode(data.read())
+            request.env['ir.attachment'].sudo().create({
+                'name': data.filename,
+                'type': 'binary',
+                'datas': file,
+                'datas_fname': data.filename,
+                'store_fname': data.filename,
+                'res_model': 'project.task',
+                'res_id': task.id,
+            })
+
+        return request.redirect('/my/tasks')
+
+
