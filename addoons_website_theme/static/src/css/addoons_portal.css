@@ -155,6 +155,26 @@ tbody tr td{
 }
 
 
+/**MODAL**/
+.modal:not(.o_technical_modal) .modal-body{
+	background-color: #ffffff;
+}
+
+.modal:not(.o_technical_modal) .modal-content label{
+	color:black;
+}
+
+.modal:not(.o_technical_modal) .modal-content .form-control {
+    background-color: #eaeaea;
+    color: #6b6b6b;
+	border: none;
+}
+
+.modal:not(.o_technical_modal) .modal-header {
+    border-bottom: 3px solid #875a7b;
+    color: #252931;
+}
+
 @media (max-width: 1200px){
     #dati-profilo, #immagine-profilo{
         max-width: 50% !important;
