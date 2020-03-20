@@ -166,3 +166,9 @@ tbody tr td{
         float:left !important;
     }
 }
+
+@media (max-width: 1200px){
+    #titolo{
+        text-align:center;
+    }
+}

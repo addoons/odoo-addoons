@@ -23,9 +23,15 @@
                                 <main class="modal-body" id="new-opp-dialog">
                                     <div class="form-group">
                                         <label class="col-form-label hdd4" for="name">Nome Attività</label>
-                                        <input type='text' name="name" class="form-control"/>
+                                        <input type='text' name="name" required="True" class="form-control"/>
                                     </div>
-
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="project_id">Progetto</label>
+                                        <select id="project_id" name="project_id" required="True" class="form-control">
+                                            <t t-foreach="projects" t-as="project">
+                                            <option t-att-value="project.id" t-esc="project.name"/></t>
+                                        </select>
+                                    </div>
                                     <div class="form-group">
                                         <label class="col-form-label hdd4" for="description">Descrizione</label>
                                         <textarea rows="3" name="description" class="form-control description"></textarea>
@@ -43,30 +49,7 @@
                             </form>
                         </div>
                     </div>
-                    <!--                    <div role="dialog" class="modal fade" id="modalCreaTask">-->
-                    <!--                        <div class="modal-dialog" >-->
-                    <!--                            <form t-attf-action="/opportunity/upload/documents" class="s_accept_json modal-content" enctype="multipart/form-data" method="post" role="form">-->
-                    <!--                                <header class="modal-header">-->
-                    <!--                                    <h4 class="modal-title">Carica Zip Documenti</h4>-->
-                    <!--                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&amp;times;</button>-->
-                    <!--                                </header>-->
-                    <!--                                <main class="modal-body">-->
-                    <!--                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>-->
-                    <!--                                    <input type="hidden" name="redirect" t-att-value="opportunity.website_link"/>-->
-                    <!--                                    <input type="hidden" name="opp_id" t-att-value="opportunity.id"/>-->
-                    <!--                                    <input type="file" class="form-control o_website_form_input" name="documenti" multiple="1"/>-->
 
-                    <!--                                </main>-->
-                    <!--                                <footer class="model-footer">-->
-                    <!--                                    <button type="submit" name="Upload" style="margin:20px;" class="fa fa-upload btn btn-primary">-->
-                    <!--                                        Upload-->
-                    <!--                                    </button>-->
-                    <!--                                </footer>-->
-                    <!--                            </form>-->
-
-
-                    <!--                        </div>-->
-                    <!--                    </div>-->
                 </div>
             </xpath>
             <xpath expr="//thead" position="replace">
@@ -123,6 +106,119 @@
         </template>
 
         <template id="addoons_portal_my_task" inherit_id="project.portal_my_task" name="My Task">
+            <xpath expr="//t[@t-set='card_body']" position="replace">
+                <t t-set="card_body">
+                    <div class="mb-1" t-if="user.partner_id.id in task.sudo().project_id.message_partner_ids.ids">
+                        <strong>Project:</strong> <a t-attf-href="/my/project/#{task.project_id.id}" t-field="task.project_id.name"/>
+                    </div>
+                    <div class="row mb-1 text-right">
+                        <div class="col-12 mb-1">
+                            <button type="button" data-toggle="modal" data-target="#modificaTask" class="btn btn-link btn-sm"><i class="fa fa-pencil mr-1"></i>Modifica</button>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-6 mb-1">
+                            <strong>Date:</strong> <span t-field="task.create_date" t-options='{"widget": "date"}'/>
+                        </div>
+                        <div class="col-12 col-md-6" t-if="task.date_deadline">
+                            <strong>Deadline:</strong> <span t-field="task.date_deadline" t-options='{"widget": "date"}'/>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4" t-if="task.user_id or task.partner_id">
+                        <div class="col-12 col-md-6 pb-2" t-if="task.user_id">
+                            <strong>Assigned to</strong>
+                            <div class="row">
+                                <div class="col flex-grow-0 pr-3">
+                                    <img t-if="task.user_id.image" class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(task.user_id.image)" alt="Contact"/>
+                                    <img t-else="" class="rounded-circle mt-1 o_portal_contact_img" src="/web/static/src/img/user_menu_avatar.png" alt="Contact"/>
+                                </div>
+                                <div class="col pl-md-0">
+                                    <div t-field="task.user_id" t-options='{"widget": "contact", "fields": ["name", "email", "phone"]}'/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="coll-12 col-md-6 pb-2" t-if="task.partner_id">
+                            <strong>Reported by</strong>
+                            <div class="row">
+                                <div class="col flex-grow-0 pr-3">
+                                    <img t-if="task.partner_id.image" class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(task.partner_id.image)" alt="Contact"/>
+                                    <img t-else="" class="rounded-circle mt-1 o_portal_contact_img" src="/web/static/src/img/user_menu_avatar.png" alt="Contact"/>
+                                </div>
+                                <div class="col pl-md-0">
+                                    <div t-field="task.partner_id" t-options='{"widget": "contact", "fields": ["name", "email", "phone"]}'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" t-if="task.description or task.attachment_ids">
+                        <div t-if="task.description" t-attf-class="col-12 col-lg-7 mb-4 mb-md-0 {{'col-lg-7' if task.attachment_ids else 'col-lg-12'}}">
+                            <hr class="mb-1"/>
+                            <strong class="d-block mb-2">Description</strong>
+                            <div class="py-1 px-2 bg-100 small" t-field="task.description"/>
+                        </div>
+                        <div t-if="task.attachment_ids" t-attf-class="col-12 col-lg-5 o_project_portal_attachments {{'col-lg-5' if task.description else 'col-lg-12'}}">
+                            <hr class="mb-1 d-none d-lg-block"/>
+                            <strong class="d-block mb-2">Attachments</strong>
+                            <div class="row">
+                                <div t-attf-class="col {{'col-lg-6' if not task.description else 'col-lg-12'}}">
+                                    <ul class="list-group">
+                                        <a class="list-group-item list-group-item-action d-flex align-items-center oe_attachments py-1 px-2" t-foreach='task.attachment_ids' t-as='attachment' t-attf-href="/web/content/#{attachment.id}?download=true&amp;access_token=#{attachment.access_token}" target="_blank" data-no-post-process="">
+                                            <div class='oe_attachment_embedded o_image o_image_small mr-2 mr-lg-3' t-att-title="attachment.name" t-att-data-mimetype="attachment.mimetype" t-attf-data-src="/web/image/#{attachment.id}/50x40?access_token=#{attachment.access_token}"/>
+                                            <div class='oe_attachment_name text-truncate'><t t-esc='attachment.name'/></div>
+                                        </a>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" role="form" id="modificaTask">
+                        <div class="modal-dialog">
+                            <form t-attf-action="/my/task/write_task" method="POST" enctype="multipart/form-data" class="s_accept_json modal-content">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="id_task" t-att-value="task.id"/>
+                                <header class="modal-header">
+                                    <h4 class="modal-title">Modifica Attività</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">&amp;times;</button>
+                                </header>
+                                <main class="modal-body" id="new-opp-dialog">
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="name">Nome Attività</label>
+                                        <input type='text' name="name" required="True" class="form-control" t-att-value="task.name"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="project_id" >Progetto</label>
+                                        <select id="project_id" name="project_id" required="True" class="form-control" t-att-value="task.project_id.id">
+                                            <t t-foreach="projects" t-as="project">
+                                                <t t-if="task.project_id.id == project.id">
+                                                    <option t-att-value="project.id" t-esc="project.name" selected="1"/>
+                                                </t>
+                                                <t t-if="task.project_id.id != project.id">
+                                                    <option t-att-value="project.id" t-esc="project.name"/>
+                                                </t>
+
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="description">Descrizione</label>
+                                        <textarea rows="3" name="description" class="form-control description"><t t-esc="task.description"></t></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label hdd4" for="attachments">File</label>
+                                        <input type="file" class="form-control o_website_form_input" name="attachments" multiple="1"/>
+                                    </div>
+                                </main>
+                                <footer class="modal-footer">
+                                    <button t-attf-class="btn btn-primary new_opp_confirm">Confirm</button> or
+                                    <button type="button" class="btn btn-link" data-dismiss="modal" style="padding: 0">Cancel</button>
+                                </footer>
+
+                            </form>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
             <xpath expr="//t[@t-set='card_body']" position="inside">
                 <div class="row" t-if="task.ore_lines" style="margin-top: 40px;">
                     <div class="col-12 col-lg-7 mb-4 mb-md-0 col-lg-12">
@@ -154,6 +250,7 @@
                     </div>
                 </div>
             </xpath>
+
         </template>
     </data>
 </odoo>

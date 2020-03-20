@@ -84,6 +84,7 @@ class CustomerPortal(CustomerPortal):
                 search_domain = OR([search_domain, [('stage_id', 'ilike', search)]])
             domain += search_domain
 
+        domain.append(('partner_id', '=', request.env.user.partner_id.id))
         # task count
         task_count = request.env['project.task'].search_count(domain)
         # pager
@@ -97,13 +98,14 @@ class CustomerPortal(CustomerPortal):
         # content according to pager and archive selected
         if groupby == 'project':
             order = "project_id, %s" % order  # force sort on project first to group by project in view
-        tasks = request.env['project.task'].search(domain, order=order, limit=self._items_per_page, offset=(page - 1) * self._items_per_page)
+        tasks = request.env['project.task'].search(domain, limit=self._items_per_page, offset=(page - 1) * self._items_per_page)
         request.session['my_tasks_history'] = tasks.ids[:100]
         if groupby == 'project':
             grouped_tasks = [request.env['project.task'].concat(*g) for k, g in groupbyelem(tasks, itemgetter('project_id'))]
         else:
             grouped_tasks = [tasks]
 
+        progetti = request.env['project.project'].sudo().search([('partner_id', '=', request.env.user.partner_id.id)])
         values.update({
             'today': datetime.datetime.today(),
             'date': date_begin,
@@ -121,6 +123,7 @@ class CustomerPortal(CustomerPortal):
             'groupby': groupby,
             'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
             'filterby': filterby,
+            'projects': progetti
         })
         return request.render("project.portal_my_tasks", values)
 
@@ -132,21 +135,66 @@ class CustomerPortal(CustomerPortal):
             'description': post['description'],
             'user_id': False,
             'partner_id': request.env.user.partner_id.id,
+            'project_id': int(post['project_id'])
         })
 
         for data in request.httprequest.files.getlist('attachments'):
 
             file = base64.b64encode(data.read())
-            request.env['ir.attachment'].sudo().create({
-                'name': data.filename,
-                'type': 'binary',
-                'datas': file,
-                'datas_fname': data.filename,
-                'store_fname': data.filename,
-                'res_model': 'project.task',
-                'res_id': task.id,
-            })
-
+            if (data.filename and data.filename != ''):
+                request.env['ir.attachment'].sudo().create({
+                    'name': data.filename,
+                    'type': 'binary',
+                    'datas': file,
+                    'datas_fname': data.filename,
+                    'store_fname': data.filename,
+                    'res_model': 'project.task',
+                    'res_id': task.id,
+                })
+        task.sudo().write({'partner_id': request.env.user.partner_id.id})
         return request.redirect('/my/tasks')
 
+    @http.route(['/my/task/write_task'], type='http', auth="user", website=True)
+    def edit_task(self, redirect=None, **post):
 
+        task = request.env['project.task'].sudo().browse(int(post['id_task']))
+        if task:
+            task.sudo().write({
+                'name': post['name'],
+                'description': post['description'],
+                'project_id': int(post['project_id'])
+            })
+
+            for data in request.httprequest.files.getlist('attachments'):
+
+                file = base64.b64encode(data.read())
+                if(data.filename and data.filename != ''):
+                    request.env['ir.attachment'].sudo().create({
+                        'name': data.filename,
+                        'type': 'binary',
+                        'datas': file,
+                        'datas_fname': data.filename,
+                        'store_fname': data.filename,
+                        'res_model': 'project.task',
+                        'res_id': task.id,
+                    })
+
+        return request.redirect('/my/task/' + str(task.id))
+
+
+    @http.route(['/my/task/<int:task_id>'], type='http', auth="public", website=True)
+    def portal_my_task(self, task_id, access_token=None, **kw):
+        try:
+            task_sudo = self._document_check_access('project.task', task_id, access_token)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+        # ensure attachment are accessible with access token inside template
+        for attachment in task_sudo.attachment_ids:
+            attachment.generate_access_token()
+        values = self._task_get_page_view_values(task_sudo, access_token, **kw)
+        progetti = request.env['project.project'].sudo().search([('partner_id', '=', request.env.user.partner_id.id)])
+        values.update({
+            'projects': progetti,
+        })
+        return request.render("project.portal_my_task", values)
