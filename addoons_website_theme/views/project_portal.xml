@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <template id="addoons_portal_my_tasks" inherit_id="project.portal_my_tasks" name="My Tasks">
             <xpath expr="//t[@t-call='portal.portal_searchbar']" position="after">
 
@@ -29,12 +28,13 @@
                                         <label class="col-form-label hdd4" for="project_id">Progetto</label>
                                         <select id="project_id" name="project_id" required="True" class="form-control">
                                             <t t-foreach="projects" t-as="project">
-                                            <option t-att-value="project.id" t-esc="project.name"/></t>
+                                                <option t-att-value="project.id" t-esc="project.name"/></t>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label hdd4" for="description">Descrizione</label>
-                                        <textarea rows="3" name="description" class="form-control description"></textarea>
+                                        <textarea name="description" class="summernote-html-editor form-control">
+                                        </textarea>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label hdd4" for="attachments">File</label>
@@ -174,7 +174,7 @@
                     </div>
                     <div class="modal fade" role="form" id="modificaTask">
                         <div class="modal-dialog">
-                            <form t-attf-action="/my/task/write_task" method="POST" enctype="multipart/form-data" class="s_accept_json modal-content">
+                            <form t-attf-action="/my/task/write_task" method="POST" enctype="multipart/form-data" class="tag_text js_website_submit_form modal-content">
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                 <input type="hidden" name="id_task" t-att-value="task.id"/>
                                 <header class="modal-header">
@@ -202,7 +202,9 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label hdd4" for="description">Descrizione</label>
-                                        <textarea rows="3" name="description" class="form-control description"><t t-esc="task.description"></t></textarea>
+                                        <textarea name="description" class="summernote-html-editor form-control">
+                                            <t t-raw="task.description"/>
+                                        </textarea>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label hdd4" for="attachments">File</label>

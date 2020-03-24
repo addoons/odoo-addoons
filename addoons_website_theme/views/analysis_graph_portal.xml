@@ -3,6 +3,14 @@
     <data>
         <template id="addoons_analysis_portal"  >
             <t t-call="portal.portal_layout">
+
+                <div class="row mt-2 mb-5">
+                    <div class="col-lg-10" />
+                    <div class="col-lg-2">
+                        <label class="col-form-label hdd4" for="year">Anno</label>
+                        <input class="form-control" type="number" id="graph-year" name="year" min="2017" max="2021" value="2020"/>
+                    </div>
+                </div>
                 <div class="row mb-5">
                     <canvas id="grafico-fatture" width="800" height="450"></canvas>
                 </div>
