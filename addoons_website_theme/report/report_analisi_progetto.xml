@@ -1,0 +1,135 @@
+<odoo>
+    <template id="report_analisi">
+        <t t-call="web.external_layout">
+            <t t-set="tasks" t-value="docs.get_data_report(partner_id, project_id.id, date_from, date_to)" />
+            <div class="page" >
+                <style>
+                    @import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+                    .page span, .page h1, .page strong, .page h2, table{
+                    font-family: font-family: 'Roboto', sans-serif !important;
+                    }
+
+                    .analisi-table tr th{
+                    background-color: #875a7b !important;
+                    padding: 10px !important;
+                    color: white !important;
+                    border: none !important;
+                    border-bottom: none !important;
+                    font-size: 15px !important;
+                    }
+                    .analisi-table td{
+                    padding: 10px !important;
+                    font-size: 14px;
+                    border:none;
+                    border-top: 1px solid #dee2e6;
+                    border-bottom: 1px solid #f2f2f2;
+                    color: #666;
+                    }
+
+                    .analisi-table tbody tr{
+                    border-left: 1px solid #dee2e6;
+                    border-right: 1px solid #dee2e6;
+                    }
+
+                </style>
+                <t t-set="stages" t-value="[]"/>
+                <t t-set="stages_ids" t-value="[]"/>
+                <t t-foreach="tasks" t-as="task">
+                    <t t-if="task.stage_id.id not in stages_ids">
+                        <t t-set="stages" t-value="stages+[task.stage_id]"/>
+                        <t t-set="stages_ids" t-value="stages_ids+[task.stage_id.id]"/>
+                    </t>
+
+                </t>
+                <div class="row mt32 mb32" id="informations">
+                    <div class="col-3">
+                        <strong>Progetto:</strong>
+                        <p t-field="project_id.name"/>
+                    </div>
+                    <div  class="col-3">
+                        <strong>Cliente:</strong>
+                        <p t-field="partner_id.name"/>
+                    </div>
+                    <div class="col-3">
+                        <strong>Attività dal:</strong>
+                        <p t-esc="date_from"/>
+                    </div>
+                    <div class="col-3">
+                        <strong>Attività al:</strong>
+                        <p t-esc="date_from"/>
+                    </div>
+
+                </div>
+
+                <table class="table analisi-table mb32">
+                    <t t-foreach="stages" t-as="stage">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}" >
+                                <!--                                    <th t-if="groupby == 'none'">Name</th>-->
+                                <th>
+                                    <em style="color:rgba(255,255,255, 0.5) !important;">Attività in stato: </em>
+                                    <span t-field="stage.name"/></th>
+                                <th class="text-center">Stage</th>
+                                <th class="text-left">Ref</th>
+                                <th class="text-center ">Data Scadenza</th>
+                                <th class="text-center">Data Pubblicazione</th>
+                                <th class="text-center">Rispettata Consegna</th>
+                            </tr>
+                        </thead>
+                        <tbody class="mb32">
+                            <t t-foreach="tasks" t-as="task">
+                                <t t-if="task.stage_id.id == stage.id">
+                                    <tr>
+                                        <td>
+                                            <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}"><span t-field="task.name"/></a>
+                                        </td>
+                                        <td class="text-center">
+                                            <span style="background-color: #9a9a9a;" class="badge badge-pill badge-info" title="Current stage of the task" t-esc="task.stage_id.name" />
+                                        </td>
+                                        <td class="text-left">
+                                            #<span t-esc="task.id"/>
+                                        </td>
+                                        <td class="text-center" style="font-weight: bold;">
+                                            <span t-field="task.date_deadline" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </td>
+                                        <td class="text-center" style="font-weight: bold;">
+                                            <span t-field="task.date_end" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </td>
+                                        <td class="text-center" style="font-weight: bold;">
+                                            <t t-if="task.date_end and task.date_deadline and task.date_end.date() &lt;= task.date_deadline">
+                                                <img src="/addoons_website_theme/static/src/img/tick.png" style="height:22px; width:22px;"/>
+                                            </t>
+
+                                            <t t-else="">
+                                                <t t-if="task.date_end and task.date_deadline and task.date_end.date() &gt; task.date_deadline">
+                                                    <img src="/addoons_website_theme/static/src/img/cross.png" style="height:22px; width:22px;"/>
+                                                </t>
+
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </tbody>
+                    </t>
+                </table>
+
+
+            </div>
+        </t>
+    </template>
+
+    <template id="report_analisi_addoons">
+        <t t-call="web.html_container">
+            <t t-call="addoons_website_theme.report_analisi"/>
+        </t>
+    </template>
+
+    <report
+            string="Report analisi progetto"
+            id="action_report_analisi"
+            model="project.task"
+            report_type="qweb-pdf"
+            name="addoons_website_theme.report_analisi_addoons"
+            file="addoons_website_theme.report_analisi_addoons"/>
+</odoo>

@@ -198,3 +198,17 @@ class CustomerPortal(CustomerPortal):
             'projects': progetti,
         })
         return request.render("project.portal_my_task", values)
+
+    @http.route(['/my/tasks/print_analisi'], type='http', auth="public", website=True)
+    def stampa_analisi(self, **post):
+
+        post['partner_id'] = request.env.user.partner_id
+        post['project_id'] = request.env['project.project'].sudo().browse(int(post['project_id']))
+        pdf_bytes = request.env.ref('addoons_website_theme.action_report_analisi').sudo().render_qweb_pdf(data=post)[0]
+
+        pdfhttpheaders = [
+            ('Content-Type', 'application/pdf'),
+            ('Content-Length', len(pdf_bytes)),
+            ('Content-Disposition', 'attachment; filename="Analisi.pdf"')
+        ]
+        return request.make_response(pdf_bytes, headers=pdfhttpheaders)

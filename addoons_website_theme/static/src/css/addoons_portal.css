@@ -154,7 +154,6 @@ tbody tr td{
 
 }
 
-
 /**MODAL**/
 .modal:not(.o_technical_modal) .modal-body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -181,6 +180,7 @@ tbody tr td{
     background-color: #f0f0f0;
     border: none;
 }
+
 
 @media (max-width: 1200px){
     #dati-profilo, #immagine-profilo{
