@@ -18,8 +18,8 @@ class CustomerPortal(CustomerPortal):
         values = self._prepare_portal_layout_values()
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
-            'name': {'label': _('Title'), 'order': 'name'},
-            'stage': {'label': _('Stage'), 'order': 'stage_id'},
+            'name': {'label': _('Title'), 'order': 'name asc'},
+            'stage': {'label': _('Stage'), 'order': 'stage_id asc'},
             'update': {'label': _('Last Stage Update'), 'order': 'date_last_stage_update desc'},
             'deadline': {'label': 'Data di Scadenza', 'order': 'date_deadline asc'},
         }
@@ -98,7 +98,7 @@ class CustomerPortal(CustomerPortal):
         # content according to pager and archive selected
         if groupby == 'project':
             order = "project_id, %s" % order  # force sort on project first to group by project in view
-        tasks = request.env['project.task'].search(domain, limit=self._items_per_page, offset=(page - 1) * self._items_per_page)
+        tasks = request.env['project.task'].search(domain, order=order, limit=self._items_per_page, offset=(page - 1) * self._items_per_page)
         request.session['my_tasks_history'] = tasks.ids[:100]
         if groupby == 'project':
             grouped_tasks = [request.env['project.task'].concat(*g) for k, g in groupbyelem(tasks, itemgetter('project_id'))]
@@ -198,17 +198,3 @@ class CustomerPortal(CustomerPortal):
             'projects': progetti,
         })
         return request.render("project.portal_my_task", values)
-
-    @http.route(['/my/tasks/print_analisi'], type='http', auth="public", website=True)
-    def stampa_analisi(self, **post):
-
-        post['partner_id'] = request.env.user.partner_id
-        post['project_id'] = request.env['project.project'].sudo().browse(int(post['project_id']))
-        pdf_bytes = request.env.ref('addoons_website_theme.action_report_analisi').sudo().render_qweb_pdf(data=post)[0]
-
-        pdfhttpheaders = [
-            ('Content-Type', 'application/pdf'),
-            ('Content-Length', len(pdf_bytes)),
-            ('Content-Disposition', 'attachment; filename="Analisi.pdf"')
-        ]
-        return request.make_response(pdf_bytes, headers=pdfhttpheaders)

@@ -28,21 +28,22 @@
                                     </a>
                                 </div>
                                 <div class="col-lg-3 metro-button-container" >
-                                    <a href="/my/leads" style="text-decoration:none;">
+                                    <a href="/my/invoices" style="text-decoration:none;">
                                         <div class="metro-button purple">
-                                            <img src="/addoons_website_theme/static/src/img/leads.png" style="margin-bottom:20px"/>
-                                            <br/>Leads
+                                            <img src="/addoons_website_theme/static/src/img/invoice-white.png" style="margin-bottom:20px"/>
+                                            <br/>Fatture Vendita
                                         </div>
                                     </a>
                                 </div>
                                 <div class="col-lg-3 metro-button-container" >
-                                    <a href="/my/opportunities" style="text-decoration:none;">
+                                    <a href="/my/pacchetti-ore/" style="text-decoration:none;">
                                         <div class="metro-button">
-                                            <img src="/addoons_website_theme/static/src/img/opportunity.png" style="margin-bottom:20px"/>
-                                            <br/>Opportunità
+                                            <img src="/addoons_website_theme/static/src/img/timesheet.png" style="margin-bottom:20px"/>
+                                            <br/>Pacchetti Ore
                                         </div>
                                     </a>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -66,37 +67,79 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-lg-3 metro-button-container" >
-                                    <a href="/my/invoices" style="text-decoration:none;">
-                                        <div class="metro-button">
-                                            <img src="/addoons_website_theme/static/src/img/invoice.png" style="margin-bottom:20px"/>
-                                            <br/>Fatture Vendita
-                                        </div>
-                                    </a>
-                                </div>
+
                                 <div class="col-lg-3 metro-button-container" >
                                     <a href="/my/tickets" style="text-decoration:none;">
-                                        <div class="metro-button purple" style="padding:30px 17px 20px 17px;">
-                                            <img src="/addoons_website_theme/static/src/img/ticket.png" style="margin-bottom:20px"/>
+                                        <div class="metro-button" style="padding:30px 17px 20px 17px;">
+                                            <img src="/addoons_website_theme/static/src/img/ticket-black.png" style="margin-bottom:20px"/>
                                             <br/>Ticket Supporto
                                         </div>
                                     </a>
                                 </div>
+                                <div class="col-lg-3 metro-button-container" id="container-analisi" >
+                                    <a href="/my/analysis" style="text-decoration:none;">
+                                        <div class="metro-button purple" style="padding:30px 17px 20px 17px;">
+                                            <img src="/addoons_website_theme/static/src/img/analysis-white.png" style="margin-bottom:20px"/>
+                                            <br/>Analisi
+                                        </div>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-3" style="padding-left:0px; padding-right: 0px;">
-                            <div class="col-lg-9 metro-button-container" id="container-analisi" >
-                                <a href="/my/analysis" style="text-decoration:none;">
-                                    <div class="metro-button" style="padding:30px 17px 20px 17px;">
-                                        <img src="/addoons_website_theme/static/src/img/analysis.png" style="margin-bottom:20px"/>
-                                        <br/>Analisi
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
+
                     </div>
 
                     <div class="col-lg-9">
+                        <div class="row" style="padding:10px;margin-top: 80px; ">
+                            <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">/Pacchetti e Contratti</b></span>
+                        </div>
+                        <div class="row" style="padding:10px;">
+                            <span style="font-family:roboto; font-size:18px; font-weight: 200; display:inline-block;"><b style="color: #855471; font-size: 20px; font-weight:450">Attivi: <t t-esc="pacchetti_attivi"/></b></span>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-lg-6">
+                                <div class="row" style="margin-top: 50px">
+                                    <div class="col-lg-12" style="font-size:22px; font-style:italic;">DISPONIBILI</div>
+                                </div>
+                                <div class="row" >
+                                    <div class="col-lg-6 metro-button-container text-center" >
+                                        <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
+                                            <span ><h1 class="text-center ore_sv" style="font-size: 60px;margin-bottom:15px;">0</h1></span>
+                                            Ore Sviluppo
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-6 metro-button-container text-center" >
+                                        <div class="metro-button" style="padding:40px 0px 30px 0px;" >
+                                            <span ><h1 class="text-center ore_fc" style="font-size: 60px;  margin-bottom:15px;">0</h1></span>
+                                            Ore Formazione
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row" style="margin-top: 50px">
+                                    <div class="col-lg-12" style="font-size:22px; font-style:italic;">UTILIZZATE</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-6 metro-button-container text-center" >
+                                        <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
+                                            <span ><h1 class="text-center" style="font-size: 60px;  margin-bottom:15px;"><t t-esc="ore_sv_utilizzate"/></h1></span>
+                                            Ore Sviluppo
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-6 metro-button-container text-center" >
+                                        <div class="metro-button" style="padding:40px 0px 30px 0px;">
+                                            <span ><h1 class="text-center" style="font-size: 60px;margin-bottom:15px;"><t t-esc="ore_fc_utilizzate"/></h1></span>
+                                            Ore Formazione
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row" style="padding:10px;margin-top: 130px;">
                             <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">/Area Personale</b></span>
                         </div>
@@ -184,53 +227,7 @@
                                 </div>
                             </div>
                         </form>
-                        <div class="row" style="padding:10px;margin-top: 80px; ">
-                            <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">/Pacchetti e Contratti</b></span>
-                        </div>
-                        <div class="row text-center">
-                            <div class="col-lg-6">
-                                <div class="row" style="margin-top: 50px">
-                                    <div class="col-lg-12" style="font-size:22px; font-style:italic;">DISPONIBILI</div>
-                                </div>
-                                <div class="row" >
-                                    <div class="col-lg-6 metro-button-container text-center" >
-                                        <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
-                                            <span ><h1 class="text-center ore_sv" style="font-size: 60px;margin-bottom:15px;">0</h1></span>
-                                            Ore Sviluppo
-                                        </div>
 
-                                    </div>
-                                    <div class="col-lg-6 metro-button-container text-center" >
-                                        <div class="metro-button" style="padding:40px 0px 30px 0px;" >
-                                            <span ><h1 class="text-center ore_fc" style="font-size: 60px;  margin-bottom:15px;">0</h1></span>
-                                            Ore Formazione
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="row" style="margin-top: 50px">
-                                    <div class="col-lg-12" style="font-size:22px; font-style:italic;">UTILIZZATE</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-6 metro-button-container text-center" >
-                                        <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
-                                            <span ><h1 class="text-center" style="font-size: 60px;  margin-bottom:15px;"><t t-esc="ore_sv_utilizzate"/></h1></span>
-                                            Ore Sviluppo
-                                        </div>
-
-                                    </div>
-                                    <div class="col-lg-6 metro-button-container text-center" >
-                                        <div class="metro-button" style="padding:40px 0px 30px 0px;">
-                                            <span ><h1 class="text-center" style="font-size: 60px;margin-bottom:15px;"><t t-esc="ore_fc_utilizzate"/></h1></span>
-                                            Ore Formazione
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
                 </div>

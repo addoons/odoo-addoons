@@ -6,6 +6,7 @@ class PartnerInherit(models.Model):
 
     ore_sviluppo_disponibili = fields.Float(string='ore', compute='_get_ore_sviluppo_disponibili')
     ore_formazione_consulenza_disponibili = fields.Float(compute='_get_ore_formazione_disponibili')
+    soglia_notifica_ore = fields.Float(default=10)
 
     def _get_ore_formazione_disponibili(self):
         for record in self:
@@ -14,34 +15,15 @@ class PartnerInherit(models.Model):
                 company = record.parent_id
             else:
                 company = record
+            ore_disponibili = 0
 
-            ore_task = 0
-            ore_pacchetti = 0
-            tasks = self.env['project.task'].search([('partner_id', '=', company.id)])
-            pacchetti_ore = self.env['pacchetti.ore'].search([('partner_id', '=', company.id), ('type', '=', 'training')])
+            pacchetti_ore = self.env['pacchetti.ore'].search([('partner_id', '=', company.id),
+                                                              ('type', '=', 'training'), ('ore_residue', '>', 0)])
 
-            for task in tasks:
-                for ore in task.ore_lines:
-                    if ore.type == 'training':
-                        ore_task += ore.requested_hours
             for pacchetto in pacchetti_ore:
-                ore_pacchetti += pacchetto.hours
+                ore_disponibili += pacchetto.ore_residue
 
-            #conto le ore assegnate ai figli della compagnia cioe ai contact
-            for worker in company.child_ids:
-                tasks = self.env['project.task'].search([('partner_id', '=', worker.id)])
-                pacchetti_ore =self.env['pacchetti.ore'].search([('partner_id', '=', worker.id), ('type', '=', 'training')])
-
-                for task in tasks:
-                    for ore in task.ore_lines:
-                        if ore.type=='training':
-                            ore_task += ore.requested_hours
-
-                for pacchetto in pacchetti_ore:
-                    ore_pacchetti += pacchetto.hours
-            record.ore_formazione_consulenza_disponibili = ore_pacchetti - ore_task
-
-
+            record.ore_formazione_consulenza_disponibili = ore_disponibili
 
     def _get_ore_sviluppo_disponibili(self):
         for record in self:
@@ -50,33 +32,16 @@ class PartnerInherit(models.Model):
             else:
                 company = record
 
-            ore_task = 0
-            ore_pacchetti = 0
-            tasks = self.env['project.task'].search([('partner_id', '=', company.id)])
+            ore_disponibili = 0
+
             pacchetti_ore = self.env['pacchetti.ore'].search(
                 [('partner_id', '=', company.id), ('type', '=', 'developing')])
-            # conto le ore assegnate alla compagnia
-            for task in tasks:
-                for ore in task.ore_lines:
-                    if ore.type == 'developing':
-                        ore_task += ore.requested_hours
+
             for pacchetto in pacchetti_ore:
-                ore_pacchetti += pacchetto.hours
+                ore_disponibili += pacchetto.ore_residue
 
-            # conto le ore assegnate ai figli della compagnia cioe ai contact
-            for worker in company.child_ids:
-                tasks = self.env['project.task'].search([('partner_id', '=', worker.id)])
-                pacchetti_ore = self.env['pacchetti.ore'].search(
-                    [('partner_id', '=', worker.id), ('type', '=', 'developing')])
+            record.ore_sviluppo_disponibili = ore_disponibili
 
-                for task in tasks:
-                    for ore in task.ore_lines:
-                        if ore.type == 'developing':
-                            ore_task += ore.requested_hours
-
-                for pacchetto in pacchetti_ore:
-                    ore_pacchetti += pacchetto.hours
-            record.ore_sviluppo_disponibili = ore_pacchetti - ore_task
     def addoons_action_view_ore_dev(self):
         return {
             'name': _('Ore sviluppo'),

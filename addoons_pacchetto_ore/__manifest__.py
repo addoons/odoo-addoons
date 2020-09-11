@@ -8,7 +8,7 @@
     'website': 'www.addoons.it',
     'support': 'support@addoons.it',
     'depends': [
-        'base', 'sale', 'sale_management', 'account', 'project', 'addoons_reports',
+        'base', 'sale', 'sale_management', 'account', 'project', 'addoons_reports', 'hr_timesheet'
     ],
     'data': [
         'views/addoons_ore_views.xml',

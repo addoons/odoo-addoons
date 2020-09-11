@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class pacchettoOre(models.Model):
     _name = 'pacchetti.ore'
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     name = fields.Char()
     partner_id = fields.Many2one('res.partner')
     description = fields.Text()
@@ -15,3 +16,30 @@ class pacchettoOre(models.Model):
         ('training', 'Formazione/consulenza')
     ])
     order_id = fields.Many2one('sale.order')
+    ore_lines = fields.Many2many('account.analytic.line')
+
+    ore_residue = fields.Float(compute='_compute_ore_residue', store=True)
+
+    @api.depends('ore_lines', 'hours')
+    def _compute_ore_residue(self):
+        for record in self:
+            totale_ore = 0
+            for line in record.ore_lines:
+                totale_ore += line.unit_amount
+            record.ore_residue = record.hours - totale_ore
+
+
+class AccountAnalyticLine(models.Model):
+
+    _inherit = 'account.analytic.line'
+
+    type = fields.Selection([
+        ('developing', 'Sviluppo'),
+        ('training', 'Formazione/consulenza')
+    ])
+    pacchetto_ore_id = fields.Many2one('pacchetti.ore')
+
+    def write(self, vals):
+        super(AccountAnalyticLine, self).write(vals)
+        if self.pacchetto_ore_id:
+            self.pacchetto_ore_id._compute_ore_residue()

@@ -12,29 +12,22 @@
 
         <menuitem id="addoons_ore_menu" name="Pacchetti ore" sequence="5" parent="sale.sale_menu_root" action="addoons_ore_action"/>
 
-        <record id="pacchetto_ore_search_view" model="ir.ui.view">
-            <field name="name">pacchetti.ore.search</field>
-            <field name="model">pacchetti.ore</field>
-            <field name="arch" type="xml">
-                <search string="ore">
-                    <field string="cliente" name="partner_id"/>
-                    <field string="tipo" name="type"/>
-                </search>
-            </field>
-        </record>
 
         <!-- tree view pacchetti.ore -->
         <record id="view_pacchetti_ore_tree" model="ir.ui.view">
             <field name="name">pacchetti.ore.tree</field>
             <field name="model">pacchetti.ore</field>
             <field name="arch" type="xml">
-                <tree >
+                <tree>
+                    <field name="name"  string="Nome"/>
                     <field name="partner_id"  string="Cliente"/>
+                    <field name="order_id" string="Ordine" />
                     <field  name="description" string="Descrizione" />
-                    <field  name="start_date" string="Inizio validità"/>
-                    <field  name="end_date" string="Fine validità"/>
-                    <field  name="hours" string="Ore"/>
+                    <!--                    <field  name="start_date" string="Inizio validità"/>-->
+                    <!--                    <field  name="end_date" string="Fine validità"/>-->
                     <field  name="type" string="tipo"/>
+                    <field  name="hours" string="Ore"/>
+                    <field  name="ore_residue" string="Ore Residue"/>
                 </tree>
             </field>
         </record>
@@ -60,13 +53,33 @@
                             <group>
                                 <field  name="order_id" string="Ordine di Vendita"/>
                             </group>
+                            <group>
+                                <field  name="ore_residue" string="Ore Residue" widget="timesheet_uom" readonly="1"/>
+                            </group>
                         </group>
                         <notebook>
+                            <page string="Ore Consumate">
+                                <field name="ore_lines">
+                                    <tree>
+                                        <field name="task_id" />
+                                        <field name="date" />
+                                        <field name="employee_id"/>
+                                        <field name="name"/>
+                                        <field name="unit_amount" widget="timesheet_uom"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <page string="Descrizione">
                                 <field name="description" />
                             </page>
+
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -77,9 +90,22 @@
             <field name="model">task.pacchetto.ore</field>
             <field name="arch" type="xml">
                 <tree string="Pacchetto ore" editable="bottom">
-                    <field  name="requested_hours" string="Ore" required="1"/>
-                    <field  name="type" string="tipo" required="1"/>
+                    <field name="requested_hours" string="Ore" required="1"/>
+                    <field name="type" string="tipo" required="1"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="pacchetti_ore_search" model="ir.ui.view">
+            <field name="name">pacchetti.ore.search</field>
+            <field name="model">pacchetti.ore</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Nome"/>
+                    <field name="partner_id" string="Cliente"/>
+                    <field name="type" string="Tipo"/>
+                    <filter name="Attivi" domain="[('ore_residue', '>', 0)]" />
+                </search>
             </field>
         </record>
     </data>

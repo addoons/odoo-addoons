@@ -35,6 +35,19 @@
     background-color: #9a9a9a;
 }
 
+.active-packet{
+    background-color: #5CB016;
+}
+
+.packet-header{
+    font-size: 15px;
+}
+
+.expired-packet{
+    background-color: red;
+}
+
+
 .badge-pill{
     border-radius: 10px;
 }
@@ -153,34 +166,10 @@ tbody tr td{
     border-radius: 50%;
 
 }
-
-/**MODAL**/
-.modal:not(.o_technical_modal) .modal-body {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    background-color: #ffffff;
-    padding-bottom: 1rem;
+.o_portal_wrap .o_portal_my_doc_table td, .o_portal_wrap .o_portal_my_doc_table th {
+    vertical-align: middle;
+    white-space: normal;
 }
-
-.modal-body label{
-	color:black;
-}
-
-.modal:not(.o_technical_modal) .modal-content .form-control {
-    background-color: #eaeaea;
-    color: #505050;
-    border: none;
-}
-
-.modal:not(.o_technical_modal) .modal-header {
-    border-bottom: 2px solid #8a4f72;
-    color: #252931;
-}
-
-.modal:not(.o_technical_modal) .modal-content .card, .modal:not(.o_technical_modal) .modal-content .panel {
-    background-color: #f0f0f0;
-    border: none;
-}
-
 
 @media (max-width: 1200px){
     #dati-profilo, #immagine-profilo{

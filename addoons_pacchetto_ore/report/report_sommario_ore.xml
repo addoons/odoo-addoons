@@ -14,15 +14,15 @@
                     <style>
                         table {
                         border-collapse: collapse;
-                        font-size: 11px;
-                        padding: 5px;
+                        font-size: 12px;
+                        padding: 0px;
                         }
 
                         td, th {
                         border: 1px solid #e6e6e6;
                         padding: 5px;
-                        font-size: 11px;
-                        padding: 0px;
+                        font-size: 12px;
+                        padding: 5px;
                         }
                     </style>
                     <table style="width:100%; font-size: medium;page-break-after:always;" cellspacing="0" cellpadding="0">
@@ -72,13 +72,13 @@
                                                 <tbody>
                                                     <t t-foreach="doc.ore_lines" t-as="ore_line">
                                                         <tr>
-                                                            <td t-esc="str(ore_line.requested_hours) + ' h'" style="text-align:right"/>
+                                                            <td width="30%" t-esc="str(ore_line.requested_hours) + ' h'"/>
                                                             <t t-if="ore_line.type == 'developing'">
-                                                                <td>Sviluppo</td>
+                                                                <td  width="70%">Sviluppo</td>
                                                                 <t t-set="tot_ore_svil" t-value="tot_ore_svil + ore_line.requested_hours"/>
                                                             </t>
                                                             <t t-if="ore_line.type == 'training'">
-                                                                <td>Consulenza</td>
+                                                                <td width="70%">Consulenza</td>
                                                                 <t t-set="tot_ore_form" t-value="tot_ore_form + ore_line.requested_hours"/>
                                                             </t>
                                                         </tr>
@@ -97,17 +97,17 @@
                             <tr>
                                 <td colspan="4" style="border: none !important;"/>
                                 <td style="text-align:right;font-size: 13px">TOT. ORE SVILUPPO</td>
-                                <td t-esc="tot_ore_svil" style="text-align:right"/>
+                                <td t-esc="str(tot_ore_svil) + ' h'" style="text-align:right"/>
                             </tr>
                             <tr>
                                 <td colspan="4" style="border: none !important;"/>
                                 <td style="text-align:right;font-size: 13px">TOT. ORE FORMAZIONE</td>
-                                <td t-esc="tot_ore_form" style="text-align:right"/>
+                                <td t-esc="str(tot_ore_form) + ' h'" style="text-align:right"/>
                             </tr>
                             <tr>
                                 <td colspan="4" style="border: none !important;"/>
                                 <td style="text-align:right;font-size: 15px"><strong>TOT. ORE COMPLESSIVO</strong></td>
-                                <td t-esc="tot_ore" style="text-align:right"/>
+                                <td t-esc="str(tot_ore) + ' h'" style="text-align:right"/>
                             </tr>
                         </tbody>
                     </table>
