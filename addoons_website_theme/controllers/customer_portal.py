@@ -20,7 +20,12 @@ class CustomerPortal(CustomerPortal):
         values = self._prepare_portal_layout_values()
         countries = request.env['res.country'].sudo().search([])
         states = request.env['res.country.state'].sudo().search([])
-        partner = request.env.user.partner_id
+
+        if request.env.user.partner_id.parent_id:
+            partner = request.env.user.partner_id.parent_id
+        else:
+            partner = request.env.user.partner_id
+
         pacchetti_attivi = request.env['pacchetti.ore'].sudo().search([('partner_id', '=', partner.id), ('ore_residue', '>', 0)])
 
         ore_sv_utilizzate = 0
@@ -40,7 +45,7 @@ class CustomerPortal(CustomerPortal):
         values.update({
             'error': {},
             'error_message': [],
-            'partner': partner,
+            'partner': request.env.user.partner_id,
             'countries': countries,
             'states': states,
             'has_check_vat': hasattr(request.env['res.partner'], 'check_vat'),
@@ -63,9 +68,13 @@ class CustomerPortal(CustomerPortal):
             'content': {'input': 'content', 'label': 'Cerca <span class="nolabel"> (nel contenuto)</span>'},
             'all': {'input': 'all', 'label': 'Cerca ovunque'},
         }
+        if request.env.user.partner_id.parent_id:
+            cliente = request.env.user.partner_id.parent_id
+        else:
+            cliente = request.env.user.partner_id
 
         # costruisce il dominio a seconda del filtro selezionato
-        domain = [('partner_id', '=', request.env.user.partner_id.id)]
+        domain = [('partner_id.id', '=', cliente.id)]
         if filterby != 'all':
             domain += searchbar_filters[filterby]['domain']
 

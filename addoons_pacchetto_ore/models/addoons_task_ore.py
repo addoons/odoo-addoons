@@ -71,19 +71,20 @@ class taskOreInherit(models.Model):
     def write(self, vals):
         super(taskOreInherit, self).write(vals)
 
+        if not self.partner_id.parent_id:
+            cliente = self.partner_id
+        else:
+            cliente = self.partner_id.parent_id
         for type in ['developing', 'training']:
             new_lines = []
             ore_nuovo_pacchetto = 0
             data_pacchetto = False
             for line in self.timesheet_ids:
                 if not line.pacchetto_ore_id and line.type == type:
-                    if not self.partner_id.parent_id:
-                        cliente = self.partner_id.id
-                    else:
-                        cliente = self.partner_id.parent_id.id
+
 
                     pacchetto_valido = self.env['pacchetti.ore'].search([('type', '=', line.type), ('ore_residue', '>', 0),
-                                         ('partner_id', '=', cliente)], order='create_date asc', limit=1)
+                                         ('partner_id', '=', cliente.id)], order='create_date asc', limit=1)
                     if pacchetto_valido:
 
                         if pacchetto_valido.ore_residue - line.unit_amount >= 0:
@@ -106,7 +107,7 @@ class taskOreInherit(models.Model):
                             while pacchetto_valido and differenza_ore > 0:
                                 pacchetto_valido = self.env['pacchetti.ore'].search(
                                     [('type', '=', line.type), ('ore_residue', '>', 0),
-                                     ('partner_id', '=', cliente)], order='create_date asc', limit=1)
+                                     ('partner_id', '=', cliente.id)], order='create_date asc', limit=1)
                                 if pacchetto_valido:
                                     vals_nuova_riga = {
                                         'date': line.date,
@@ -136,7 +137,7 @@ class taskOreInherit(models.Model):
                                     'name': 'pacchetto aggiuntivo ' + datetime.today().date().strftime("%d/%m/%Y"),
                                     'type': pacchetto_valido.type,
                                     'hours': 0,
-                                    'partner_id': cliente
+                                    'partner_id': cliente.id
                                 }
                                 new_lines.append({
                                     'date': line.date,
@@ -155,7 +156,7 @@ class taskOreInherit(models.Model):
                                     "%d/%m/%Y"),
                                 'type': type,
                                 'hours': 0,
-                                'partner_id': cliente
+                                'partner_id': cliente.id
                             }
 
             if data_pacchetto:
@@ -171,4 +172,6 @@ class taskOreInherit(models.Model):
                     if not line.pacchetto_ore_id and line.type == type:
                         line.pacchetto_ore_id = nuovo_pacchetto.id
                         nuovo_pacchetto.write({'ore_lines': [(4, line.id)]})
+
+        cliente.check_soglia_ore()
 

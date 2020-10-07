@@ -18,6 +18,12 @@
                     </button>
 
                 </xpath>
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="notifica_sviluppo" string="Notificate Ore Sviluppo" />
+                    <field name="notifica_formazione" string="Notificate ore Formazione" />
+                    <field name="soglia_ore_sviluppo" string="Soglia Notifica Ore Sviluppo" />
+                    <field name="soglia_ore_formazione" string="Soglia Notifica ore Formazione" />
+                </xpath>
 
             </field>
         </record>

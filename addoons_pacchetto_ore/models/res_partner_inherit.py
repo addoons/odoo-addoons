@@ -6,7 +6,12 @@ class PartnerInherit(models.Model):
 
     ore_sviluppo_disponibili = fields.Float(string='ore', compute='_get_ore_sviluppo_disponibili')
     ore_formazione_consulenza_disponibili = fields.Float(compute='_get_ore_formazione_disponibili')
-    soglia_notifica_ore = fields.Float(default=10)
+
+    soglia_ore_sviluppo = fields.Float(default=10)
+    soglia_ore_formazione = fields.Float(default=10)
+
+    notifica_sviluppo = fields.Boolean()
+    notifica_formazione = fields.Boolean()
 
     def _get_ore_formazione_disponibili(self):
         for record in self:
@@ -65,3 +70,24 @@ class PartnerInherit(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'current',
         }
+
+    def check_soglia_ore(self):
+        for record in self:
+            users = self.env['res.partner'].search([('email', 'in', ['f.ranieri@addoons.it', 's.sganzerla@addoons.it'])]).ids
+            users.append(record.id)
+            author = self.env['res.partner'].search([('email', '=', 'sales@addoons.it')]).id
+            if record.ore_sviluppo_disponibili <= record.soglia_ore_sviluppo and not record.notifica_sviluppo:
+                message = "Attenzione le ore SVILUPPO disponibili di %s stanno per terminare. \n" \
+                          "Le ore residue sono minori di %s h"  % (record.name, record.soglia_ore_sviluppo)
+                subject = "Esaurimento ore SVILUPPO %s" % record.name
+
+                record.message_post(body=message, subject=subject, message_type='comment', subtype='mail.mt_comment',
+                                    partner_ids=users, author_id=author)
+                record.notifica_sviluppo = True
+            if record.ore_formazione_consulenza_disponibili <= record.soglia_ore_formazione and not record.notifica_formazione:
+                message = "Attenzione le ore FORMAZIONE/CONSULENZA disponibili di %s stanno per terminare. \n" \
+                          "Le ore residue sono minori di %s h" % (record.name, record.soglia_ore_sviluppo)
+                subject = "Esaurimento ore FORMAZIONE/CONSULENZA %s" % record.name
+                record.message_post(body=message, subject=subject, message_type='comment', subtype='mail.mt_comment',
+                                    partner_ids=users, author_id=author)
+                record.notifica_formazione = True
