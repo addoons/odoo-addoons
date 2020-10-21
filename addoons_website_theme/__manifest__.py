@@ -20,6 +20,7 @@
         'views/analysis_graph_portal.xml',
         'views/ticket_portal.xml',
         'views/pacchetti_ore_portal.xml',
+        'views/acquista_ore.xml',
 
     ],
 

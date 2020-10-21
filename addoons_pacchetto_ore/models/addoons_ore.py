@@ -35,7 +35,8 @@ class AccountAnalyticLine(models.Model):
 
     type = fields.Selection([
         ('developing', 'Sviluppo'),
-        ('training', 'Formazione/consulenza')
+        ('training', 'Formazione/consulenza'),
+        ('internal', 'Ore Interne')
     ])
     pacchetto_ore_id = fields.Many2one('pacchetti.ore')
 

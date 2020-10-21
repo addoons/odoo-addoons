@@ -17,6 +17,7 @@
         'security/ir.model.access.csv',
         'report/reports.xml',
         'report/report_sommario_ore.xml',
+        'report/report_sommario_ore_interne.xml'
     ],
 
     'installable': True,

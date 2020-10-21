@@ -12,6 +12,7 @@
                 <script src="/addoons_website_theme/static/src/lib/summernote.min.js" type="text/javascript"/>
                 <script src="/addoons_website_theme/static/src/js/ore_frontend.js" type="text/javascript"/>
                 <script src="/addoons_website_theme/static/src/js/analysis_graph.js" type="text/javascript"/>
+                <script src="/addoons_website_theme/static/src/js/acquista_ore.js" type="text/javascript"/>
                 <script src="/addoons_website_theme/static/src/js/html_field_editor.js" type="text/javascript"/>
                 <script src="/addoons_website_theme/static/src/lib/Chart.js" type="text/javascript"/>
 

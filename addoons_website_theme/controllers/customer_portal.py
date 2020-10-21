@@ -95,6 +95,24 @@ class CustomerPortal(CustomerPortal):
         )
         pacchetti_ore_list = pacchetti_ore.sudo().search(domain, limit=self._items_per_page,
                                                          offset=(page - 1) * self._items_per_page)
+
+        pacchetti_attivi = request.env['pacchetti.ore'].sudo().search([('partner_id', '=', cliente.id), ('ore_residue', '>', 0)])
+
+        ore_sv_utilizzate = 0
+        ore_fc_utilizzate = 0
+
+        stringa_pacchetti = ""
+        for pacchetto in pacchetti_attivi:
+            if pacchetto.order_id:
+                stringa_pacchetti = stringa_pacchetti + pacchetto.order_id.name + " - "
+            else:
+                stringa_pacchetti = stringa_pacchetti + pacchetto.name + " - "
+            if pacchetto.type == 'developing':
+                ore_sv_utilizzate += pacchetto.hours - pacchetto.ore_residue
+            if pacchetto.type == 'training':
+                ore_fc_utilizzate += pacchetto.hours - pacchetto.ore_residue
+        stringa_pacchetti = stringa_pacchetti[:-2]
+
         return request.render("addoons_website_theme.addoons_pacchetti_ore_portal", {'pacchetti_ore': pacchetti_ore_list,
                                                                                      'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
                                                                                      'filterby': filterby,
@@ -102,12 +120,22 @@ class CustomerPortal(CustomerPortal):
                                                                                      'search_in': search_in,
                                                                                      'default_url': '/my/pacchetti-ore',
                                                                                      'page_name': 'pacchetti',
-                                                                                     'pager': pager,})
+                                                                                     'pager': pager,
+                                                                                     'ore_sv_utilizzate': round(ore_sv_utilizzate, 2),
+                                                                                     'ore_fc_utilizzate': round(ore_fc_utilizzate, 2),
+                                                                                     'pacchetti_attivi': stringa_pacchetti
+                                                                                     })
 
-    @http.route(['/my/pacchetto-ore/<int:pacchetto_id>'], type='http', auth="public", website=True)
+    @http.route(['/my/pacchetto-ore/<int:pacchetto_id>'], type='http', auth="user", website=True)
     def portal_my_pacchetti_ore(self, pacchetto_id, access_token=None, **kw):
 
         pacchetto = request.env['pacchetti.ore'].sudo().search([('id', '=', pacchetto_id)])
 
         return request.render("addoons_website_theme.portal_my_pacchetto", {'pacchetto': pacchetto,
                                                                             'page_name': 'pacchetti'})
+
+
+    @http.route(['/my/pacchetti-ore/acquista-ore'], type='http', auth="user", website=True)
+    def acquista_ore_portal(self, **kw):
+
+        return request.render("addoons_website_theme.addoons_acquista_ore", {})

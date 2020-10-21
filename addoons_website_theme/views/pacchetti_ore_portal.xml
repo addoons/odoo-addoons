@@ -25,35 +25,103 @@
                     Non esiste nessun Pacchetto Ore associato a questo Cliente.
                 </div>
             </t>
-            <t t-if="pacchetti_ore" t-call="portal.portal_table">
-                <thead>
-                    <tr class="active">
-                        <th>Nome</th>
-                        <th>Ore Totali</th>
-                        <th>Ore Residue</th>
-                        <th>Tipo</th>
-                        <th>Ordine</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr t-foreach="pacchetti_ore" t-as="pacchetto">
-                        <td style="width:40%;">
-                            <a t-attf-href="/my/pacchetto-ore/#{pacchetto.id}?{{ keep_query() }}"><span t-field="pacchetto.name"/></a>
-                        </td>
-                        <td style="width:10%;">
-                            <span style="float:right;" t-field="pacchetto.hours"/>
-                        </td>
-                        <td style="width:10%;">
-                            <span style="float:right;" t-field="pacchetto.ore_residue"/>
-                        </td>
-                        <td style="width:20%;">
-                            <span t-field="pacchetto.type"/>
-                        </td>
-                        <td style="width:20%;">
-                            <span t-field="pacchetto.order_id"/>
-                        </td>
-                    </tr>
-                </tbody>
+            <t t-if="pacchetti_ore">
+                <div class="col-lg-12 mb-5">
+                    <div class="row" style="padding:10px;margin-top: 80px; ">
+                        <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">/Pacchetti e Contratti</b></span>
+                    </div>
+                    <div class="row" style="padding:10px;">
+                        <span style="font-family:roboto; font-size:18px; font-weight: 200; display:inline-block;"><b style="color: #855471; font-size: 20px; font-weight:450">Attivi: <t t-esc="pacchetti_attivi"/></b></span>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-lg-5">
+                            <div class="row" style="margin-top: 50px">
+                                <div class="col-lg-12" style="font-size:22px; font-style:italic;">DISPONIBILI</div>
+                            </div>
+                            <div class="row" >
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
+                                        <span ><h1 class="text-center ore_sv" style="font-size: 60px;margin-bottom:15px;">0</h1></span>
+                                        Ore Sviluppo
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button" style="padding:40px 0px 30px 0px;" >
+                                        <span ><h1 class="text-center ore_fc" style="font-size: 60px;  margin-bottom:15px;">0</h1></span>
+                                        Ore Formazione
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="row" style="margin-top: 50px">
+                                <div class="col-lg-12" style="font-size:22px; font-style:italic; "></div>
+                            </div>
+                            <div class="col-lg-12 metro-button-container mt-2" >
+                                <a href="/my/pacchetti-ore/acquista-ore">
+                                    <div class="metro-button" style="height: 100px; width: 100px;border-radius: 50%; background-color: #00A09D; color: white; font-size: 30px;padding:30px 0px 30px 0px;
+                                                                                                                            margin-top: 35px; margin-right: auto; margin-left: auto;">
+                                        <i class="fa fa-plus"/>
+                                    </div>
+                                </a>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="row" style="margin-top: 50px">
+                                <div class="col-lg-12" style="font-size:22px; font-style:italic;">UTILIZZATE</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button purple" style="padding:40px 0px 30px 0px;">
+                                        <span ><h1 class="text-center" style="font-size: 60px;  margin-bottom:15px;"><t t-esc="ore_sv_utilizzate"/></h1></span>
+                                        Ore Sviluppo
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-6 metro-button-container text-center" >
+                                    <div class="metro-button" style="padding:40px 0px 30px 0px;">
+                                        <span ><h1 class="text-center" style="font-size: 60px;margin-bottom:15px;"><t t-esc="ore_fc_utilizzate"/></h1></span>
+                                        Ore Formazione
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <t t-call="portal.portal_table">
+                    <thead>
+                        <tr class="active">
+                            <th>Nome</th>
+                            <th>Ore Totali</th>
+                            <th>Ore Residue</th>
+                            <th>Tipo</th>
+                            <th>Ordine</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="pacchetti_ore" t-as="pacchetto">
+                            <td style="width:40%;">
+                                <a t-attf-href="/my/pacchetto-ore/#{pacchetto.id}?{{ keep_query() }}"><span t-field="pacchetto.name"/></a>
+                            </td>
+                            <td style="width:10%;">
+                                <span style="float:right;" t-field="pacchetto.hours"/>
+                            </td>
+                            <td style="width:10%;">
+                                <span style="float:right;" t-field="pacchetto.ore_residue"/>
+                            </td>
+                            <td style="width:20%;">
+                                <span t-field="pacchetto.type"/>
+                            </td>
+                            <td style="width:20%;">
+                                <span t-field="pacchetto.order_id"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </t>
             </t>
         </t>
     </template>
@@ -118,9 +186,9 @@
                             </thead>
                             <script>
                                 $(document).ready(function()
-                                    {
-                                      $("tr:even").css("background-color", "white");
-                                    });
+                                {
+                                $("tr:even").css("background-color", "white");
+                                });
                             </script>
                             <tr t-foreach="pacchetto.ore_lines" t-as="timesheet">
                                 <td style="padding-left:0"><t t-esc="timesheet.task_id.name"/></td>

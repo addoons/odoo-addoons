@@ -8,4 +8,15 @@
             file="addoons_pacchetto_ore.report_task_list_tmpl"
             paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
     />
+
+    <report
+            id="report_task_list_ore_interne"
+            model="project.task"
+            string="Sommario Ore Interne"
+            report_type="qweb-pdf"
+            name="addoons_pacchetto_ore.report_task_list_ore_interne_tmpl"
+            file="addoons_pacchetto_ore.report_task_list_ore_interne_tmpl"
+            paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
+    />
+
 </odoo>

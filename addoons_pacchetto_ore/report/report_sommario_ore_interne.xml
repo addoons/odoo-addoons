@@ -1,5 +1,5 @@
 <odoo>
-    <template id="report_task_list_tmpl">
+    <template id="report_task_list_ore_interne_tmpl">
         <t t-call="web.basic_layout">
             <t t-call="addoons_reports.internal_minimal_layout">
                 <div class="page">
@@ -38,8 +38,6 @@
                         </thead>
                         <tbody>
                             <t t-set="cont" t-value="1"/>
-                            <t t-set="tot_ore_svil" t-value="0"/>
-                            <t t-set="tot_ore_form" t-value="0"/>
                             <t t-set="tot_ore" t-value="0"/>
                             <t t-set="descrizione" t-value="0"/>
                             <t t-foreach="docs" t-as="doc">
@@ -67,21 +65,14 @@
                                                 <table style="width:100%;">
                                                 <thead>
                                                     <th>Ore</th>
-                                                    <th>Tipo</th>
+                                                    <th>Descrizione</th>
                                                 </thead>
                                                 <tbody>
                                                     <t t-foreach="doc.timesheet_ids" t-as="timesheet_id">
-                                                        <t t-if="timesheet_id.type == 'developing' or timesheet_id.type  == 'training'">
+                                                        <t t-if="timesheet_id.type != 'developing' or timesheet_id.type  != 'training'">
                                                             <tr>
                                                                 <td width="30%" t-esc="str(timesheet_id.unit_amount) + ' h'"/>
-                                                                <t t-if="timesheet_id.type == 'developing'">
-                                                                    <td  width="70%">Sviluppo</td>
-                                                                    <t t-set="tot_ore_svil" t-value="tot_ore_svil + timesheet_id.unit_amount"/>
-                                                                </t>
-                                                                <t t-if="timesheet_id.type == 'training'">
-                                                                    <td width="70%">Consulenza</td>
-                                                                    <t t-set="tot_ore_form" t-value="tot_ore_form + timesheet_id.unit_amount"/>
-                                                                </t>
+                                                                    <td  width="70%" t-esc="timesheet_id.name"></td>
                                                             </tr>
                                                             <t t-set="ore_task" t-value="ore_task + timesheet_id.unit_amount"/>
                                                         </t>
@@ -96,16 +87,6 @@
                                 </tr>
                                 <t t-set="cont" t-value="cont + 1"/>
                             </t>
-                            <tr>
-                                <td colspan="4" style="border: none !important;"/>
-                                <td style="text-align:right;font-size: 13px">TOT. ORE SVILUPPO</td>
-                                <td t-esc="str(tot_ore_svil) + ' h'" style="text-align:right"/>
-                            </tr>
-                            <tr>
-                                <td colspan="4" style="border: none !important;"/>
-                                <td style="text-align:right;font-size: 13px">TOT. ORE FORMAZIONE</td>
-                                <td t-esc="str(tot_ore_form) + ' h'" style="text-align:right"/>
-                            </tr>
                             <tr>
                                 <td colspan="4" style="border: none !important;"/>
                                 <td style="text-align:right;font-size: 15px"><strong>TOT. ORE COMPLESSIVO</strong></td>

@@ -48,7 +48,6 @@ class taskOreInherit(models.Model):
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
 
-
         ore_task_formazione_modifiche = 0
         ore_task_sviluppo_modifiche = 0
         for ore in self.ore_lines:
@@ -71,6 +70,9 @@ class taskOreInherit(models.Model):
     def write(self, vals):
         super(taskOreInherit, self).write(vals)
 
+        if not self.partner_id:
+            raise ValidationError(
+                'Devi selezionare un cliente per salvare il record:')
         if not self.partner_id.parent_id:
             cliente = self.partner_id
         else:
@@ -172,6 +174,11 @@ class taskOreInherit(models.Model):
                     if not line.pacchetto_ore_id and line.type == type:
                         line.pacchetto_ore_id = nuovo_pacchetto.id
                         nuovo_pacchetto.write({'ore_lines': [(4, line.id)]})
+
+        for line in self.timesheet_ids:
+            # se nelle righe di lavoro di un task trovo quelle relative alle ore interne le aggancio al campo (ore_interne_ids)
+            if line.type == 'internal':
+                cliente.write({'ore_interne_ids': [(4, line.id)]})
 
         cliente.check_soglia_ore()
 

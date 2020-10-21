@@ -6,7 +6,6 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
 
-
                 <xpath expr="//div[@name='button_box']" position="inside">
 
                     <button name="addoons_action_view_ore_dev" type="object" class="oe_stat_button" icon="fa-indent"  >
@@ -17,6 +16,10 @@
                         <field name="ore_formazione_consulenza_disponibili" string="Ore formazione" widget="statinfo"/>
                     </button>
 
+                     <button name="addoons_action_view_ore_internal" type="object" class="oe_stat_button" icon="fa-clock-o" >
+                        <field name="ore_interne_accumulate" string="Ore interne" widget="statinfo"/>
+                    </button>
+
                 </xpath>
                 <xpath expr="//field[@name='vat']" position="after">
                     <field name="notifica_sviluppo" string="Notificate Ore Sviluppo" />
@@ -25,6 +28,11 @@
                     <field name="soglia_ore_formazione" string="Soglia Notifica ore Formazione" />
                 </xpath>
 
+                <xpath expr="//notebook/page[1]" position="after">
+                    <page string="Ore Interne">
+                        <field name="ore_interne_ids" readonly="1" ></field>
+                    </page>
+                </xpath>
             </field>
         </record>
 
