@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from odoo import api, fields, models
 
@@ -99,10 +100,14 @@ class SaleOrderInherit(models.Model):
             'vendita_pacchetto_ore': True,
             'payment_term_id': 1
         }
-
-        ordine = self.env['sale.order'].sudo().create(vals)
-        ordine.action_confirm()
-        if ordine:
-            return {'success': True, 'name': ordine.name, 'id': ordine.id}
-        else:
+        logging.info(vals)
+        try:
+            ordine = self.env['sale.order'].sudo().create(vals)
+            ordine.action_confirm()
+            if ordine:
+                return {'success': True, 'name': ordine.name, 'id': ordine.id}
+            else:
+                return {'success': False, 'name': "C'è stato un problema durante la creazione dell'ordine"}
+        except Exception as e:
+            logging.info(e)
             return {'success': False, 'name': "C'è stato un problema durante la creazione dell'ordine"}
