@@ -76,7 +76,7 @@ class SaleOrderInherit(models.Model):
                 'name': 'Ore Sviluppo',
                 'product_uom': prodotto_sviluppo.uom_id.id,
                 'price_unit': float(data['prezzo_sviluppo']),
-                'tax_id': tassa.id
+                'tax_id': [(4,tassa.id)]
             }))
 
         if data['qty_formazione'] > 0:
@@ -88,7 +88,7 @@ class SaleOrderInherit(models.Model):
                 'name': 'Ore Sviluppo',
                 'product_uom': prodotto_formazione.uom_id.id,
                 'price_unit': float(data['prezzo_formazione']),
-                'tax_id': tassa.id
+                'tax_id': [(4,tassa.id)]
             }))
 
         vals = {
