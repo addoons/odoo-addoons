@@ -1,0 +1,35 @@
+<odoo>
+
+    <data>
+        <record id="support_sale_order_form_view" model="ir.ui.view">
+            <field name="name">support.sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_unlock']" position="after">
+                    <button name="crea_pacchetto" string="Crea Pacchetto" type="object" class="" attrs="{'invisible': ['|',('vendita_pacchetto_ore','=', False),('counter_pacchetti_ore', '>', 0)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field string="Vendita pacchetto ore" name="vendita_pacchetto_ore" />
+                    <field name="counter_pacchetti_ore" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Pacchetti Ore">
+                        <field name="pacchetti_ore_ids">
+                            <tree>
+                                <field name="name"  string="Nome"/>
+                                <field name="partner_id"  string="Cliente"/>
+                                <field name="order_id" string="Ordine" />
+                                <field  name="description" string="Descrizione" />
+                                <field  name="type" string="tipo"/>
+                                <field  name="hours" string="Ore"/>
+                                <field  name="ore_residue" string="Ore Residue"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

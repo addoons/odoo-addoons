@@ -30,9 +30,6 @@
                     <div class="row" style="padding:10px;margin-top: 80px; ">
                         <span style="font-family:roboto; font-size:23px; font-weight: 300; display:inline-block;"><b style="color: #855471; font-size: 35px; font-weight:650">/Pacchetti e Contratti</b></span>
                     </div>
-                    <div class="row" style="padding:10px;">
-                        <span style="font-family:roboto; font-size:18px; font-weight: 200; display:inline-block;"><b style="color: #855471; font-size: 20px; font-weight:450">Attivi: <t t-esc="pacchetti_attivi"/></b></span>
-                    </div>
                     <div class="row text-center">
                         <div class="col-lg-5">
                             <div class="row" style="margin-top: 50px">
