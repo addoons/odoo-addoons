@@ -21,6 +21,7 @@ class StockPicking(models.Model):
         column2='stock_picking_package_preparation_id',
         string='TD',
         copy=False, )
+    picking_type = fields.Selection([('incoming', 'Vendors'), ('outgoing', 'Customers'), ('internal', 'Internal')],'Type of Operation', related='picking_type_id.code')
 
     @api.multi
     def write(self, values):

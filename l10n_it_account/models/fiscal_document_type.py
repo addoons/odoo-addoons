@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
-from odoo import models, fields, api
+from odoo import models, fields, api,_
 
 
 class FiscalDocumentType(models.Model):
@@ -10,7 +10,7 @@ class FiscalDocumentType(models.Model):
     _description = 'Fiscal document type'
 
     code = fields.Char(string='Code', size=5)
-    name = fields.Char(string='Name', size=100)
+    name = fields.Char(string='Name', size=150)
     out_invoice = fields.Boolean(string='Customer Invoice')
     in_invoice = fields.Boolean(string='Vendor Bill')
     out_refund = fields.Boolean(string='Customer Credit Note')

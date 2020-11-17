@@ -26,8 +26,8 @@
                     <!--                    <field  name="start_date" string="Inizio validità"/>-->
                     <!--                    <field  name="end_date" string="Fine validità"/>-->
                     <field  name="type" string="tipo"/>
-                    <field  name="hours" string="Ore"/>
-                    <field  name="ore_residue" string="Ore Residue"/>
+                    <field  name="hours" string="Ore" widget="timesheet_uom"/>
+                    <field  name="ore_residue" string="Ore Residue" widget="timesheet_uom"/>
                 </tree>
             </field>
         </record>
@@ -46,7 +46,7 @@
                                 <field  name="start_date" string="Inizio validità" />
                             </group>
                             <group>
-                                <field  name="hours" string="Ore" required="1"/>
+                                <field  name="hours" string="Ore" required="1" widget="timesheet_uom"/>
                                 <field  name="type" string="tipo" required="1"/>
                                 <field  name="end_date" string="Fine validità"/>
                             </group>

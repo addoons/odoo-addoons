@@ -7,11 +7,14 @@ from odoo.addons.base.models.ir_mail_server import extract_rfc2822_addresses
 
 SDI_CHANNELS = [
     ('pec', 'PEC'),
-    ('web', 'Web service')
+    ('web', 'Web service'),
+    ('ftp', 'FTP')
 ]
 SDI_PROVIDER = [
-    ('aruba', 'ARUBA')
+    ('aruba', 'ARUBA'),
+    ('credemtel', 'CREDEMTEL')
 ]
+
 
 class SdiChannel(models.Model):
     _name = "sdi.channel"
@@ -25,13 +28,17 @@ class SdiChannel(models.Model):
     first_invoice_sent = fields.Boolean("First invoice sent", readonly=True)
     channel_type = fields.Selection(selection=SDI_CHANNELS)
     provider = fields.Selection(selection=SDI_PROVIDER)
-    web_server_method_address = fields.Char()
+    web_server_method_address = fields.Char(default='https://ws.fatturazioneelettronica.aruba.it')
     web_server_refresh_token = fields.Char()
     active_web_server = fields.Boolean()
-    web_server_address = fields.Char(string='Web server address')
+    web_server_address = fields.Char(string='Web server address', default='https://auth.fatturazioneelettronica.aruba.it/auth/signin')
     web_server_login = fields.Char(string='Web server login')
     web_server_password = fields.Char(string='Web server password')
     web_server_token = fields.Char(string='Web server token')
+    # campi credemtel
+    url = fields.Char(string="URL")
+    username = fields.Char(string="Username")
+    password = fields.Char()
 
     def get_default_ws(self):
         """

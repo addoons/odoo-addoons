@@ -7,4 +7,5 @@ from . import link_to_existing_invoice
 from . import wizard_export_fatturapa
 from . import send_pec
 from . import send_aruba
-
+from . import send_credemtel
+from . import wizard_import_fatturapa_zip

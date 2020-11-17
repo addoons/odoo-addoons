@@ -24,6 +24,7 @@
         'data/fetchmail_data.xml',
         'data/bollo_virtuale.xml',
         'data/config_parameter.xml',
+        'data/ir_cron.xml',
         'security/groups.xml',
         'security/security.xml',
         'wizard/send_pec_view.xml',
@@ -40,16 +41,20 @@
         'views/product_view.xml',
         'views/ir_mail_server.xml',
         'views/sdi_view.xml',
+        'views/account_rc.xml',
         'security/ir.model.access.csv',
         'wizard/link_to_existing_invoice.xml',
         'wizard/send_to_aruba.xml',
+        'wizard/send_credemtel.xml',
+        'wizard/wizard_import_fatturapa_zip.xml',
         'data/fatturapa_attachment_in_cron.xml',
     ],
     'installable': True,
     'external_dependencies': {
         'python': [
             'pyxb',  # pyxb 1.2.5
-            'asn1crypto'
+            'asn1crypto',
+            'pysftp',
         ],
     }
 }

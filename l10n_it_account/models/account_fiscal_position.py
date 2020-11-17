@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
-from odoo import models, fields,api
+from odoo import models, fields,api,_
 
 
 class AccountFiscalPosition(models.Model):
@@ -17,6 +17,9 @@ class AccountFiscalPosition(models.Model):
         'fiscal_position_id', 'withholding_tax_id', string='Withholding Tax')
 
     corrispettivi = fields.Boolean(string='Receipts')
+    rc_type_id = fields.Many2one('account.rc.type', 'RC Type')
+
+    esterometro = fields.Boolean()
 
     @api.model
     def get_corr_fiscal_pos(self, company_id=None):

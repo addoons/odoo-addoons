@@ -64,6 +64,21 @@ class WithholdingTax(models.Model):
     rate_ids = fields.One2many('withholding.tax.rate', 'withholding_tax_id',
                                'Rates', required=True)
 
+    wt_types = fields.Selection([
+        ('enasarco', 'Enasarco tax'),
+        ('ritenuta', 'Withholding tax'),
+        ('inps', 'Inps Tax'),
+        ('enpam', 'Enpam Tax'),
+        ('other', 'Other Tax'),
+        ], 'Withholding tax type', required=True, default='ritenuta')
+
+    use_daticassaprev = fields.Boolean(
+        "DatiCassa export", oldname='use_daticassaprev_for_enasarco',
+        help="Setting this, while exporting e-invoice XML, "
+             "data will be also added to DatiCassaPrevidenziale"
+    )
+    daticassprev_tax_id = fields.Many2one('account.tax')
+
 
 
     @api.one
@@ -83,7 +98,7 @@ class WithholdingTax(models.Model):
                 self.env.context['currency_id'])
         else:
             currency = self.env.user.company_id.currency_id
-        prec = currency.decimal_places
+        prec = 5
         base = round(amount * self.base, prec)
         tax = round(base * ((self.tax or 0.0) / 100.0), prec)
         res['base'] = base
@@ -456,3 +471,4 @@ class AccountInvoiceWithholdingTax(models.Model):
     tax_coeff = fields.Float(
         'Tax Coeff', compute='_compute_coeff', store=True, help="Coeff used\
          to compute amount competence in the riconciliation")
+

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="wizard_import_fatturapa_massive_form_view" model="ir.ui.view">
+        <field name="name">Electronic Bill Import Massive</field>
+        <field name="model">wizard.import.fatturapa.massive</field>
+        <field name="arch" type="xml">
+            <form string="Electronic Bill Import Massive" >
+                <group>
+                    <field widget="many2many_binary" name="file_ids" nolabel="1" colspan="2"/>
+                    <footer>
+                        <button class="oe_highlight" name="importFatturaList" string="IMPORTA" type="object"/>
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <act_window name="Import F.E. Massivo"
+                res_model="wizard.import.fatturapa.massive"
+                view_mode="form"
+                target="new"
+                key2="client_action_multi"
+                id="action_fatturapa_attachment_massive"
+                view_id="wizard_import_fatturapa_massive_form_view"/>
+
+    <menuitem action="action_fatturapa_attachment_massive"
+              parent="account.menu_finance_payables"
+              name="Fatture Elettroniche (XML) Massivo"
+              string="File Fatture Elettroniche Massivo"
+              id="fatturapa_attachment_massive_menu_vendor"
+              sequence="201"/>
+
+</odoo>

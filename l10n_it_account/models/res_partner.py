@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
-from odoo import models, fields, api
+from odoo import models, fields, api,_
 
 
 class ResPartner(models.Model):
@@ -21,10 +21,13 @@ class ResPartner(models.Model):
                     # the user might insert VAT in fiscalcode field.
                     # Perform the same check as Company case
                     continue
-                if len(partner.fiscalcode) != 16:
+                if len(partner.fiscalcode) != 16 and len(partner.fiscalcode) != 11:
                     # Check fiscalcode of a person
                     return False
         return True
+
+    costi_account = fields.Many2one('account.account')
+    ricavi_account = fields.Many2one('account.account')
 
     use_corrispettivi = fields.Boolean(string='Use Receipts')
     out_fiscal_document_type = fields.Many2one(
@@ -40,6 +43,7 @@ class ResPartner(models.Model):
         column2='ateco_id',
         string='Ateco categories'
     )
+    is_dogana = fields.Boolean()
 
     _constraints = [
         (check_fiscalcode,
@@ -58,10 +62,7 @@ class ResPartner(models.Model):
         [('LS', 'In liquidation'),
          ('LN', 'Not in liquidation')], 'Liquidation State')
 
-    _sql_constraints = [
-        ('rea_code_uniq', 'unique (rea_code, company_id)',
-         'The rea code code must be unique per company !'),
-    ]
+
 
     @api.onchange('use_corrispettivi')
     def onchange_use_corrispettivi(self):

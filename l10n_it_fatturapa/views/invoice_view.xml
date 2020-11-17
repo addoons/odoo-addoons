@@ -31,16 +31,14 @@
                 <attribute name="colors">CadetBlue:is_stamp_line==True;</attribute>
             </xpath>
 
-            <field name="date_due" position="after">
+            <field name="reference" position="after">
                 <field name="auto_compute_stamp" invisible="1"/>
-                <field name="tax_stamp"  string="Tax stamp" attrs="{'invisible': [('auto_compute_stamp', '=', True)]}"/>
+                <field name="tax_stamp"  string="Marca da Bollo" attrs="{'invisible': [('auto_compute_stamp', '=', True)]}"/>
+                <button class="oe_edit_only" type="object" string="Aggiungi Marca Da Bollo" name="add_tax_stamp_line" attrs="{'invisible': ['|',('tax_stamp', '=', False),('state', 'not in', 'draft')]}"/>
             </field>
 
-            <field name="invoice_line_ids" position="after">
-                <img src="/l10n_it_account_stamp/static/description/icon.png" alt="Tax stamp"
-                     attrs="{'invisible': [('tax_stamp', '=', False)]}"/>
-                <button class="oe_edit_only" type="object" string="Add tax stamp line"
-                        name="add_tax_stamp_line" attrs="{'invisible': ['|',('tax_stamp', '=', False),('state', 'not in', 'draft')]}"/>
+            <field name="number" position="after">
+                <img src="/l10n_it_fatturapa/static/description/bollo.png" style="float: right; max-width: 150px;" alt="Tax stamp" attrs="{'invisible': [('tax_stamp', '=', False)]}"/>
             </field>
 
         </field>

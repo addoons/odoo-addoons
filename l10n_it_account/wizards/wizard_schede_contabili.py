@@ -45,7 +45,7 @@ class WizardSchedeContabili(models.TransientModel):
         if not self.all_partners:
             partner_ids = [x.id for x in self.partner_ids]
             domain.append(('partner_id', 'in', partner_ids))
-            domain_previous.append('|', ('move_id.partner_id', 'in', partner_ids), ('partner_id', 'in', partner_ids))
+            domain_previous.append(('partner_id', 'in', partner_ids))
         if self.only_customers:
             domain.append(('partner_id.customer', '=', True))
             domain_previous.append(('partner_id.customer', '=', True))

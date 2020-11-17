@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
-from odoo import models, fields
+from odoo import models, fields,_
 
 
 class AccountTax(models.Model):
@@ -21,6 +21,8 @@ class AccountTax(models.Model):
     ], string="VAT payability")
     vat_statement_account_id = fields.Many2one('account.account', "Account used for VAT statement", help="The tax balance will be associated to this account after "
                                                                                                          "selecting the period in VAT statement")
+    vsc_exclude_operation = fields.Boolean(string='Exclude from active / passive operations')
+    vsc_exclude_vat = fields.Boolean(string='Exclude from VAT payable / deducted')
 
     def _get_tax_amount(self):
         self.ensure_one()
@@ -58,18 +60,49 @@ class AccountTax(models.Model):
 
         tax = self.env['account.tax'].with_context(context).browse(self.id)
         tax_name = tax._get_tax_name()
+
+
+        #TOTALI
+        amount_untaxed = 0 #Imponibile
+        amount_tax = 0 #Imposte
+        amount_tax_exig = 0 #Esigibili
+
+
+        if 'cash_move_ids' in data:
+            for move in data['move_ids']:
+                move_id = self.env['account.move'].browse(int(move))
+                # 1° Calcolo quali sarebbero le imposte e l'imponibile
+                for line in move_id.line_ids:
+                    if line.tax_line_id.id == tax.id:
+                        amount_untaxed += line.tax_base_amount
+                        amount_tax += line.credit
+
+            for move, cash_move_ids in data['cash_move_ids'].items():
+                # 2° Calcolo in reale imponibile ed imposte Esigibili, guardando i giroconti del Principio di Cassa
+                for cash_move in cash_move_ids:
+                    cash_move_id = self.env['account.move'].browse(int(cash_move))
+                    for line in cash_move_id.line_ids:
+                        if line.tax_line_id.id == tax.id:
+                            amount_tax_exig += line.credit_cash_basis
+        else:
+            amount_untaxed = tax.base_balance
+            amount_tax = tax.balance
+            amount_tax_exig = amount_tax
+
+        #Non Esigibili
+        amount_tax_no_exig = amount_tax - amount_tax_exig
+
         if not tax.children_tax_ids:
-            base_balance = tax.base_balance
-            balance = tax.balance
             if registry_type == 'supplier':
-                base_balance = -base_balance
-                balance = -balance
+                amount_untaxed = -amount_untaxed
+                amount_tax_exig = -amount_tax_exig
+                amount_tax_no_exig = -amount_tax_no_exig
+                amount_tax = -amount_tax
             return (
-                tax_name, base_balance, balance, balance, 0
+                tax_name, abs(amount_untaxed), amount_tax, amount_tax_exig, amount_tax_no_exig
             )
         else:
             base_balance = tax.base_balance
-
             tax_balance = 0
             deductible = 0
             undeductible = 0

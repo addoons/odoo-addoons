@@ -272,7 +272,7 @@ msgstr "Riferimento pacco"
 #. module: stock_picking_package_preparation
 #: model_terms:ir.ui.view,arch_db:stock_picking_package_preparation.stock_picking_package_preparation_form
 msgid "Package done"
-msgstr "Pacco completato"
+msgstr "Spedisci"
 
 #. module: stock_picking_package_preparation
 #: model:ir.model.fields,field_description:stock_picking_package_preparation.field_stock_picking_package_preparation__packaging_id
@@ -287,7 +287,7 @@ msgstr "Partner"
 #. module: stock_picking_package_preparation
 #: model_terms:ir.ui.view,arch_db:stock_picking_package_preparation.stock_picking_package_preparation_form
 msgid "Put in pack"
-msgstr "Metti nel pacco"
+msgstr "Conferma DDT"
 
 #. module: stock_picking_package_preparation
 #: model_terms:ir.ui.view,arch_db:stock_picking_package_preparation.stock_picking_package_preparation_form

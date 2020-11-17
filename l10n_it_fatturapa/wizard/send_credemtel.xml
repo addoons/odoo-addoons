@@ -1,0 +1,23 @@
+<odoo>
+    <record model="ir.ui.view" id="wizard_download_zip_fatture">
+        <field name="name">wizard.download.zip.fatture</field>
+        <field name="model">wizard.send.credemtel</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>Scarica le fatture elettroniche selezionate</p>
+                <footer>
+                    <button type="object" class="oe_highlight" name="export_zip_fatture" string="Download zip"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="action_download_zip_fatture"
+                key2="client_action_multi"
+                name="Scarica fatture elettroniche"
+                res_model="wizard.send.credemtel"
+                src_model="fatturapa.attachment.out"
+                target="new"
+                view_id="wizard_download_zip_fatture"
+                view_mode="form"/>
+</odoo>

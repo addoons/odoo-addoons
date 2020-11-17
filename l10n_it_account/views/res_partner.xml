@@ -34,6 +34,10 @@
             <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
                 <field name="in_fiscal_document_type" class="oe_inline" string="Tipo Documento"/>
             </xpath>
+            <xpath expr="//field[@name='property_account_payable_id']" position="after">
+                <field name="costi_account" string="Conto di Costo" />
+                <field name="ricavi_account" string="Conto di Ricavo" />
+            </xpath>
         </field>
     </record>
 
@@ -101,10 +105,8 @@
         <field name="arch" type="xml">
             <field name="vat" position="after">
                 <field name="use_corrispettivi"/>
+                <field name="is_dogana" string="E' Dogana"/>
             </field>
-            <!--<group name="accounting_entries" position="inside">-->
-                <!---->
-            <!--</group>-->
         </field>
     </record>
 

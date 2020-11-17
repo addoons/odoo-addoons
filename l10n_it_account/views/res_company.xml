@@ -41,6 +41,11 @@
                 </page>
             </notebook>
             <field name="company_registry" position="replace"/>
+
+            <xpath expr="//field[@name='of_account_end_vat_statement_interest_account_id']" position="after">
+                <field name="vsc_supply_code" placeholder="IVP18"/>
+            </xpath>
+
         </field>
     </record>
 </odoo>

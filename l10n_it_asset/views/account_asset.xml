@@ -1,0 +1,28 @@
+<odoo>
+
+    <record id="account_asset_action" model="ir.actions.act_window">
+        <field name="name">Piani di Ammortamento</field>
+        <field name="res_model">account.asset.asset</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+    </record>
+
+    <!-- Account asset Root (Registro Cespiti) -->
+    <menuitem id="account_asset_root"
+              name="Registro Cespiti"
+              parent="account.menu_finance_entries"
+              sequence="100"/>
+
+    <!-- Piani di Ammortamento -->
+    <menuitem id="account_asset.menu_action_account_asset_asset_form"
+              name="Piani di Ammortamento"
+              parent="account_asset_root"
+              action="account_asset_action"
+              sequence="1"/>
+
+    <!-- Genera Scritture di Immobilizzazioni -->
+    <menuitem name="Generate Assets Entries" action="account_asset.action_asset_depreciation_confirmation_wizard"
+        id="account_asset.menu_asset_depreciation_confirmation_wizard"
+        parent="account_asset_root" sequence="111" groups="account.group_account_manager"/>
+
+</odoo>

@@ -42,6 +42,7 @@
                                     <th class="left_without_line">TIN</th>
                                 </t>
                                 <th class="left_without_line"></th>
+                                <th class="left_without_line"></th>
                                 <th class="right_without_line">TOTAL</th>
                             </tr>
                             <tr style="page-break-inside: avoid" name="vat_header_tax">
@@ -53,12 +54,19 @@
                                     <th class="left_with_line_bottom"></th>
                                 </t>
                                 <th class="left_with_line_bottom">Tax description</th>
-                                <th class="right_with_line_bottom">Taxable</th>
-                                <th class="right_with_line_bottom">Tax</th>
+                                <th class="right_with_line_bottom">Imponibile</th>
+                                <th class="right_with_line_bottom">Imposta</th>
+                                <th class="right_with_line_bottom">Sospesa</th>
                                 <th class="right_with_line_bottom"></th>
                             </tr>
                         </t>
                     </thead>
+
+                    <style>
+                        .no_exigible_line td *{
+                            color:red !important;
+                        }
+                    </style>
 
                     <tbody>
                         <t t-set="total_used_taxes" t-value="env['account.tax']"></t>
@@ -98,6 +106,7 @@
                                                 <td class="left_without_line_bold"><div style="page-break-inside: avoid" t-esc="move.partner_id.vat"/></td>
                                             </t>
                                             <td class="left_without_line"></td>
+                                            <td class="left_without_line"></td>
                                             <!-- totale -->
                                             <td class="right_without_line_bold"><div style="page-break-inside: avoid" t-esc="formatLang(env, invoice_total(move))"/></td>
                                         </tr>
@@ -116,6 +125,9 @@
                                         <td class="right_without_line"><div style="page-break-inside: avoid" t-esc="formatLang(env, line['base'])"/></td>
                                         <!-- tax -->
                                         <td class="right_without_line"><div style="page-break-inside: avoid" t-esc="formatLang(env, line['tax'])"/></td>
+                                        <!-- sospesa -->
+                                        <td class="right_without_line"><div style="page-break-inside: avoid" t-esc="formatLang(env, line['tax_no_exigible'])"/></td>
+
                                         <td class="left_without_line"></td>
                                     </tr>
                                 </t>
@@ -137,11 +149,11 @@
                                 <table style="width:100%;">
                                     <thead>
                                         <tr>
-                                            <th class="left_without_line_bold">Description</th>
-                                            <th class="right_without_line_bold">Taxable</th>
-                                            <th class="right_without_line_bold">Tax</th>
-                                            <th class="right_without_line_bold">Deductible</th>
-                                            <th class="right_without_line_bold">Non-Deductible</th>
+                                            <th class="left_without_line_bold">Descrizione</th>
+                                            <th class="right_without_line_bold">Imponibile</th>
+                                            <th class="right_without_line_bold">Imposta</th>
+                                            <th class="right_without_line_bold">Deducibile/Esigibile</th>
+                                            <th class="right_without_line_bold">Non Deducibile/Sospesa</th>
                                         </tr>
                                     </thead>
                                     <t t-foreach="total_used_taxes" t-as="total_used_tax">

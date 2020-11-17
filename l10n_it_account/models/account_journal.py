@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
-from odoo import models, api, fields
+from odoo import models, api, fields,_
 from odoo.exceptions import Warning as UserError
 from odoo.tools.translate import _
 
@@ -11,6 +11,7 @@ class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
     corrispettivi = fields.Boolean(string='Receipts')
+    comunicazione_dati_iva_escludi = fields.Boolean(string='Exclude from invoices communication')
 
     @api.model
     def get_corr_journal(self, company_id=None):

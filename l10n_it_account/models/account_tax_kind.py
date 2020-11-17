@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
-from odoo import api, models, fields
+from odoo import api, models, fields,_
 
 
 class AccountTaxKind(models.Model):
@@ -10,7 +10,7 @@ class AccountTaxKind(models.Model):
     _name = 'account.tax.kind'
     _description = 'Tax exemption kind'
 
-    code = fields.Char(string='Code', size=3, required=True)
+    code = fields.Char(string='Code', size=4, required=True)
     name = fields.Char(string='Name', required=True)
 
     @api.multi

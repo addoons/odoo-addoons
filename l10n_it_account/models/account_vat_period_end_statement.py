@@ -547,7 +547,7 @@ class AccountVatPeriodEndStatement(models.Model):
                 'from_date': period.date_start,
                 'to_date': period.date_end,
                 'registry_type': 'customer',
-            })[3]  # position 3 is deductible part
+            })[3]  # position 2 totale esigibile
         debit_line_ids.append({
             'account_id': debit_tax.vat_statement_account_id.id,
             'tax_id': debit_tax.id,
@@ -561,7 +561,7 @@ class AccountVatPeriodEndStatement(models.Model):
                 'from_date': period.date_start,
                 'to_date': period.date_end,
                 'registry_type': 'supplier',
-            })[3]  # position 3 is deductible part
+            })[3]  # position 3 totale esigibile
         credit_line_ids.append({
             'account_id': credit_tax.vat_statement_account_id.id,
             'tax_id': credit_tax.id,

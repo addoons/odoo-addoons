@@ -23,4 +23,13 @@
             file="l10n_it_account.report_scheda_contabile"
             paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
     />
+    <report
+            id="report_bilancio"
+            model="wizard.bilancio.verifica"
+            string="Bilancio"
+            report_type="qweb-pdf"
+            name="l10n_it_account.report_bilancio_verifica"
+            file="l10n_it_account.report_bilancio_verifica"
+            paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
+    />
 </odoo>

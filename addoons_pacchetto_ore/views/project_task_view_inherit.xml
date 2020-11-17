@@ -6,13 +6,11 @@
             <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
 
-
                 <xpath expr="//page[@name='extra_info']" position="after">
-                    <page string="ore">
+                    <page string="ore" groups="base.group_no_one">
                         <field name="ore_lines"  string="Pacchetto ore" />
                     </page>
                 </xpath>
-
 
             </field>
         </record>
@@ -25,10 +23,17 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='timesheet_ids']/tree/field[@name='name']" position="after">
-
                     <field name="type" required="1"/>
                     <field name="pacchetto_ore_id" readonly="1"/>
+                </xpath>
 
+                <xpath expr="//field[@name='tag_ids']" position="after">
+                    <field name="ore_sviluppo_disponibili" string="Ore Residue Sviluppo" widget="timesheet_uom"/>
+                    <field name="ore_formazione_consulenza_disponibili" string="Ore Residue Formazione" widget="timesheet_uom"/>
+                </xpath>
+
+                <xpath expr="//notebook" position="before">
+                    <field name="avviso_ore_terminate" readonly="1"/>
                 </xpath>
 
             </field>

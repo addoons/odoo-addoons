@@ -2210,3 +2210,213 @@ msgstr ""
 #: model:ir.model,name:l10n_it_account.model_wizard_schede_contabili
 msgid "wizard.schede.contabili"
 msgstr ""
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP10</b> Auto UE payments"
+msgstr "<b>VP10</b> Versamenti Auto UE"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP11</b> Tax credits"
+msgstr "<b>VP11</b> Crediti di imposta"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP12</b> Due interests for quarterly statements"
+msgstr "<b>VP12</b> Interessi dovuti sulle liquidazioni trimestrali"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP13</b> Due down payment"
+msgstr "<b>VP13</b> Acconto dovuto"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP14</b> VAT to pay"
+msgstr "<b>VP14</b> Iva da versare"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP2</b> Profitable operations total (without VAT)"
+msgstr "<b>VP2</b> Totale operazioni attive (senza IVA)"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP3</b> Unprofitable operations total (without VAT)"
+msgstr "<b>VP3</b> Totale operazioni passive (asenza IVA)"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP4</b> Due VAT"
+msgstr "<b>VP4</b> IVA esigibile"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP5</b> Deducted VAT"
+msgstr "<b>VP5</b> IVA detratta"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP6</b> Debit VAT"
+msgstr "<b>VP6</b> IVA dovuta"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP7</b> Previous period debit, not grater than 25,82 €"
+msgstr "<b>VP7</b> Debito del periodo precedente, inferiore a 25,82 €"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP8</b> Previous period credit"
+msgstr "<b>VP8</b> Credito periodo precedente"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<b>VP9</b> Previous year credit"
+msgstr "<b>VP9</b> Credito anno precedente"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "<span> or credit</span>"
+msgstr "<span> o a credito </span>"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione_vp__period_type
+msgid "Period type"
+msgstr "Tipologia periodo"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione_vp__month
+msgid "Month"
+msgstr "Mensilità"
+
+#. module: l10n_it_account
+#: selection:comunicazione.liquidazione.vp,period_type:0
+msgid "Monthly"
+msgstr "Mensile"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione_vp__quarter
+msgid "Quarter"
+msgstr "Trimestre"
+
+#. module: l10n_it_account
+#: selection:comunicazione.liquidazione.vp,period_type:0
+msgid "Quarterly"
+msgstr "Trimestrale"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione_vp__subcontracting
+msgid "Subcontracting"
+msgstr "Subforniture"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione_vp__exceptional_events
+msgid "Exceptional events"
+msgstr "Eventi eccezionali"
+
+#. module: l10n_it_account
+#: selection:comunicazione.liquidazione.vp,exceptional_events:0
+msgid "Code 1"
+msgstr "Codice 1"
+
+#. module: l10n_it_account
+#: selection:comunicazione.liquidazione.vp,exceptional_events:0
+msgid "Code 9"
+msgstr "Codice 9"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "Reference period"
+msgstr "Periodo di riferimento"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "VAT statements to communicate"
+msgstr "Liquidazioni IVA da comunicare"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "Recompute"
+msgstr "Ricalcola"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "Tax statement"
+msgstr "Situazione IVA"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_form
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_vp_form
+msgid "VP table"
+msgstr "Quadro VP"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione__quadri_vp_ids
+msgid "VP tables"
+msgstr "Quadri VP"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione__iva_da_versare
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione_vp__iva_da_versare
+msgid "VAT to pay"
+msgstr "IVA a debito"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_dati_iva__identificativo
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione__identificativo
+msgid "Identifier"
+msgstr "Identificativo"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_form
+msgid "Frontispiece"
+msgstr "Frontespizio"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_form
+msgid "General data"
+msgstr "Informazioni generali"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione__year
+msgid "Year"
+msgstr "Anno"
+
+#. module: l10n_it_account
+#: code:addons/l10n_it_account/models/comunicazione_liquidazione.py:160
+#, python-format
+msgid "Year required"
+msgstr "Anno richiesto"
+
+#. module: l10n_it_account
+#: model_terms:ir.ui.view,arch_db:l10n_it_account.view_comunicazione_liquidazione_form
+msgid "Declarant"
+msgstr "Dichiarante"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione__declarant_fiscalcode
+msgid "Declarant Fiscalcode"
+msgstr "Codice fiscale dichiarante"
+
+#. module: l10n_it_account
+#: code:addons/l10n_it_account/models/comunicazione_liquidazione.py:174
+#, python-format
+msgid "Declarant Fiscalcode is required. You can enable the                 section with different declarant option"
+msgstr "Il codice fiscale del dichiarante è obbligatorio."
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione__declarant_different
+msgid "Declarant different from taxpayer"
+msgstr "Dichiarante diverso dal contribuente"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_dati_iva__declarant_fiscalcode
+msgid "Declarant fiscal code"
+msgstr "Codice fiscale dichiarante"
+
+#. module: l10n_it_account
+#: model:ir.model.fields,field_description:l10n_it_account.field_comunicazione_liquidazione__declarant_sign
+msgid "Declarant sign"
+msgstr "Firma dichiarante"

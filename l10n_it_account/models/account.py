@@ -79,9 +79,9 @@ class AccountPartialReconcile(models.Model):
             is_wt_move = False
         # Wt moves creation
         if invoice.withholding_tax_line_ids \
-                and not self._context.get('no_generate_wt_move')\
+                and not self._context.get('no_generate_wt_move') \
                 and not is_wt_move:
-                # and not wt_existing_moves\
+            # and not wt_existing_moves\
             reconcile.generate_wt_moves()
 
         return reconcile
@@ -158,7 +158,7 @@ class AccountPartialReconcile(models.Model):
             if wt_moves:
                 raise ValidationError(
                     _('Warning! Only Withholding Tax moves in Due status \
-                    can be deleted'))
+                        can be deleted'))
             # Statement to recompute
             domain = [('reconcile_partial_id', '=', rec.id)]
             wt_moves = self.env['withholding.tax.move'].search(domain)

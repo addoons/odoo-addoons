@@ -5,6 +5,7 @@
     # Copyright 2019 addOons srl (<http://www.addoons.it>)
   -->
 <odoo>
+
     <template id="print_invoice_inherit" inherit_id="account.report_invoice_document">
         <xpath expr="//div[@t-if='o.partner_id.vat']" position="after">
             <div t-if="o.partner_id.fiscalcode" class="mt16">
@@ -13,4 +14,7 @@
             </div>
         </xpath>
     </template>
+
+
+
 </odoo>

@@ -5,12 +5,37 @@
     # Copyright 2019 addOons srl (<http://www.addoons.it>)
   -->
 <odoo>
+
     <!--Form Fatture Fornitori-->
     <record model="ir.ui.view" id="view_withholding_invoice_supplier_form">
         <field name="name">view.withholding.invoice.supplier.form</field>
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_supplier_form"/>
         <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="create_fattura_spedizioniere" string="Fattura Spedizioniere" type="object" class="btn btn-primary" attrs="{'invisible': [('is_dogana', '=', False)]}"/>
+                <field name="is_dogana" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/group/group/field[@name='date_due']" position="replace">
+                <field name="date_due" force_save="1"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/group/group/field[@name='partner_bank_id']" position="replace">
+            </xpath>
+
+            <field name="vendor_bill_id" position="after">
+                <field name="journal_id" groups="account.group_account_user" options="{'no_create': True}"
+                       attrs="{'readonly':[('move_name','!=',False)]}"/>
+                <field domain="[('partner_id', '=', commercial_partner_id)]" name="partner_bank_id" string="Conto Bancario" context="{'default_partner_id': commercial_partner_id}" attrs="{'invisible': [('type', '!=', 'in_invoice')]}"/>
+            </field>
+
+            <xpath expr="//form/sheet/group/group/field[@name='date_due']" position="after">
+                <field name="date" groups="account.group_account_user" string="Data Competenza"/>
+                <field name="data_ricezione" string="Data ricezione"/>
+
+            </xpath>
 
             <xpath expr="//field[@name='move_id']" position="before">
                 <field name="fiscal_document_type_id" class="oe_inline" string="Tipo Documento"/>
@@ -26,6 +51,22 @@
 
             <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='invoice_line_tax_ids']" position="after">
                 <field name="invoice_line_tax_wt_ids" widget="many2many_tags" options="{'no_create': True}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='account_analytic_id']" position="replace">
+                <field name="account_analytic_id" domain="[('company_id', '=', parent.company_id)]" groups="analytic.group_analytic_accounting"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="after">
+                <button name="open_line" string="Dettagli" type="object" class="btn btn-success"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="before">
+                <field name="selected" string="Selezione Multipla"/>
+            </xpath>
+
+            <xpath expr="//field[@name='fiscal_document_type_id']" position="after">
+                <field name="comunicazione_dati_iva_escludi" class="oe_inline" />
             </xpath>
 
             <xpath expr="//field[@name='tax_line_ids']" position="after">
@@ -63,6 +104,41 @@
                        attrs="{'invisible': ['|', ('state', '=', 'draft'), ('withholding_tax', '=', False)]}" class="oe_subtotal_footer_separator"/>
             </xpath>
 
+
+            <!--Reverse Charge-->
+            <field name="move_id" position="after">
+                <field name="rc_self_invoice_id" readonly="True"
+                       context="{'form_view_ref': 'account.invoice_form'}"/>
+                <field name="rc_self_purchase_invoice_id" readonly="True"
+                       context="{'form_view_ref': 'account.supplier_invoice_form'}"/>
+            </field>
+            <field name="price_subtotal" position="after">
+                <field name="rc"/>
+            </field>
+
+
+            <!--Bolletta Doganale-->
+            <xpath expr="//field[@name='move_id']" position="after">
+                <field name="giroconto_bolletta_doganale_id" string="Giroconto Dogana"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/notebook" position="before">
+                <group string="Operazioni massive">
+                    <group>
+                        <field name="am_account_id" string="Conto"/>
+                        <field name="row_description" string="Descrizione Riga"/>
+                        <field name="am_analytic_account" string="Conto Analitico"/>
+                        <field name="select_all_rows" string="Seleziona Tutte le Righe"/>
+                        <button name="apply_partner_account" string="Modifica righe" type="object" class="btn btn-success"/>
+                    </group>
+                    <group>
+                        <field name="am_tax_id" string="Imposte"/>
+                        <field name="am_rda" string="Ritenuta d'acconto"/>
+                        <field name="am_rc" string="RC"/>
+                    </group>
+                </group>
+            </xpath>
+
         </field>
     </record>
 
@@ -74,12 +150,93 @@
         <field name="type">form</field>
         <field name="inherit_id" ref="account.invoice_form"/>
         <field name="arch" type="xml">
+
+            <xpath expr="//header" position="inside">
+                <button name="set_fiscal_positon" type="object" string="Imposta Posizione Fiscale" class="btn btn-danger"/>
+            </xpath>
+
             <xpath expr="//field[@name='move_id']" position="before">
                 <field name="fiscal_document_type_id" class="oe_inline" string="Tipo Documento"/>
             </xpath>
             <field name="fiscal_position_id" position="after">
                 <field name="corrispettivo" string="Ricevuta"/>
             </field>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="after">
+                <button name="open_line" string="Dettagli" type="object" class="btn btn-success"/>
+            </xpath>
+            <xpath expr="//field[@name='fiscal_document_type_id']" position="after">
+                <field name="comunicazione_dati_iva_escludi" class="oe_inline" />
+            </xpath>
+
+            <field name="move_id" position="after">
+                <field name="rc_purchase_invoice_id" readonly="True" context="{'form_view_ref': 'account.supplier_invoice_form'}"/>
+            </field>
+
+            <xpath expr="//page/group/group/field[@name='journal_id']" position="after">
+                <field name="withholding_tax" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="before">
+                <field name="selected" string="Selezione Multipla"/>
+            </xpath>
+
+            <xpath expr="//page/field[@name='invoice_line_ids']" position="attributes">
+                <attribute name="context">{'fiscal_position_id': fiscal_position_id, 'type': type, 'journal_id': journal_id, 'default_invoice_id': id}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='invoice_line_tax_ids']" position="after">
+                <field name="invoice_line_tax_wt_ids" widget="many2many_tags" options="{'no_create': True}"/>
+            </xpath>
+
+            <xpath expr="//page/field[@name='tax_line_ids']" position="after">
+                <field name="withholding_tax_line_ids" attrs="{'invisible': [('withholding_tax', '=', False)]}">
+                    <tree>
+                        <field name="withholding_tax_id"/>
+                        <field name="base"/>
+                        <field name="tax"/>
+                    </tree>
+                    <form>
+                        <group colspan="2">
+                            <field name="withholding_tax_id" />
+                            <field name="base"/>
+                            <field name="tax"/>
+                        </group>
+                    </form>
+
+                    <tree  editable="bottom" string="Withholding Taxes">
+                        <field name="withholding_tax_id"/>
+                        <field name="base"/>
+                        <field name="tax"/>
+                    </tree>
+
+                </field>
+            </xpath>
+
+            <xpath expr="//group[hasclass('oe_subtotal_footer', 'oe_right')]/field[@name='amount_total']" position="after">
+                <field name="withholding_tax_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
+                       attrs="{'invisible': [('withholding_tax', '=', False)]}"/>
+                <field name="amount_net_pay" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_subtotal_footer_separator"
+                       attrs="{'invisible': [('withholding_tax', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//group[hasclass('oe_subtotal_footer', 'oe_right')]/field[@name='residual']" position="after">
+                <field name="amount_net_pay_residual" widget="monetary" options="{'currency_field': 'currency_id'}"
+                       attrs="{'invisible': ['|', ('state', '=', 'draft'), ('withholding_tax', '=', False)]}" class="oe_subtotal_footer_separator"/>
+            </xpath>
+            <xpath expr="//form/sheet/notebook" position="before">
+                <group string="Operazioni massive">
+                    <group>
+                        <field name="am_account_id" string="Conto"/>
+                        <field name="am_analytic_account" string="Conto Analitico"/>
+                        <field name="select_all_rows" string="Seleziona Tutte le Righe"/>
+                        <button name="apply_partner_account" string="Modifica righe" type="object" class="btn btn-success"/>
+                    </group>
+                    <group>
+                        <field name="am_tax_id" string="Imposte"/>
+                        <field name="am_rda" string="Ritenuta d'acconto"/>
+                        <field name="am_rc" string="RC"/>
+                    </group>
+                </group>
+            </xpath>
         </field>
     </record>
 
@@ -95,9 +252,7 @@
                 <button name="corrispettivo_print" string="Stampa Ricevuta"
                         type="object" class="oe_highlight" groups="base.group_user"
                         attrs="{'invisible':['|',('sent','=',True), ('state', 'not in', ('open', 'in_payment', 'paid'))]}"/>
-                <button name="corrispettivo_print" string="Stampa Ricevuta"
-                        type="object" groups="base.group_user"
-                        attrs="{'invisible':['|',('sent','=',False), ('state', 'not in', ('open', 'in_payment', 'paid'))]}"/>
+
             </header>
             <xpath expr="//button[@name='action_invoice_sent' and hasclass('oe_highlight')]" position="attributes">
                 <attribute name="invisible">True</attribute>
@@ -153,9 +308,39 @@
 
             <xpath expr="//field[@name='invoice_line_tax_ids']" position="after">
                 <field name="invoice_line_tax_wt_ids" widget="many2many_tags" options="{'no_create': True}"
-                       invisible="context.get('type', 'out_invoice') not in ['in_invoice', 'in_refund']"/>
+                />
             </xpath>
 
+            <xpath expr="//form/group/group/field[@name='currency_id']" position="after">
+                <field name="rc"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="addoons_account_invoice_tree_view" model="ir.ui.view">
+        <field name="name">addoons.account.invoice.tree</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='origin']" position="after">
+                <field name="comment" string="Note"/>
+                <field name="rc_self_invoice_id" string="Auto Fattura RC"/>
+            </xpath>
+            <xpath expr="//tree/field[@name='date_invoice']" position="after">
+                <field name="data_ricezione" string="Data Ricezione"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="addoons_view_account_invoice_search" model="ir.ui.view">
+        <field name="name">view_account_invoice_search</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <field name="comment" string="Note"/>
+            </search>
         </field>
     </record>
 

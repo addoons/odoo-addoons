@@ -1,0 +1,28 @@
+<odoo>
+    <record id="addoons_view_account_invoice_annulla" model="ir.ui.view">
+        <field name="name">view_account_invoice_annulla</field>
+        <field name="model">wizard.annulla.fattura</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="text" nolabel="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Conferma" name="annulla_fattura" type="object" default_focus="1" class="btn-primary"/>
+                    <button string="Annulla" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window name="Annulla Fattura"
+                res_model="wizard.annulla.fattura"
+                src_model="account.invoice"
+                view_mode="form"
+                target="new"
+                key2="client_action_multi"
+                id="action_invoice_annulla"
+                view_id="addoons_view_account_invoice_annulla"/>
+</odoo>

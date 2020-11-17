@@ -27,6 +27,11 @@
                 </page>
             </xpath>
 
+            <!--Reverse Charge-->
+            <field name="country_group_id" position="after">
+                <field name="rc_type_id"/>
+            </field>
+
         </field>
     </record>
 
@@ -49,6 +54,7 @@
         <field name="arch" type="xml">
             <field name="company_id" position="after">
                 <field name="corrispettivi"/>
+                <field name="esterometro" string="Usa per Esterometro"/>
             </field>
         </field>
     </record>

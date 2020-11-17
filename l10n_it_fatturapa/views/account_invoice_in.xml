@@ -51,6 +51,14 @@
                         </tree>
                     </field>
                 </page>
+                <group string="Ritenute">
+                    <field name="ftpa_withholding_ids" nolabel="1" readonly="1">
+                        <tree editable="bottom" string="Withholding Details">
+                            <field name="name"/>
+                            <field name="amount"/>
+                        </tree>
+                    </field>
+                </group>
                 <page string="Fattura Elettronica" attrs="{'invisible': [('electronic_invoice_subjected', '=', False)]}">
                     <group>
                         <field name="fatturapa_attachment_out_id" string="XML Generato"/>

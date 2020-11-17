@@ -860,12 +860,12 @@ msgstr "Tipo DDT"
 #: model:ir.actions.act_window,name:l10n_it_ddt.action_ddt_from_pickings
 #: model_terms:ir.ui.view,arch_db:l10n_it_ddt.view_ddt_from_pickings
 msgid "TD from Pickings"
-msgstr "DDT da consegne"
+msgstr "Crea DDT"
 
 #. module: l10n_it_ddt
 #: model:ir.model,name:l10n_it_ddt.model_ddt_from_pickings
 msgid "TD from pickings"
-msgstr "DDT da consegne"
+msgstr "Crea DDT"
 
 #. module: l10n_it_ddt
 #: model_terms:ir.ui.view,arch_db:l10n_it_ddt.view_partner_form_ddt

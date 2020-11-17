@@ -4,10 +4,10 @@
 <odoo>
 
         <record id="view_ddt_from_pickings" model="ir.ui.view">
-            <field name="name">TD from Pickings</field>
+            <field name="name">Crea DDT</field>
             <field name="model">ddt.from.pickings</field>
             <field name="arch" type="xml">
-              <form string="TD from Pickings">
+              <form string="Crea DDT">
                 <separator string="Picking" />
                     <field string="Pickings" name="picking_ids">
                     <tree edit="false" delete="true" create="false">
@@ -31,7 +31,7 @@
         </record>
 
         <record id="action_ddt_from_pickings" model="ir.actions.act_window">
-            <field name="name">TD from Pickings</field>
+            <field name="name">Crea DDT</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ddt.from.pickings</field>
             <field name="view_type">form</field>
@@ -40,5 +40,6 @@
             <field name="target">new</field>
             <field name="binding_model_id" ref="stock.model_stock_picking"/>
         </record>
+
 
 </odoo>

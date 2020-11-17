@@ -7,99 +7,115 @@
 <odoo>
     <!-- Report che mostra il piano dei conti raggruppato per prefisso del codice-->
 
-    <!-- modifiche header e footer-->
-    <template id="vs_layout_header">
-        <div class="header">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="col-xs-6">
-                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' %company.logo"/>
-                    </div>
-                    <div class="col-xs-6" style="padding-top: 70px; text-align:right;">
-                        <h2 style="color: #2d3436;"><strong>Piano dei conti</strong></h2>
-                    </div>
-                </div>
-                <div class="col-xs-12">
-                    <div style="width: 100%; border-bottom: 1px solid #b2bec3;"/>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <template id="vs_layout_footer">
-        <div class="footer">
-            <div class="row zero_min_height">
-                <div class="col-xs-12">
-                    <div style="border-bottom: 1px solid #b2bec3;"></div>
-                </div>
-            </div>
-            <div class="text-center">
-                <span style="color: #2d3436;">
-                    <p>
-                        <t t-esc="company.partner_id.name"/>,
-                        <t t-esc="company.street"/> -
-                        <t t-esc="company.website"/> -
-                        <t t-esc="company.email"/>
-                    </p>
-                </span>
-                <ul class="list-inline" style="color: #2d3436;">
-                    <li>Page:</li>
-                    <li><span class="page"/></li>
-                    <li>/</li>
-                    <li><span class="topage"/></li>
-                </ul>
-            </div>
-        </div>
-    </template>
-
-    <template id="vs_external_layout">
-        <!-- Multicompany -->
-        <t t-if="not o and doc">
-            <t t-set="o" t-value="doc"/>
-        </t>
-        <t t-if="o and 'company_id' in o">
-            <t t-set="company" t-value="o.company_id"></t>
-        </t>
-        <t t-if="not o or not 'company_id' in o">
-            <t t-set="company" t-value="res_company"></t>
-        </t>
-
-        <t t-call="l10n_it_account.vs_layout_header" />
-        <t t-raw="0" />
-        <t t-call="l10n_it_account.vs_layout_footer" />
-    </template>
-
     <template id="report_cof">
         <t t-call="web.basic_layout">
-            <t t-call="addoons_reports.internal_layout">
+            <t t-call="addoons_reports.internal_minimal_layout">
                 <div class="page">
-                    <h4 t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"></h4>
-                    <table style="width:100%; font-size: medium;" cellspacing="0" cellpadding="10" class="table table-bordered">
-                        <thead>
-                            <tr class="first_th_row" style="background-color:lightgrey">
-                                <th>CODE</th>
-                                <th>ACCOUNT</th>
-                                <th>TYPE</th>
-                            </tr>
-                        </thead>
+                    <div class="container">
+
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><h4>PIANO DEI CONTI</h4> </div>
+                        <div class="col-6" style="text-align: right;">Stampato il: <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"/></div>
+                    </div>
+                    <br/>
+                    <style>
+                        table {
+                        border-collapse: collapse;
+                        }
+
+                        td, th {
+                        border: 1px solid #e6e6e6;
+                        padding: 5px;
+                        }
+                    </style>
+                    <table style="width:100%; font-size: medium;border: none;page-break-inside:always;!important" cellspacing="0" cellpadding="10">
                         <tbody>
-                            <t t-set="prev_prefix" t-value="000000000000000000000000000000000000000000"/>
-                            <t t-foreach="docs" t-as="doc">
-                                <t t-set="prefix" t-value="doc.code[:3]"/>
-                                <t t-if="doc.check_prefix(prev_prefix,prefix)">
-                                    <t t-set="prev_prefix" t-value="doc.code[:3]"/>
-                                    <tr class="first_th_row" style="background-color: lightgrey;">
-                                        <th t-esc="doc.print_prefix(doc.code)+'***'"/>
-                                        <th></th>
-                                        <th></th>
+                            <t t-set="prev_macro" t-value="' '"/>
+                            <t t-set="prev_aggregate" t-value="' '"/>
+                            <t t-set="account_ids" t-value="docs[0].get_all_accounts()"/>
+                            <t t-set="totale_saldo" t-value="0"/>
+                            <t t-foreach="account_ids" t-as="doc">
+                                <t t-set="aggregate_code" t-value="' '"/>
+                                <t t-if="not doc.hierarchy_type_id">
+                                    <!--MACRO-->
+                                    <t t-if="doc.macroaggregate_id">
+                                        <t t-set="macro" t-value="doc.macroaggregate_id.name"/>
+                                    </t>
+                                    <t t-if="not doc.macroaggregate_id">
+                                        <t t-set="macro" t-value="'Non definito'"/>
+                                    </t>
+                                    <t t-if="macro != prev_macro">
+                                        <t t-if="not doc.parent_id">
+                                            <t t-set="prev_macro" t-value="'Non definito'"/>
+                                        </t>
+                                        <t t-if="doc.parent_id">
+                                            <t t-set="prev_macro" t-value="doc.macroaggregate_id.name"/>
+                                        </t>
+                                        <tr class="first_th_row" style="background-color: lightgrey;">
+                                            <th colspan="5" t-esc="macro"/>
+                                            <t t-if="doc.macroaggregate_id">
+                                                <th t-esc="doc.macroaggregate_id.get_macro_balance()" style="text-align:right" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                <t t-set="totale_saldo" t-value="totale_saldo + doc.macroaggregate_id.get_macro_balance()"/>
+                                            </t>
+                                            <t t-if="not doc.macroaggregate_id">
+                                                <th t-esc="doc.get_not_defined_balance()" style="text-align:right" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                <t t-set="totale_saldo" t-value="totale_saldo + doc.get_not_defined_balance()"/>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                    <!--AGGREGATO-->
+                                    <t t-if="doc.parent_id">
+                                        <t t-set="aggregate" t-value="doc.parent_id.name"/>
+                                    </t>
+                                    <t t-if="not doc.parent_id">
+                                        <t t-set="macro" t-value="'Non definito'"/>
+                                    </t>
+                                    <t t-if="aggregate != prev_aggregate">
+                                        <t t-if="not doc.parent_id">
+                                            <t t-set="prev_aggregate" t-value="'Non definito'"/>
+                                        </t>
+                                        <t t-if="doc.parent_id">
+                                            <t t-set="prev_aggregate" t-value="doc.parent_id.name"/>
+                                            <t t-set="aggregate_code" t-value="doc.parent_id.code"/>
+                                        </t>
+                                        <tr style="background-color: #e6e6e6;">
+                                            <th width="5%" style="border: none;background-color: white;!important" t-esc="' '"/>
+                                                <th width="95%" colspan="4" t-esc="aggregate_code + ' ' + aggregate"/>
+                                            <t t-if="doc.parent_id">
+                                                <th t-esc="doc.parent_id.get_aggregate_balance()" style="text-align:right" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </t>
+                                            <t t-if="not doc.macroaggregate_id">
+                                                <th t-esc="doc.get_not_defined_balance()" style="text-align:right" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <th width="5%" style="border: none;!important" t-esc="' '"/>
+                                        <th width="5%" style="border: none;!important" t-esc="' '"/>
+                                        <td width="10%" t-esc="doc.code"/>
+                                        <!--<t t-if="doc.parent_id">-->
+                                        <!--<td width="40%" t-esc="doc.name + '   ' + doc.parent_id.name"/>-->
+                                        <!--</t>-->
+                                        <!--<t t-if="not doc.parent_id">-->
+                                        <!--<td width="40%" t-esc="doc.name"/>-->
+                                        <!--</t>-->
+                                        <td width="40%" t-esc="doc.name"/>
+                                        <td width="20%" t-esc="doc.hierarchy_type_id.name"/>
+                                        <td width="35%" colspan="2" t-esc="doc.balance" style="text-align:right" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
                                     </tr>
                                 </t>
-                                <tr>
-                                    <td t-esc="doc.code"/>
-                                    <td t-esc="doc.name"/>
-                                    <td t-esc="doc.user_type_id.name"/>
-                                </tr>
                             </t>
+                            <tr>
+                                <td colspan="4" style="border: none !important;"/>
+                                <td><span><strong>Saldo Finale</strong></span></td>
+                                <td style="text-align:right">
+                                    <span>
+                                        <strong t-if="totale_saldo != 0"  t-esc="totale_saldo" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                        <span t-if="totale_saldo == 0" style="text-align:right" t-esc="totale_saldo" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                    </span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

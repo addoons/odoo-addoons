@@ -5,7 +5,8 @@
 from odoo import fields, models, api, _, exceptions
 import odoo.addons.decimal_precision as dp
 
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
 
 RELATED_DOCUMENT_TYPES = {
     'order': 'DatiOrdineAcquisto',
@@ -24,6 +25,18 @@ fatturapa_attachment_state_mapping = {
     'accepted': 'accepted',
     'rejected': 'error'
 }
+
+
+class RCType(models.Model):
+    _inherit = 'account.rc.type'
+
+    e_invoice_suppliers = fields.Boolean(
+        "E-invoice suppliers",
+        help="Automatically used when importing e-invoices from Italian "
+             "suppliers")
+
+
+
 
 
 class FatturapaFormat(models.Model):
@@ -136,6 +149,27 @@ class WelfareFundDataLine(models.Model):
         ondelete='cascade', index=True
     )
 
+class WithholdingDataLine(models.Model):
+    _name = "withholding.data.line"
+    _description = 'E-invoice Withholding Data'
+
+    name = fields.Selection(
+        selection=[
+            ('RT01', 'Natural Person'),
+            ('RT02', 'Legal Person'),
+            ('RT03', 'INPS'),
+            ('RT04', 'ENASARCO'),
+            ('RT05', 'ENPAM'),
+            ('RT06', 'OTHER'),
+        ],
+        string='Withholding Type'
+    )
+    amount = fields.Float('Withholding amount')
+    invoice_id = fields.Many2one(
+        'account.invoice', 'Related Invoice',
+        ondelete='cascade', index=True
+    )
+
 
 class DiscountRisePrice(models.Model):
     # _position = ['2.1.1.8', '2.2.1.10']
@@ -156,6 +190,10 @@ class DiscountRisePrice(models.Model):
     )
     e_invoice_line_id = fields.Many2one(
         'einvoice.line', 'Related E-bill Line', readonly=True
+    )
+    ftpa_withholding_ids = fields.One2many(
+        'withholding.data.line', 'invoice_id',
+        'Withholding', copy=False
     )
 
 
@@ -269,6 +307,17 @@ class AccountInvoiceLine(models.Model):
         related='product_id.is_stamp',
         readonly=True)
 
+    @api.multi
+    def _set_rc_flag(self, invoice):
+        self.ensure_one()
+        if 'fatturapa.attachment.in' in self.env.context.get(
+                'active_model', []
+        ):
+            # this means we are importing an e-invoice,
+            # so RC flag is already set, where needed
+            return
+        return super(AccountInvoiceLine, self)._set_rc_flag(invoice)
+
 
 class FaturapaSummaryData(models.Model):
     # _position = ['2.2.2']
@@ -278,10 +327,27 @@ class FaturapaSummaryData(models.Model):
     non_taxable_nature = fields.Selection([
         ('N1', 'excluding ex Art. 15'),
         ('N2', 'not subject'),
+        ('N2.1', 'not subject ex Artt. from 7 to 7-septies of DPR 633/72'),
+        ('N2.2', 'not subject – other'),
         ('N3', 'not taxable'),
+        ('N3.1', 'not taxable – export'),
+        ('N3.2', 'not taxable – intercommunity cession'),
+        ('N3.3', 'not taxable – cession to San Marino'),
+        ('N3.4', 'not taxable – operation similar to export cession'),
+        ('N3.5', 'not taxable – following declarations of intent'),
+        ('N3.6', 'not taxable – other operations that do not contribute to the formation of the ceiling'),
         ('N4', 'exempt'),
         ('N5', 'margin regime'),
         ('N6', 'reverse charge'),
+        ('N6.1', 'reverse charge – disposal of scrap and other recycled materials'),
+        ('N6.2', 'reverse charge – supply of gold and pure silver'),
+        ('N6.3', 'reverse charge – subcontracting in the construction sector'),
+        ('N6.4', 'reverse charge – sale of buildings'),
+        ('N6.5', 'reverse charge – transfer of cell phones'),
+        ('N6.6', 'reverse charge – sale of electronic products'),
+        ('N6.7', 'reverse charge – construction sector and related sectors'),
+        ('N6.8', 'reverse charge – energy sector operations'),
+        ('N6.9', 'reverse charge – other cases'),
         ('N7', 'VAT paid in another EU country')
     ], string="Non taxable nature")
     incidental_charges = fields.Float('Incidental Charges')
@@ -315,11 +381,11 @@ class AccountInvoice(models.Model):
     #  1.6
     sender = fields.Selection(
         [('CC', 'Assignee / Partner'), ('TZ', 'Third Person')], 'Sender')
+
     #  2.1.1.5
-    #  2.1.1.5.1
-    ftpa_withholding_type = fields.Selection(
-        [('RT01', 'Natural Person'), ('RT02', 'Legal Person')],
-        'Withholding Type'
+    ftpa_withholding_ids = fields.One2many(
+        'withholding.data.line', 'invoice_id',
+        'Withholding', copy=False
     )
     #  2.1.1.5.2 2.1.1.5.3 2.1.1.5.4 mapped to l10n_it_withholding_tax fields
 
@@ -449,8 +515,7 @@ class AccountInvoice(models.Model):
     )
     tax_stamp = fields.Boolean(
         "Tax Stamp", readonly=True, states={'draft': [('readonly', False)]})
-    auto_compute_stamp = fields.Boolean(
-        related='company_id.tax_stamp_product_id.auto_compute')
+    auto_compute_stamp = fields.Boolean(related='company_id.tax_stamp_product_id.auto_compute')
 
     amount_sp = fields.Float(
         string='Split Payment',
@@ -461,6 +526,245 @@ class AccountInvoice(models.Model):
     split_payment = fields.Boolean(
         'Is Split Payment',
         related='fiscal_position_id.split_payment')
+
+    e_invoice_received_date = fields.Date(
+        string='E-Bill Received Date')
+
+    e_invoice_amount_untaxed = fields.Monetary(
+        string='E-Invoice Untaxed Amount', readonly=True)
+    e_invoice_amount_tax = fields.Monetary(string='E-Invoice Tax Amount',
+                                           readonly=True)
+    e_invoice_amount_total = fields.Monetary(string='E-Invoice Total Amount',
+                                             readonly=True)
+
+    e_invoice_reference = fields.Char(
+        string="E-invoice vendor reference",
+        readonly=True)
+
+    e_invoice_date_invoice = fields.Date(
+        string="E-invoice date",
+        readonly=True)
+
+    e_invoice_validation_error = fields.Boolean(
+        compute='_compute_e_invoice_validation_error')
+
+    e_invoice_validation_message = fields.Text(
+        compute='_compute_e_invoice_validation_error')
+
+    e_invoice_force_validation = fields.Boolean(
+        string='Force E-Invoice Validation')
+
+
+    def process_negative_lines(self):
+        self.ensure_one()
+        for line in self.invoice_line_ids:
+            if line.price_unit >= 0:
+                return
+        # if every line is negative, change them all
+        for line in self.invoice_line_ids:
+            line.price_unit = -line.price_unit
+        self.compute_taxes()
+
+    @api.model
+    def compute_xml_amount_untaxed(self, FatturaBody):
+        amount_untaxed = float(
+            FatturaBody.DatiGenerali.DatiGeneraliDocumento.Arrotondamento
+            or 0.0)
+        for Riepilogo in FatturaBody.DatiBeniServizi.DatiRiepilogo:
+            rounding = float(Riepilogo.Arrotondamento or 0.0)
+            amount_untaxed += float(Riepilogo.ImponibileImporto) + rounding
+        return amount_untaxed
+
+
+    @api.multi
+    def invoice_validate(self):
+        for invoice in self:
+            if (invoice.e_invoice_validation_error and
+                    not invoice.e_invoice_force_validation):
+                raise ValidationError(
+                    _("The invoice '%s' doesn't match the related e-invoice") %
+                    invoice.display_name)
+        return super(AccountInvoice, self).invoice_validate()
+
+    def e_inv_check_amount_untaxed(self):
+        error_message = ''
+        if (self.e_invoice_amount_untaxed and
+                float_compare(self.amount_untaxed,
+                              # Using abs because odoo invoice total can't be negative,
+                              # while XML total can.
+                              # See process_negative_lines method
+                              abs(self.e_invoice_amount_untaxed),
+                              precision_rounding=self.currency_id
+                              .rounding) != 0):
+            error_message = (
+                _("Untaxed amount ({bill_amount_untaxed}) "
+                  "does not match with "
+                  "e-bill untaxed amount ({e_bill_amount_untaxed})")
+                .format(
+                    bill_amount_untaxed=self.amount_untaxed or 0,
+                    e_bill_amount_untaxed=self.e_invoice_amount_untaxed
+                ))
+        return error_message
+
+    # def e_inv_check_amount_tax(self):
+    #     error_message = ''
+    #     if (self.e_invoice_amount_tax and
+    #             float_compare(self.amount_tax,
+    #                           abs(self.e_invoice_amount_tax),
+    #                           precision_rounding=self.currency_id
+    #                           .rounding) != 0):
+    #         error_message = (
+    #             _("Taxed amount ({bill_amount_tax}) "
+    #               "does not match with "
+    #               "e-bill taxed amount ({e_bill_amount_tax})")
+    #             .format(
+    #                 bill_amount_tax=self.amount_tax or 0,
+    #                 e_bill_amount_tax=self.e_invoice_amount_tax
+    #             ))
+    #     return error_message
+
+    # def e_inv_check_amount_total(self):
+    #     error_message = ''
+    #     if (self.e_invoice_amount_total and
+    #             float_compare(self.amount_total,
+    #                           abs(self.e_invoice_amount_total),
+    #                           precision_rounding=self.currency_id
+    #                           .rounding) != 0):
+    #         error_message = (
+    #             _("Total amount ({bill_amount_total}) "
+    #               "does not match with "
+    #               "e-bill total amount ({e_bill_amount_total})")
+    #             .format(
+    #                 bill_amount_total=self.amount_total or 0,
+    #                 e_bill_amount_total=self.e_invoice_amount_total
+    #             ))
+    #     return error_message
+
+    @api.depends('type', 'state', 'fatturapa_attachment_in_id',
+                 'amount_untaxed', 'amount_tax', 'amount_total',
+                 'reference', 'date_invoice')
+    def _compute_e_invoice_validation_error(self):
+        bills_to_check = self.filtered(
+            lambda inv:
+            inv.type in ['in_invoice', 'in_refund'] and
+            inv.state in ['draft', 'open', 'paid'] and
+            inv.fatturapa_attachment_in_id)
+        for bill in bills_to_check:
+            error_messages = list()
+
+            error_message = bill.e_inv_check_amount_untaxed()
+            if error_message:
+                error_messages.append(error_message)
+
+            error_message = bill.e_inv_check_amount_tax()
+            if error_message:
+                error_messages.append(error_message)
+
+            error_message = bill.e_inv_check_amount_total()
+            if error_message:
+                error_messages.append(error_message)
+
+            if (bill.e_invoice_reference and
+                    bill.reference != bill.e_invoice_reference):
+                error_messages.append(
+                    _("Vendor reference ({bill_vendor_ref}) "
+                      "does not match with "
+                      "e-bill vendor reference ({e_bill_vendor_ref})")
+                        .format(
+                        bill_vendor_ref=bill.reference or "",
+                        e_bill_vendor_ref=bill.e_invoice_reference
+                    ))
+
+            if (bill.e_invoice_date_invoice and
+                    bill.e_invoice_date_invoice != bill.date_invoice):
+                error_messages.append(
+                    _("Invoice date ({bill_date_invoice}) "
+                      "does not match with "
+                      "e-bill invoice date ({e_bill_date_invoice})")
+                        .format(
+                        bill_date_invoice=bill.date_invoice or "",
+                        e_bill_date_invoice=bill.e_invoice_date_invoice
+                    ))
+
+            if not error_messages:
+                continue
+            bill.e_invoice_validation_error = True
+            bill.e_invoice_validation_message = \
+                ",\n".join(error_messages) + "."
+
+    @api.model
+    def compute_xml_amount_tax(self, DatiRiepilogo):
+        amount_tax = 0.0
+        for Riepilogo in DatiRiepilogo:
+            amount_tax += float(Riepilogo.Imposta)
+        return amount_tax
+
+    def set_einvoice_data(self, fattura):
+        self.ensure_one()
+        amount_untaxed = self.compute_xml_amount_untaxed(fattura)
+        amount_tax = self.compute_xml_amount_tax(
+            fattura.DatiBeniServizi.DatiRiepilogo)
+        amount_total = float(
+            fattura.DatiGenerali.DatiGeneraliDocumento.
+            ImportoTotaleDocumento or 0.0)
+        reference = fattura.DatiGenerali.DatiGeneraliDocumento.Numero
+        date_invoice = fields.Date.from_string(
+            fattura.DatiGenerali.DatiGeneraliDocumento.Data)
+
+        self.update({
+            'e_invoice_amount_untaxed': amount_untaxed,
+            'e_invoice_amount_tax': amount_tax,
+            'e_invoice_amount_total': amount_total,
+            'e_invoice_reference': reference,
+            'e_invoice_date_invoice': date_invoice,
+        })
+
+    def e_inv_check_amount_tax(self):
+        if (
+                    any(self.invoice_line_ids.mapped('rc')) and
+                    self.e_invoice_amount_tax
+        ):
+            error_message = ''
+            amount_added_for_rc = self.get_tax_amount_added_for_rc()
+            amount_tax = self.amount_tax - amount_added_for_rc
+            if float_compare(
+                    amount_tax, self.e_invoice_amount_tax,
+                    precision_rounding=self.currency_id.rounding
+            ) != 0:
+                error_message = (
+                    _("Taxed amount ({bill_amount_tax}) "
+                      "does not match with "
+                      "e-bill taxed amount ({e_bill_amount_tax})")
+                        .format(
+                        bill_amount_tax=amount_tax or 0,
+                        e_bill_amount_tax=self.e_invoice_amount_tax
+                    ))
+            return error_message
+
+
+    def e_inv_check_amount_total(self):
+        if (
+                    any(self.invoice_line_ids.mapped('rc')) and
+                    self.e_invoice_amount_total
+        ):
+            error_message = ''
+            amount_added_for_rc = self.get_tax_amount_added_for_rc()
+            amount_total = self.amount_total - amount_added_for_rc
+            if float_compare(
+                    amount_total, self.e_invoice_amount_total,
+                    precision_rounding=self.currency_id.rounding
+            ) != 0:
+                error_message = (
+                    _("Total amount ({bill_amount_total}) "
+                      "does not match with "
+                      "e-bill total amount ({e_bill_amount_total})")
+                        .format(
+                        bill_amount_total=amount_total or 0,
+                        e_bill_amount_total=self.e_invoice_amount_total
+                    ))
+            return error_message
+
+
 
     @api.one
     @api.depends(

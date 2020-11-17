@@ -11,8 +11,22 @@
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
-                    <field name="ddt_ids" string="TD"/>
+                <field name="ddt_ids" string="TD"/>
             </field>
+        </field>
+    </record>
+
+
+    <!-- FormView Stock Picking -->
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">view_picking_form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <field name="picking_type" invisible="1"/>
+                <button name="%(l10n_it_ddt.action_ddt_from_pickings)d" type="action" class="btn btn-primary" string="CREA DDT" attrs="{'invisible': [('picking_type','!=','outgoing')]}"/>
+            </xpath>
         </field>
     </record>
 

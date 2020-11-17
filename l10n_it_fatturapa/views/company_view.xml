@@ -40,6 +40,18 @@
                                     <label for="fatturapa_sender_partner" class="col-lg-3 o_light_label"/>
                                     <field name="fatturapa_sender_partner"/>
                                 </div>
+                                <div class="row">
+                                    <label for="cassa_previdenziale_product_id" class="col-lg-3 o_light_label"/>
+                                    <field name="cassa_previdenziale_product_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="enasarco_relax_checks" class="col-lg-3 o_light_label"/>
+                                    <field name="enasarco_relax_checks"/>
+                                </div>
+                                <div class="row">
+                                    <label for="in_invoice_registration_date" class="col-lg-3 o_light_label"/>
+                                    <field name="in_invoice_registration_date"/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -71,6 +83,9 @@
                                 <div class="row">
                                     <label for="fatturapa_rea_liquidation" class="col-lg-3 o_light_label"/>
                                     <field name="fatturapa_rea_liquidation"/>
+                                </div>
+                                <div class="row">
+
                                 </div>
                             </div>
                         </div>
@@ -153,6 +168,17 @@
                     </group>
                 </page>
             </notebook>
+
+            <xpath expr="//group[@name='social_media']" position="after">
+                <group>
+                    <field name="arrotondamenti_attivi_account_id" string="Conto Arrotondamenti Attivi"/>
+                    <field name="arrotondamenti_passivi_account_id" string="Conto Arrotondamenti Passivi"/>
+                    <field name="arrotondamenti_tax_id" string="Imposta per arrotondamenti"/>
+                    <field name="cassa_previdenziale_product_id" string="Prodotto Cassa Previdenziale"/>
+                    <field name="enasarco_relax_checks" string="Enasarco Relax Checks"/>
+                    <field name="in_invoice_registration_date" string="Data Registrazione Fatture Ingresso"/>
+                </group>
+            </xpath>
         </field>
     </record>
 

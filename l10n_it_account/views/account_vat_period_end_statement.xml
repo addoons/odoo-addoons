@@ -22,9 +22,6 @@
                     <group>
                         <field name="journal_id"   widget="selection"/>
                         <field name="date"/>
-                        <!-- TODO check if it's manageable
-                        <button name="open_chart_of_taxes" string="View chart of taxes for selected period" type="object"/>
-                        -->
                         <field name="move_id"/>
                         <field name="payment_term_id"/>
                         <field name="authority_partner_id" domain="[('supplier', '=', True)]" contenxt="{'default_supplier': True}"/>
@@ -189,6 +186,8 @@
         <field name="arch" type="xml">
             <field name="tax_group_id" position="after">
                 <field name="vat_statement_account_id"/>
+                <field name="vsc_exclude_operation"/>
+                <field name="vsc_exclude_vat"/>
             </field>
         </field>
     </record>

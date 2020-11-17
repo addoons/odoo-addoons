@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
-from odoo import models, fields, api
+from odoo import models, fields, api,_
 from odoo.tools import formatLang
 
 
@@ -38,6 +38,12 @@ class ResCompany(models.Model):
     of_account_end_vat_statement_interest_account_id = fields.Many2one(
         'account.account', 'Interest on End Vat Statement - Account',
         help="Apply interest on end vat statement")
+
+    vsc_supply_code = fields.Char(
+        'Vat statement communication supply code',
+        default="IVP18",
+        help="IVP18",
+    )
 
     @api.onchange(
         "rea_office", "rea_code", "rea_capital", "rea_member_type",

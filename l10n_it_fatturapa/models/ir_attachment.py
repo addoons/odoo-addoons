@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
+import datetime
 import json
 import lxml.etree as ET
 import re
@@ -47,23 +48,32 @@ ERROR_CODE = [
     ('0072', 'Errore in fase di caricamento lista fatture per utente'),
     ('0082', 'Si è verificato un errore in fase di recupero notifiche'),
     ('0092', 'Errore generico schema xsd'),
+    ('0093', 'Errore deleghe non valide'),
+    ('0094', 'La fattura che stai inviando contiene ID e/o contatti dei trasmittenti differenti dai dati dell’intermediario Aruba PEC.'),
+    ('0095', 'Servizio momentaneamente non disponibile. Il controllo dei permessi è fallito. Si prega di riprovare più tardi.'),
 ]
 
 SDI_STATE = [
-    ('1', 'Presa in carico'),
-    ('2', 'Errore Elaborazione'),
-    ('3', 'Inviata'),
-    ('4', 'Scartata'),
-    ('5', 'Non Consegnata'),
-    ('6', 'Recapito Impossibile'),
-    ('7', 'Consegnata'),
-    ('8', 'Accettata'),
-    ('9', 'Rifiutata'),
-    ('10', 'Decorrenza Termini'),
+    ('Presa in carico', 'Presa in carico'),
+    ('Errore Elaborazione', 'Errore Elaborazione'),
+    ('Inviata', 'Inviata'),
+    ('Scartata', 'Scartata'),
+    ('Non Consegnata', 'Non Consegnata'),
+    ('Recapito Impossibile', 'Recapito Impossibile'),
+    ('Consegnata', 'Consegnata'),
+    ('Accettata', 'Accettata'),
+    ('Rifiutata', 'Rifiutata'),
+    ('Decorrenza Termini', 'Decorrenza Termini'),
 ]
 
-WS_ENDPOINT_NOTIFICATION_FILENAME_SIGNED = '/services/notification/out/getByInvoiceFilename'
-WS_ENDPOINT_NOTIFICATION_FILENAME_NOT_SIGNED = '/services/notification/out/getByFilename'
+#Elenco degli Stati SDI che indicano che la fattura è in stato "Chiusa"
+#Questi stati verranno saltati nelle successive richieste di Aggiornamento SDI
+SDI_COMPLETED = [
+    ('Consegnata', 'Consegnata'),
+    ('Non Consegnata', 'Non Consegnata'),
+]
+
+WS_ENDPOINT_NOTIFICATION_FILENAME = '/services/invoice/out/getByFilename'
 WS_ENDPOINT_UPLOAD_INVOICE = '/services/invoice/upload'
 
 class Attachment(models.Model):
@@ -167,117 +177,138 @@ class Attachment(models.Model):
         newdom = transform(dom)
         return ET.tostring(newdom, pretty_print=True)
 
-    class FatturaPAAttachmentIn(models.Model):
-        _name = "fatturapa.attachment.in"
-        _description = "E-bill import file"
-        _inherits = {'ir.attachment': 'ir_attachment_id'}
-        _inherit = ['mail.thread']
-        _order = 'id desc'
 
-        ir_attachment_id = fields.Many2one(
-            'ir.attachment', 'Attachment', required=True, ondelete="cascade")
-        in_invoice_ids = fields.One2many(
-            'account.invoice', 'fatturapa_attachment_in_id',
-            string="In Bills", readonly=True)
-        xml_supplier_id = fields.Many2one(
-            "res.partner", string="Supplier", compute="_compute_xml_data",
-            store=True)
-        invoices_number = fields.Integer(
-            "Bills Number", compute="_compute_xml_data", store=True)
-        invoices_total = fields.Float(
-            "Bills Total", compute="_compute_xml_data", store=True,
-            help="If specified by supplier, total amount of the document net of "
-                 "any discount and including tax charged to the buyer/ordered"
-        )
-        registered = fields.Boolean(
-            "Registered", compute="_compute_registered", store=True)
 
-        aruba_filename = fields.Char()
 
-        def import_aruba_invoice(self):
-            """
-            Import Aruba Supplier Invoice
-            """
-            ws_ids = self.env['sdi.channel'].get_default_ws()
-            for ws in ws_ids:
-                ws.web_auth()
-                header = {'Authorization': 'Bearer ' + ws.web_server_token}
-                data = {
-                    'username': ws.web_server_login,
-                    'countrySender': 'IT',
-                    'countryReceiver': 'IT'
-                }
-                r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE, headers=header,
-                                 params=data).json()
-                for invoice in r['content']:
-                    filename = invoice['filename']
-                    invoice_id = self.search([('aruba_filename', '=', filename)])
-                    if not invoice_id:
-                        # LA FATTURA MANCA, IMPORTA
-                        invoice_data = {'filename': filename}
-                        r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE_XML, headers=header,
-                                         params=invoice_data).json()
-                        if r:
-                            # CREA LA FATTURA
-                            self.create({
-                                'aruba_filename': filename,
-                                'datas': r['file'],
-                            })
+class FatturaPAAttachmentIn(models.Model):
+    _name = "fatturapa.attachment.in"
+    _description = "E-bill import file"
+    _inherits = {'ir.attachment': 'ir_attachment_id'}
+    _inherit = ['mail.thread']
+    _order = 'id desc'
 
-        @api.onchange('datas_fname')
-        def onchagne_datas_fname(self):
-            self.name = self.datas_fname
+    ir_attachment_id = fields.Many2one(
+        'ir.attachment', 'Attachment', required=True, ondelete="cascade")
+    in_invoice_ids = fields.One2many(
+        'account.invoice', 'fatturapa_attachment_in_id',
+        string="In Bills", readonly=True)
+    xml_supplier_id = fields.Many2one(
+        "res.partner", string="Supplier", compute="_compute_xml_data",
+        store=True)
+    invoices_number = fields.Integer(
+        "Bills Number", compute="_compute_xml_data", store=True)
+    invoices_total = fields.Float(
+        "Bills Total", compute="_compute_xml_data", store=True,
+        help="If specified by supplier, total amount of the document net of "
+             "any discount and including tax charged to the buyer/ordered"
+    )
+    registered = fields.Boolean(
+        "Registered", compute="_compute_registered", store=True)
+    exported_zip = fields.Many2one(
+        'ir.attachment', 'Exported ZIP', readonly=True)
 
-        def get_xml_string(self):
-            return self.ir_attachment_id.get_xml_string()
+    e_invoice_received_date = fields.Datetime(string='E-Bill Received Date')
 
-        @api.multi
-        @api.depends('ir_attachment_id.datas')
-        def _compute_xml_data(self):
-            for att in self:
-                fatt = self.env['wizard.import.fatturapa'].get_invoice_obj(att)
-                cedentePrestatore = fatt.FatturaElettronicaHeader.CedentePrestatore
-                partner_id = self.env['wizard.import.fatturapa'].getCedPrest(
-                    cedentePrestatore)
-                att.xml_supplier_id = partner_id
-                att.invoices_number = len(fatt.FatturaElettronicaBody)
-                att.invoices_total = 0
-                for invoice_body in fatt.FatturaElettronicaBody:
-                    att.invoices_total += float(
-                        invoice_body.DatiGenerali.DatiGeneraliDocumento.
-                        ImportoTotaleDocumento or 0
-                    )
+    e_invoice_validation_error = fields.Boolean(
+        compute='_compute_e_invoice_validation_error')
 
-        @api.multi
-        @api.depends('in_invoice_ids')
-        def _compute_registered(self):
-            for att in self:
-                if (
-                    att.in_invoice_ids and
-                    len(att.in_invoice_ids) == att.invoices_number
-                ):
-                    att.registered = True
-                else:
-                    att.registered = False
+    e_invoice_validation_message = fields.Text(
+        compute='_compute_e_invoice_validation_error')
 
-        def extract_attachments(self, AttachmentsData, invoice_id):
-            AttachModel = self.env['fatturapa.attachments']
-            for attach in AttachmentsData:
-                if not attach.NomeAttachment:
-                    name = _("Attachment without name")
-                else:
-                    name = attach.NomeAttachment
-                content = attach.Attachment
-                _attach_dict = {
-                    'name': name,
-                    'datas': base64.b64encode(content),
-                    'datas_fname': name,
-                    'description': attach.DescrizioneAttachment or '',
-                    'compression': attach.AlgoritmoCompressione or '',
-                    'format': attach.FormatoAttachment or '',
-                    'invoice_id': invoice_id,
-                }
-                AttachModel.create(_attach_dict)
+    aruba_filename = fields.Char()
+
+    def import_aruba_invoice(self):
+        """
+        Import Aruba Supplier Invoice
+        """
+        ws_ids = self.env['sdi.channel'].get_default_ws()
+        for ws in ws_ids:
+            ws.web_auth()
+            header = {'Authorization': 'Bearer ' + ws.web_server_token}
+            data = {
+                'username': ws.web_server_login,
+                'countrySender': 'IT',
+                'countryReceiver': 'IT'
+            }
+            r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE, headers=header,
+                             params=data).json()
+            for invoice in r['content']:
+                filename = invoice['filename']
+                invoice_id = self.search([('aruba_filename', '=', filename)])
+                if not invoice_id:
+                    # LA FATTURA MANCA, IMPORTA
+                    invoice_data = {'filename': filename}
+                    r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE_XML, headers=header,
+                                     params=invoice_data).json()
+                    if r:
+                        # CREA LA FATTURA
+                        self.create({
+                            'aruba_filename': filename,
+                            'datas': r['file'],
+                        })
+
+    @api.onchange('datas_fname')
+    def onchagne_datas_fname(self):
+        self.name = self.datas_fname
+
+    def get_xml_string(self):
+        return self.ir_attachment_id.get_xml_string()
+
+    @api.multi
+    @api.depends('ir_attachment_id.datas')
+    def _compute_xml_data(self):
+        for att in self:
+            fatt = self.env['wizard.import.fatturapa'].get_invoice_obj(att)
+            cedentePrestatore = fatt.FatturaElettronicaHeader.CedentePrestatore
+            partner_id = self.env['wizard.import.fatturapa'].getCedPrest(
+                cedentePrestatore)
+            att.xml_supplier_id = partner_id
+            att.invoices_number = len(fatt.FatturaElettronicaBody)
+            att.invoices_total = 0
+            for invoice_body in fatt.FatturaElettronicaBody:
+                att.invoices_total += float(
+                    invoice_body.DatiGenerali.DatiGeneraliDocumento.
+                    ImportoTotaleDocumento or 0
+                )
+
+    @api.multi
+    @api.depends('in_invoice_ids')
+    def _compute_registered(self):
+        for att in self:
+            if (
+                att.in_invoice_ids and
+                len(att.in_invoice_ids) == att.invoices_number
+            ):
+                att.registered = True
+            else:
+                att.registered = False
+
+    def extract_attachments(self, AttachmentsData, invoice_id):
+        AttachModel = self.env['fatturapa.attachments']
+        for attach in AttachmentsData:
+            if not attach.NomeAttachment:
+                name = _("Attachment without name")
+            else:
+                name = attach.NomeAttachment
+            content = attach.Attachment
+            _attach_dict = {
+                'name': name,
+                'datas': base64.b64encode(content),
+                'datas_fname': name,
+                'description': attach.DescrizioneAttachment or '',
+                'compression': attach.AlgoritmoCompressione or '',
+                'format': attach.FormatoAttachment or '',
+                'invoice_id': invoice_id,
+            }
+            AttachModel.create(_attach_dict)
+
+class SdiNotification(models.Model):
+    _name = 'sdi.notification'
+
+    attachment_out_id = fields.Many2one('fatturapa.attachment_out')
+    date = fields.Datetime()
+    sdi_state = fields.Selection(SDI_STATE)
+    sdi_description = fields.Text()
 
 class FatturaPAAttachmentOut(models.Model):
     _name = "fatturapa.attachment.out"
@@ -298,6 +329,9 @@ class FatturaPAAttachmentOut(models.Model):
     invoice_partner_id = fields.Many2one(
         'res.partner', string='Customer', store=True,
         compute='_compute_invoice_partner_id')
+    exported_zip = fields.Many2one(
+        'ir.attachment', 'Exported ZIP', readonly=True)
+    sdi_notification_ids = fields.One2many('sdi.notification', 'attachment_out_id')
 
     aruba_upload_filename = fields.Char()
     aruba_error_code = fields.Selection(selection=ERROR_CODE)
@@ -305,33 +339,59 @@ class FatturaPAAttachmentOut(models.Model):
     aruba_error_description = fields.Text()
     aruba_sent = fields.Boolean()
 
+
     def get_sdi_notification(self):
         """
         Aggiorna lo stato notifica SDI
         """
         ws_ids = self.env['sdi.channel'].get_default_ws()
         for ws in ws_ids:
-            ws.web_auth()
-            header = {
-                'Authorization': 'Bearer ' + ws.web_server_token,
-            }
-            data = {
-                'invoiceFilename': str(self.aruba_upload_filename),
-            }
-            r = requests.get(ws.web_server_method_address + WS_ENDPOINT_NOTIFICATION_FILENAME_SIGNED,
-                             headers=header, params=data)
-            r = r.json()
-            notifications = r['notifications']
-            for n in notifications:
-                # Cicla tutte le notifiche relative alla fattura
-                # Salva l'ultimo stato
-                self.aruba_sdi_state = n['result']
+            if ws.provider == 'aruba':
+                #Ora gestiamo solo le notifiche di Aruba
+                ws.web_auth()
+                last_week = datetime.datetime.now() - datetime.timedelta(days=7)
+                #12 è il limite massimo ogni 1 minuto ARUBA
+                for attachment in self.search([('create_date', '>=', last_week), ('aruba_sdi_state', 'not in', SDI_COMPLETED)], limit=12):
+                    if attachment.aruba_upload_filename:
+                        header = {
+                            'Authorization': 'Bearer ' + ws.web_server_token,
+                        }
+                        data = {
+                            'filename': str(attachment.aruba_upload_filename),
+                            'includePdf': False,
+                        }
+                        r = requests.get(ws.web_server_method_address + WS_ENDPOINT_NOTIFICATION_FILENAME,
+                                         headers=header, params=data)
+
+                        if r.status_code == 200:
+                            r = r.json()
+                            invoices = r['invoices']
+                            notification = [(5, )]
+                            for inv in invoices:
+                                # Cicla tutte le notifiche relative alla fattura
+                                # Salva l'ultimo stato
+                                attachment.aruba_sdi_state = inv['status']
+                                notification_date = re.sub(r'([-+]\d{2}):(\d{2})(?:(\d{2}))?$', r'\1\2\3', inv['invoiceDate'])
+                                date = datetime.datetime.strptime(notification_date, '%Y-%m-%dT%H:%M:%S.%f%z')
+                                notification.append((0, 0, {
+                                    'sdi_state': inv['status'],
+                                    'date': date.strftime('%Y-%m-%d %H:%M:%S'),
+                                    'sdi_description': inv['statusDescription']
+                                }))
+                            attachment.sdi_notification_ids = notification
+                        else:
+                            attachment.aruba_sdi_state = 'Errore Elaborazione' #Errore Elaborazione
+                    else:
+                        attachment.aruba_sdi_state = 'Errore Elaborazione' #Errore Elaborazione
+
 
     def send_to_aruba(self):
         """
         Invia il documento XML al ws di ARUBA
         """
         ws_ids = self.env['sdi.channel'].get_default_ws()
+        if not ws_ids:
+            raise UserWarning("Non e' stata trovata la configurazione Default di Aruba")
         for ws in ws_ids:
             ws.web_auth()
             header = {
@@ -339,18 +399,52 @@ class FatturaPAAttachmentOut(models.Model):
                 'Authorization': 'Bearer ' + ws.web_server_token,
             }
             data = {
-                'dataFile': self.datas,
+                'dataFile': self.datas.decode('utf-8'),
                 'credential': None,
                 'domain': None,
             }
-            r = requests.post(ws.web_server_method_address + WS_ENDPOINT_UPLOAD_INVOICE, headers=header,
-                              data=json.dumps(data))
-            r = r.json()
-            self.aruba_upload_filename = r['uploadFileName']
-            self.aruba_error_code = r['errorCode']
-            self.aruba_error_description = r['errorDescription']
-            if self.aruba_error_code == '0000':
-                self.aruba_sent = True
+            try:
+                r = requests.post(ws.web_server_method_address + WS_ENDPOINT_UPLOAD_INVOICE, headers=header, data=json.dumps(data))
+                if r.status_code == 200:
+                    r = r.json()
+                    self.aruba_upload_filename = r['uploadFileName']
+                    self.aruba_error_code = r['errorCode']
+                    self.aruba_error_description = r['errorDescription']
+                    if self.aruba_error_code == '0000':
+                        self.aruba_sent = True
+                        for invoice in self.out_invoice_ids:
+                            invoice.fatturapa_state = 'sent'
+                else:
+                    raise UserWarning(r)
+            except Exception as e:
+                raise UserWarning(e)
+
+    @api.model
+    def get_file_vat(self):
+        company = self.env.user.company_id
+        if company.fatturapa_sender_partner:
+            if not company.fatturapa_sender_partner.vat:
+                raise UserError(
+                    _('Partner %s TIN not set.')
+                    % company.fatturapa_sender_partner.display_name
+                )
+            vat = company.fatturapa_sender_partner.vat
+        else:
+            if not company.vat:
+                raise UserError(
+                    _('Company %s TIN not set.') % company.display_name)
+            vat = company.vat
+        vat = vat.replace(' ', '').replace('.', '').replace('-', '')
+        return vat
+
+    def file_name_exists(self, file_id):
+        vat = self.get_file_vat()
+        partial_fname = r'%s\_%s.' % (vat, file_id)  # escaping _ SQL
+        # Not trying to perfect match file extension, because user could have
+        # downloaded, signed and uploaded again the file, thus having changed
+        # file extension
+        return bool(self.search(
+            [('datas_fname', '=like', '%s%%' % partial_fname)]))
 
     @api.multi
     @api.depends('out_invoice_ids')

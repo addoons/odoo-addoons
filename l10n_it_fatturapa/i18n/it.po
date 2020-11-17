@@ -1556,7 +1556,7 @@ msgstr ""
 #. module: l10n_it_fatturapa
 #: model:ir.actions.act_window,name:l10n_it_fatturapa.action_wizard_import_fatturapa
 msgid "Import Electronic Bill"
-msgstr ""
+msgstr "Importa Fattura Fornitore"
 
 #. module: l10n_it_fatturapa
 #: model:ir.model.fields,field_description:l10n_it_fatturapa.field_account_invoice__inconsistencies

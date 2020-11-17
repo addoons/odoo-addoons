@@ -11,10 +11,15 @@
         <field name="type">form</field>
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
+            <!--Flag Corrispettivi-->
             <xpath expr="//page[@name='advanced_settings']/group" position="inside">
                 <group name="corrispettivi" string="Receipts" attrs="{'invisible': [('type', '!=',  'sale')]}">
                     <field name="corrispettivi"/>
                 </group>
+            </xpath>
+            <!--Flag Escludi Esterometro-->
+            <xpath expr="//field[@name='refund_sequence']" position="after">
+                <field name="comunicazione_dati_iva_escludi"/>
             </xpath>
         </field>
     </record>

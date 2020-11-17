@@ -29,6 +29,7 @@
                             <field name="invoices_number"/>
                             <field name="registered"/>
                             <field name="invoices_total"/>
+                            <field name="exported_zip"/>
                         </group>
                     </group>
                     <notebook>
@@ -75,6 +76,7 @@
                 <field name="invoices_number"/>
                 <field name="registered"/>
                 <field name="in_invoice_ids"/>
+                <field name="exported_zip"/>
             </tree>
         </field>
     </record>
@@ -88,6 +90,9 @@
                 <field name="name"/>
                 <field name="xml_supplier_id"/>
                 <filter name="to_register" string="To Register" domain="[('registered','=',False)]"/>
+                <separator/>
+                <filter name="zip_not_exported" string="ZIP Not Exported" domain="[('exported_zip','=', False)]"/>
+                <filter name="zip_exported" string="ZIP Exported" domain="[('exported_zip','!=', False)]"/>
             </search>
         </field>
     </record>

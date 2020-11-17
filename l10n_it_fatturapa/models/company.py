@@ -46,6 +46,13 @@ class ResCompany(models.Model):
         help="Product used as Tax Stamp in customer invoices."
     )
 
+    enasarco_relax_checks = fields.Boolean('Relax checks for Enasarco')
+    in_invoice_registration_date = fields.Selection([
+        ('inv_date', 'Invoice Date'),
+        ('rec_date', 'Received Date'),
+    ], string='Vendor invoice registration default date',
+        default='inv_date')
+
     sdi_channel_id = fields.Many2one(
         'sdi.channel', string='ES channel')
     sdi_channel_type = fields.Selection(
@@ -62,6 +69,16 @@ class ResCompany(models.Model):
         'account.account',
         string='Split Payment Write-off Account',
         help='Account used to write off the VAT amount', readonly=False)
+
+    arrotondamenti_attivi_account_id = fields.Many2one('account.account')
+    arrotondamenti_passivi_account_id = fields.Many2one('account.account')
+    arrotondamenti_tax_id = fields.Many2one('account.tax')
+
+    cassa_previdenziale_product_id = fields.Many2one(
+        'product.product', 'Welfare Fund Data Product',
+        help="Product used to model DatiCassaPrevidenziale XML element "
+             "on bills."
+    )
 
     @api.multi
     @api.constrains(
@@ -190,6 +207,33 @@ class AccountConfigSettings(models.TransientModel):
         help='Product used to model ScontoMaggiorazione XML element on bills',
         readonly=False
         )
+
+    enasarco_relax_checks = fields.Boolean(
+        related='company_id.enasarco_relax_checks', readonly=False
+    )
+    in_invoice_registration_date = fields.Selection(
+        related='company_id.in_invoice_registration_date', readonly=False
+    )
+
+    cassa_previdenziale_product_id = fields.Many2one(
+        related='company_id.cassa_previdenziale_product_id',
+        readonly=False
+    )
+    arrotondamenti_attivi_account_id = fields.Many2one(
+        related='company_id.arrotondamenti_attivi_account_id',
+        readonly=False
+    )
+    arrotondamenti_passivi_account_id = fields.Many2one(
+        related='company_id.arrotondamenti_passivi_account_id',
+        readonly=False
+    )
+    arrotondamenti_tax_id = fields.Many2one(
+        related='company_id.arrotondamenti_tax_id',
+        readonly=False
+    )
+
+
+
     @api.onchange('company_id')
     def onchange_company_id(self):
         if self.company_id:

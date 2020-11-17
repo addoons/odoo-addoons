@@ -164,12 +164,25 @@ class ReportRegistroIva(models.AbstractModel):
 
         for tax_id in amounts_by_tax_id:
             tax = self.env['account.tax'].browse(tax_id)
+            tax_exigible = 0
+            for line in move_lines:
+                if line.tax_line_id.id == tax.id:
+                    #La riga è quella della Tassa
+                    if 'cash_move_ids' in data:
+                        if str(move.id) in data['cash_move_ids']:
+                            cash_move_ids = data['cash_move_ids'][str(move.id)]
+                            for cash_move in cash_move_ids:
+                                cash_move_id = self.env['account.move'].browse(cash_move)
+                                for line in cash_move_id.line_ids:
+                                    if line.tax_line_id.id == tax.id:
+                                        tax_exigible += line.credit_cash_basis
             tax_item = {
                 'tax_code_name': tax._get_tax_name(),
                 'base': amounts_by_tax_id[tax_id]['base'],
                 'tax': amounts_by_tax_id[tax_id]['tax'],
                 'index': index,
                 'invoice_type': invoice_type,
+                'tax_no_exigible': amounts_by_tax_id[tax_id]['tax'] - tax_exigible,
                 'invoice_date': (
                     invoice and invoice.date_invoice or move.date or ''),
                 'reference': (

@@ -17,7 +17,25 @@ class taskPacchettoOre(models.Model):
 class taskOreInherit(models.Model):
 
     _inherit = 'project.task'
+
     ore_lines = fields.One2many('task.pacchetto.ore', 'task_id')
+    ore_sviluppo_disponibili = fields.Float(related='partner_id.ore_sviluppo_disponibili')
+    ore_formazione_consulenza_disponibili = fields.Float(related='partner_id.ore_formazione_consulenza_disponibili')
+    avviso_ore_terminate = fields.Html(compute='compute_avviso_ore_terminate')
+
+    def compute_avviso_ore_terminate(self):
+        for rec in self:
+            if not self.partner_id.parent_id:
+                cliente = self.partner_id
+            else:
+                cliente = self.partner_id.parent_id
+            rec.avviso_ore_terminate = ''
+            if rec.ore_sviluppo_disponibili <= cliente.soglia_ore_sviluppo:
+                rec.avviso_ore_terminate += "<h1 style='color: red;'>ATTENZIONE! ORE SVILUPPO IN ESAURIMENTO o ESAURITE</h1>"
+
+            if rec.ore_formazione_consulenza_disponibili <= cliente.soglia_ore_formazione:
+                rec.avviso_ore_terminate += "<h1 style='color: red;'>ATTENZIONE! ORE FORMAZIONE IN ESAURIMENTO o ESAURITE</h1>"
+
 
     @api.onchange('ore_lines')
     def _onchange_ore_task(self):
@@ -62,12 +80,13 @@ class taskOreInherit(models.Model):
         if self.partner_id.ore_formazione_consulenza_disponibili - ore_task_formazione_modifiche < 0:
             raise ValidationError(_('Non ci sono più ore di formazione/consulenza disponibili per assegnare il task'))
 
-    """
-    Va ad assegnare la riga di lavoro di una task 
-    al primo pacchetto ore disponibile(pacchetto con data di creazione più vecchia e che ha ancora ore disponibili).
-    Le ore disponibili del pacchetto vengono scalate in base all somma delle ore di lavoro assegnate al quel pacchetto
-    """
+
     def write(self, vals):
+        """
+            Va ad assegnare la riga di lavoro di una task al primo pacchetto
+            ore disponibile(pacchetto con data di creazione più vecchia e che ha ancora ore disponibili).
+            Le ore disponibili del pacchetto vengono scalate in base all somma delle ore di lavoro assegnate a quel pacchetto
+        """
         super(taskOreInherit, self).write(vals)
 
         if not self.partner_id:
@@ -78,12 +97,8 @@ class taskOreInherit(models.Model):
         else:
             cliente = self.partner_id.parent_id
         for type in ['developing', 'training']:
-            new_lines = []
-            ore_nuovo_pacchetto = 0
-            data_pacchetto = False
             for line in self.timesheet_ids:
                 if not line.pacchetto_ore_id and line.type == type:
-
 
                     pacchetto_valido = self.env['pacchetti.ore'].search([('type', '=', line.type), ('ore_residue', '>', 0),
                                          ('partner_id', '=', cliente.id)], order='create_date asc', limit=1)
@@ -91,7 +106,7 @@ class taskOreInherit(models.Model):
 
                         if pacchetto_valido.ore_residue - line.unit_amount >= 0:
 
-                            # se con il pacchetto trovato riesco coprire tutte le ore della riga le assegno al pacchetto.
+                            # se con il pacchetto trovato riesco coprire tutte le ore della riga le assegno al pacchetto
                             pacchetto_valido.write({'ore_lines': [(4, line.id)]})
                             line.pacchetto_ore_id = pacchetto_valido.id
                         else:
@@ -99,11 +114,10 @@ class taskOreInherit(models.Model):
                             # Alla riga corrente assegnamo le ore disponibili del pacchetto
                             differenza_ore = line.unit_amount - pacchetto_valido.ore_residue
 
-                            if not data_pacchetto:
-                                # modifico la riga inserendo le ore residue del pacchetto
-                                line.unit_amount = pacchetto_valido.ore_residue
-                                pacchetto_valido.write({'ore_lines': [(4, line.id)]})
-                                line.pacchetto_ore_id = pacchetto_valido.id
+                            # modifico la riga inserendo le ore residue del pacchetto
+                            line.unit_amount = pacchetto_valido.ore_residue
+                            pacchetto_valido.write({'ore_lines': [(4, line.id)]})
+                            line.pacchetto_ore_id = pacchetto_valido.id
 
                             # cerco altri pacchetti disponibili e assegno le ore rimaste a questi creando nuove righe
                             while pacchetto_valido and differenza_ore > 0:
@@ -120,7 +134,7 @@ class taskOreInherit(models.Model):
                                         'unit_amount': 0,
                                         'account_id': line.account_id.id
                                     }
-                                    if pacchetto_valido.ore_residue > differenza_ore :
+                                    if pacchetto_valido.ore_residue > differenza_ore:
                                         vals_nuova_riga['unit_amount'] = differenza_ore
                                         differenza_ore = 0
                                     else:
@@ -131,54 +145,17 @@ class taskOreInherit(models.Model):
                                     pacchetto_valido.write({'ore_lines': [(4, nuova_riga.id)]})
                                     super(taskOreInherit, self).write({'timesheet_ids': [(4, nuova_riga.id)]})
 
-                            # se ci sono ancora ore rimaste da assegnare ad un pacchetto ma non ce ne sono più disponibili,
-                            # si crea un nuovo pacchetto
+                            # rimangono delle ore da assegnare ai pacchetti ma non ci sono piu pacchetti disponibili
                             if differenza_ore > 0:
-                                ore_nuovo_pacchetto += differenza_ore
-                                data_pacchetto = {
-                                    'name': 'pacchetto aggiuntivo ' + datetime.today().date().strftime("%d/%m/%Y"),
-                                    'type': pacchetto_valido.type,
-                                    'hours': 0,
-                                    'partner_id': cliente.id
-                                }
-                                new_lines.append({
-                                    'date': line.date,
-                                    'employee_id': line.employee_id.id,
-                                    'name': line.name,
-                                    'type': line.type,
-                                    'pacchetto_ore_id': 0,
-                                    'unit_amount': differenza_ore,
-                                    'account_id': line.account_id.id
-                                })
-                    else:
-                        ore_nuovo_pacchetto += line.unit_amount
-                        if not data_pacchetto:
-                            data_pacchetto = {
-                                'name': self.partner_id.name + ' pacchetto aggiuntivo ' + datetime.today().date().strftime(
-                                    "%d/%m/%Y"),
-                                'type': type,
-                                'hours': 0,
-                                'partner_id': cliente.id
-                            }
+                                raise ValidationError(_('Attenzione il cliente non ha abbastanza ore disponibili'
+                                                        ' per registrare le ore di lavoro.'))
 
-            if data_pacchetto:
-                # devo creare un nuovo pacchetto e le relative righe
-                data_pacchetto['hours'] = ore_nuovo_pacchetto
-                nuovo_pacchetto = self.env['pacchetti.ore'].create(data_pacchetto)
-                for line in new_lines:
-                    line['pacchetto_ore_id'] = nuovo_pacchetto.id
-                    id = self.env['account.analytic.line'].create(line).id
-                    nuovo_pacchetto.write({'ore_lines': [(4, id)]})
-                    super(taskOreInherit, self).write({'timesheet_ids': [(4, id)]})
-                for line in self.timesheet_ids:
-                    if not line.pacchetto_ore_id and line.type == type:
-                        line.pacchetto_ore_id = nuovo_pacchetto.id
-                        nuovo_pacchetto.write({'ore_lines': [(4, line.id)]})
+                    else:
+                        raise ValidationError(_('Attenzione il cliente non ha abbastanza ore disponibili'
+                                                ' per registrare le ore di lavoro.'))
 
         for line in self.timesheet_ids:
-            # se nelle righe di lavoro di un task trovo quelle relative alle ore interne le aggancio al campo (ore_interne_ids)
+            # assegno le ore interne al campo sul cliente (ore interne ids)
             if line.type == 'internal':
                 cliente.write({'ore_interne_ids': [(4, line.id)]})
-
-        cliente.check_soglia_ore()
 

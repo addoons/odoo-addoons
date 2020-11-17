@@ -19,6 +19,7 @@
                 <field name="aruba_sent" string="Sent"/>
                 <field name="sending_date" string="Data Invio"/>
                 <field name="delivered_date" string="Data Consegna"/>
+                <field name="exported_zip"/>
             </tree>
         </field>
     </record>
@@ -36,6 +37,9 @@
                 <filter name="recipient_error" string="Non Consegnate" domain="[('state','=','recipient_error')]"/>
                 <filter name="rejected" string="Rifiutate (PA)" domain="[('state','=','rejected')]"/>
                 <field name="invoice_partner_id" string="Cliente"/>
+                <separator/>
+                <filter name="zip_not_exported" string="ZIP Not Exported" domain="[('exported_zip','=', False)]"/>
+                <filter name="zip_exported" string="ZIP Exported" domain="[('exported_zip','!=', False)]"/>
             </search>
         </field>
     </record>
@@ -68,10 +72,18 @@
                             <group>
                                 <field name="has_pdf_invoice_print" string="Include PDF"/>
                                 <field name="invoice_partner_id" string="Partner"/>
+                                <field name="exported_zip"/>
                             </group>
                         </group>
                         <separator string="Fatture Clienti"/>
                         <field name="out_invoice_ids" context="{'form_view_ref': 'account.invoice_form', 'tree_view_ref': 'account.invoice_tree'}"/>
+                        <field name="sdi_notification_ids">
+                            <tree>
+                                <field name="date"/>
+                                <field name="sdi_state"/>
+                                <field name="sdi_description"/>
+                            </tree>
+                        </field>
                         <group string="Storico">
                             <label for="create_uid" string="Creato Da"/>
                             <div name="creation_div">

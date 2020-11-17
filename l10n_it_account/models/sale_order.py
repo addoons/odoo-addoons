@@ -2,7 +2,7 @@
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 from odoo.addons.account.models.account_invoice import TYPE2JOURNAL
-from odoo import models, fields, api
+from odoo import models, fields, api,_
 
 
 class SaleOrder(models.Model):
