@@ -24,7 +24,6 @@
         'data/fetchmail_data.xml',
         'data/bollo_virtuale.xml',
         'data/config_parameter.xml',
-        'data/ir_cron.xml',
         'security/groups.xml',
         'security/security.xml',
         'wizard/send_pec_view.xml',
@@ -48,6 +47,7 @@
         'wizard/send_credemtel.xml',
         'wizard/wizard_import_fatturapa_zip.xml',
         'data/fatturapa_attachment_in_cron.xml',
+        'data/ir_cron.xml',
     ],
     'installable': True,
     'external_dependencies': {
