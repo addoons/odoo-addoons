@@ -19,7 +19,7 @@ class WizardImportFatturapaMassive(models.TransientModel):
                 myzipfile = zipfile.ZipFile(zipdata)
                 for name in myzipfile.namelist():
                     file = myzipfile.read(name)
-                    if not name.endswith('.xml') or name.endswith('.p7m'):
+                    if not name.endswith('.xml') and name.endswith('.p7m'):
                         raise UserError("Il file " + name + " non e' un file XML valido.")
                     # try:
                     self.env['fatturapa.attachment.in'].create({'datas': base64.b64encode(file), 'name': name, 'datas_fname': name})
