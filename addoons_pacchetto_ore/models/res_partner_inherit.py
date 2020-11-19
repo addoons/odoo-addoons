@@ -51,8 +51,8 @@ class PartnerInherit(models.Model):
             record.ore_sviluppo_disponibili = ore_disponibili
 
     def _get_ore_interne(self):
-        ore_interne = 0
         for record in self:
+            ore_interne = 0
             if record.parent_id:
                 company = record.parent_id
             else:
