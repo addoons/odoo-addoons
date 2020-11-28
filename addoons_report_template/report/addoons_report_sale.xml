@@ -144,6 +144,8 @@
                     <t t-set="display_discount" t-value="any([l.discount for l in doc.order_line])"/>
 
                     <t t-set="cont" t-value="1"/>
+                    <t t-set="totale_odoo" t-value="0"/>
+                    <t t-set="group_addoons" t-value="0"/>
                     <t t-foreach="doc.order_lines_layouted()" t-as="page">
                         <t t-foreach="page" t-as="layout_category">
                             <h4><strong><t t-esc="layout_category['name']"/></strong></h4>
@@ -191,7 +193,7 @@
                                                 </t>
                                             </td>
                                             <td class="text-right">
-                                                IVA <span t-esc="int(l.tax_id.amount)"/>%
+                                                <span t-esc="l.tax_id.description"/>
                                             </td>
                                             <td class="text-right">
                                                 <span t-field="l.price_subtotal"
@@ -224,18 +226,46 @@
                                         <td style="text-align:right; background-color: #e6e6e6;">
                                             <span t-esc="group_price" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
                                         </td>
+                                        <t t-if="layout_category['name'] == 'Annuale Odoo'">
+                                            <t t-set="totale_odoo" t-value="totale_odoo + group_price" />
+                                        </t>
                                     </tr>
                                 </tbody>
                             </table>
                         </t>
                     </t>
+                    <t t-set="totale_addoons" t-value="doc.amount_total - totale_odoo"/>
 
                     <br/>
 
                     <!--TOTALI-->
                     <div class="row" name="total" style="page-break-inside:avoid;">
-                        <div class="col-4" />
-                        <div class="col-4" />
+                        <div class="col-7">
+
+                            <table>
+                                <thead>
+                                    <th style="width:30%; padding-left: 5px;">IMPOSTA</th>
+                                    <th style="width:55%;">DESCRIZIONE</th>
+                                    <th style="width:15%;">IMPORTO</th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                    <t t-set="valori_imposte" t-value="doc.get_amount_by_tax()"/>
+                                    <t t-foreach="valori_imposte" t-as="tassa">
+                                        <tr>
+                                            <td style="padding-left: 5px;"><t t-esc="tassa_value['etichetta']"/></td>
+                                            <td><t t-esc="tassa_value['nome']"/></td>
+                                            <td style="text-align: right;">
+                                                <t t-esc="tassa_value['totale']"
+                                                   t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="col-1"/>
                         <div class="col-4 pull-right">
                             <table class="table table-condensed">
                                 <tr>
@@ -245,33 +275,32 @@
                                               t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
                                     </td>
                                 </tr>
-                                <t t-foreach="doc.amount_by_group" t-as="amount_by_group">
-                                    <tr style="">
-                                        <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                            <td>
-                                                <span t-esc="amount_by_group[0]"/>
-                                                <span>&amp;nbsp;<span>on</span>&amp;nbsp;<t t-esc="amount_by_group[2]" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></span>
-                                            </td>
-                                            <td class="text-right o_price_total">
-                                                <span t-esc="amount_by_group[1]"
-                                                      t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                            </td>
-                                        </t>
-                                        <t t-else ="">
-                                            <td>
-                                                <span t-esc="amount_by_group[0]"/>
-                                            </td>
-                                            <td class="text-right o_price_total">
-                                                <span t-esc="amount_by_group[1]"
-                                                      t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                            </td>
-                                        </t>
-                                    </tr>
-                                </t>
+                                <tr>
+                                    <td><span>Imposte</span></td>
+                                    <td class="text-right">
+                                        <span t-field="doc.amount_tax"
+                                              t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                    </td>
+                                </tr>
+
                                 <tr>
                                     <td><strong>Totale</strong></td>
                                     <td class="text-right">
                                         <span t-field="doc.amount_total"
+                                              t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Totale addOons srl</strong></td>
+                                    <td class="text-right">
+                                        <span t-esc="totale_addoons"
+                                              t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Totale Odoo SA</strong></td>
+                                    <td class="text-right">
+                                        <span t-esc="totale_odoo"
                                               t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
                                     </td>
                                 </tr>
@@ -447,7 +476,7 @@
                             TUTTI I MARCHI REGISTRATI E NON, COME OGNI E QUALSIASI SEGNO DISTINTIVO O DENOMINAZIONE APPOSTI SUL PROGRAMMA E SULLA RELATIVA DOCUMENTAZIONE, RESTANO DI PROPRIETÀ DEL TITOLARE, SENZA CHE DALLA STIPULAZIONE DEL PRESENTE CONTRATTO DERIVI A <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> ALCUN DIRITTO SUI MEDESIMI. <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> SI IMPEGNA A NON DISTRUGGERE, ALTERARE O SPOSTARE TALI MARCHI, SEGNI DISTINTIVI E DENOMINAZIONI E SI IMPEGNA A RIPRODURLI SULLE COPIE DI BACKUP.
                             <br/><br/>
                             <strong>ART. 3.1) CODICI SORGENTE.</strong>
-                           CODICI SORGENTE COME MODIFICATO, IMPLEMENTATO, CONFIGURATO E SVILUPPATO DA ADDOONS S.R.L. CON LA SOTTOSCRIZIONE DEL PRESENTE CONTRATTO, <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> ACQUISTA LA PROPRIETÀ DEL CODICE SORGENTE COME MODIFICATO, IMPLEMENTATO, CONFIGURATO E SVILUPPATO
+                            CODICI SORGENTE COME MODIFICATO, IMPLEMENTATO, CONFIGURATO E SVILUPPATO DA ADDOONS S.R.L. CON LA SOTTOSCRIZIONE DEL PRESENTE CONTRATTO, <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> ACQUISTA LA PROPRIETÀ DEL CODICE SORGENTE COME MODIFICATO, IMPLEMENTATO, CONFIGURATO E SVILUPPATO
                             DA ADDOONS S.R.L., LA QUALE TUTTAVIA SI OBBLIGA AD UTILIZZARLI PER FINI MERAMENTE COMMERCIALI INTERNI, RISULTANDONE COSÌ VIETATA LA CESSIONE A TERZI E LA DISTRIBUZIONE AL PUBBLICO. TUTTE LE TECNICHE, GLI ALGORITMI E I PROCEDIMENTI CONTENUTI NEL SOFTWARE E NELLA RELATIVA DOCUMENTAZIONE SONO INFORMAZIONI PROTETTE DAL DIRITTO D’AUTORE E,
                             PERTANTO, NON POSSONO ESSERE USATI IN ALCUN MODO DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> PER SCOPI DIVERSI DA QUELLI INDICATI NEL PRESENTE CONTRATTO.
                             <br/><br/>
@@ -473,7 +502,7 @@
                             <br/><br/>
 
                             <strong>ART. 7) CONDIZIONI ECONOMICHE E CORRISPETTIVI.</strong><br/>
-                            PER LO SVILUPPO DI CUI AL PRESENTE ACCORDO E PER I SERVIZI DI MANUTENZIONE, IL COMMITTENTE SI IMPEGNA A VERSARE IL CORRISPETTIVO PATTUITO DI TOTALE OFFERTA €. <span t-field="doc.amount_total"/> COME SEGUE:
+                            PER LO SVILUPPO DI CUI AL PRESENTE ACCORDO E PER I SERVIZI DI MANUTENZIONE, IL COMMITTENTE SI IMPEGNA A VERSARE IL CORRISPETTIVO PATTUITO DI TOTALE OFFERTA €. <span t-esc="round(totale_addoons,2)" /> COME SEGUE:
                             MODALITÀ DI PAGAMENTO: 30% ACCONTO A MEZZO B.B. D.F. F.M., 40% PRIMA INSTALLAZIONE A MEZZO R.B. 30 GG D.F. F.M., SALDO A MEZZO R.B. 30 GG D.F. F.M.
                             EVENTUALI ORE DI SERVIZIO DI MANUTENZIONE CHE NON DOVESSERO ESSERE UTILIZZATE NELL’ARCO DELL’ANNO ANDRANNO PERDUTE E NON POTRANNO ESSERE UTILIZZATE NEL SUCCESSIVO ANNO CON CONSEGUENTE DIVIETO DI RECUPERO NEGLI ANNI SUCCESSIVI.
                             TUTTI GLI IMPORTI E I PREZZI INDICATI NEL CONTRATTO O NEGLI EVENTUALI ALLEGATI SI INTENDONO AL NETTO DI IVA.

@@ -58,6 +58,9 @@
                 <xpath expr="//field[@name='order_line']/tree" position="inside">
                     <button name="open_line" string="Apri" class="btn btn-primary" type="object"/>
                 </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="before">
+                    <field name="periodo"/>
+                </xpath>
 
                 <xpath expr="//field[@name='order_line']/form/field[@name='name']" position="after">
                     <field name="description_line" string="Descrizione Dettagliata"/>

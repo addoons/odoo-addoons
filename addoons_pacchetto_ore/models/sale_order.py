@@ -11,11 +11,11 @@ class SaleOrderInherit(models.Model):
     def _compute_numero_pacchetti(self):
         for record in self:
             record.counter_pacchetti_ore = len(record.pacchetti_ore_ids)
-    """
-        Funzione che crea i pacchetti ore associati all'ordine di vendita nato dal portale.
-    """
-    def crea_pacchetto(self):
 
+    def crea_pacchetto(self):
+        """
+            Funzione che crea i pacchetti ore associati all'ordine di vendita nato dal portale.
+        """
         if self.vendita_pacchetto_ore:
             pacchetti_ids = []
             if not self.partner_id.parent_id:
@@ -52,7 +52,7 @@ class SaleOrderInherit(models.Model):
                     'name': 'Pacchetti ordine ' + self.name,
                     'view_mode': 'tree,form',
                     'res_model': 'pacchetti.ore',
-                    'domain':[('id', 'in', pacchetti_ids)],
+                    'domain': [('id', 'in', pacchetti_ids)],
                     'type': 'ir.actions.act_window',
                     'target': 'current',
                 }

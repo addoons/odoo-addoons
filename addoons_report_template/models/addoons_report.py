@@ -32,13 +32,34 @@ class AddoonsReportSaleOrder(models.Model):
             })
         return report_pages
 
+    def get_amount_by_tax(self):
+        """
+        Calcolo il totale per ogni imposta
+        """
+        result = {}
+        for line in self.order_line:
+            if not line.display_type:
+                if len(line.tax_id) > 0 and line.tax_id[0].description not in result.keys():
+                    result[line.tax_id[0].description] = {
+                        'nome': line.tax_id[0].name,
+                        'etichetta': line.tax_id[0].description,
+                        'totale': 0,
+                    }
+                if len(line.tax_id) > 0 and line.tax_id[0].description in result.keys():
+                    result[line.tax_id[0].description]['totale'] += line.price_tax
+
+        return result
+
 
 class AddoonsReportSaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     description_line = fields.Html()
     deadline = fields.Date()
-    periodo = fields.Selection([('Una Tantum', 'Una Tantum'), ('Giornaliero', 'Giornaliero'), ('Mensile', 'Mensile'), ('Annuale', 'Annuale')])
+
+    # questa e' molto brutto nel valore interno non si mette la stringa con gli spazi. era stata fatta tempo fa perche'
+    # non si riusciva a prendere il valore stringa in python
+    periodo = fields.Selection([('Una Tantum', 'Una Tantum'), ('Giornaliero', 'Giornaliero'), ('Mensile', 'Mensile'), ('Annuale', 'Annuale'), ('Annuale Odoo', 'Annuale Odoo')])
 
     def check_description(self):
         if self.description_line:
@@ -57,6 +78,7 @@ class AddoonsReportSaleOrderLine(models.Model):
             'res_id': self.id,
             'context': self.env.context
         }
+
 
 
 
