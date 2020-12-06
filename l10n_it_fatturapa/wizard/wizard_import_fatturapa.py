@@ -877,7 +877,7 @@ class WizardImportFatturapa(models.TransientModel):
         # 2.1.1.12
         self.set_art73(FatturaBody, invoice_data)
 
-        # 2.1.1.5
+        # 2.1.1.5 - Ritenute righe Fattura
         wt_found = self.set_withholding_tax(FatturaBody, invoice_data)
 
         # 2.2.1
@@ -894,7 +894,7 @@ class WizardImportFatturapa(models.TransientModel):
 
         self.set_vendor_bill_data(FatturaBody, invoice)
 
-        # 2.1.1.7
+        # 2.1.1.7 #Ritenuta Totale Fattura
         self.set_welfares_fund(FatturaBody, credit_account_id, invoice, wt_found)
 
         rel_docs_dict = {
@@ -1184,88 +1184,49 @@ class WizardImportFatturapa(models.TransientModel):
         return wt_founds
 
     def set_welfares_fund(
-        self, FatturaBody, credit_account_id, invoice, wt_founds
+            self, FatturaBody, credit_account_id, invoice, wt_founds
     ):
         if not self.e_invoice_detail_level == '2':
             return
 
-        Welfares = FatturaBody.DatiGenerali.DatiGeneraliDocumento.DatiCassaPrevidenziale
+        Welfares = FatturaBody.DatiGenerali. \
+            DatiGeneraliDocumento.DatiCassaPrevidenziale
         if not Welfares:
             return
 
         WelfareFundLineModel = self.env['welfare.fund.data.line']
-
-        wts = False
-        enasarco_relax_checks = self.env.user.company_id.enasarco_relax_checks
-        if any([welfareLine for welfareLine in Welfares
-                if welfareLine.TipoCassa == 'TC07']):
-                    # Search the matching withholding tax
-                    wts = self.env['withholding.tax'].search([('wt_types', '=', 'enasarco')])
-
         for welfareLine in Welfares:
             WalfarLineVals = self._prepareWelfareLine(invoice.id, welfareLine)
             WelfareFundLineModel.create(WalfarLineVals)
 
-            # Handle only TC07
             if welfareLine.TipoCassa == 'TC07':
-                if not wts:
-                    msg = _(
-                        "%s The bill contains Welfare Fund tax with "
-                        "Type %s, "
-                        "but such a tax is not found in your system. Please "
-                        "set it."
-                    ) % (invoice.partner_id.name, welfareLine.TipoCassa)
-                    if enasarco_relax_checks:
-                        self.log_inconsistency(msg)
-                    else:
-                        raise UserError(msg)
+                continue
 
-                wt_found = False
-                for wt in wts:
-                    if wt.tax == float(welfareLine.AlCassa):
-                        wt_found = wt
-                        break
-
-                if not wt_found:
-                    msg = _(
-                        "%s The bill contains Welfare Fund tax with "
-                        "Type %s and Tax %s "
-                        "but such a tax is not found in your system. Please "
-                        "set it."
-                    ) % (invoice.partner_id.name, welfareLine.TipoCassa, float(welfareLine.AlCassa))
-                    if enasarco_relax_checks:
-                        self.log_inconsistency(msg)
-                    else:
-                        raise UserError(msg)
-
-                for line in invoice.invoice_line_ids:
-                    line.invoice_line_tax_wt_ids = [(4, wt_found.id)]
-                invoice._onchange_invoice_line_wt_ids()
-                invoice.write(invoice._convert_to_write(invoice._cache))
-
-
-                line_vals = self._prepare_generic_line_data(welfareLine)
-                line_vals.update({
-                    'name': _("Welfare Fund: %s") % welfareLine.TipoCassa,
-                    'price_unit': float(welfareLine.ImportoContributoCassa),
-                    'invoice_id': invoice.id,
-                    'account_id': credit_account_id,
-                })
-
-                if welfareLine.Ritenuta:
-                    if not wt_found:
-                        raise UserError(_(
-                            "%s Welfare Fund data %s has withholding tax but no "
-                            "withholding tax was found in the system."
-                        ) % (invoice.partner_id.name, welfareLine.TipoCassa))
-                    line_vals['invoice_line_tax_wt_ids'] = [(6, 0, [wt_found.id])]
-                if self.env.user.company_id.cassa_previdenziale_product_id:
-                    cassa_previdenziale_product = self.env.user.company_id.cassa_previdenziale_product_id
-                    line_vals['product_id'] = cassa_previdenziale_product.id
-                    line_vals['name'] = cassa_previdenziale_product.name
-                    self.adjust_accounting_data(cassa_previdenziale_product, line_vals)
-
-                self.env['account.invoice.line'].create(line_vals)
+            line_vals = self._prepare_generic_line_data(welfareLine)
+            line_vals.update({
+                'name': _(
+                    "Welfare Fund: %s") % welfareLine.TipoCassa,
+                'price_unit': float(welfareLine.ImportoContributoCassa),
+                'invoice_id': invoice.id,
+                'account_id': credit_account_id,
+            })
+            if welfareLine.Ritenuta:
+                if not wt_founds:
+                    raise UserError(_(
+                        "Welfare Fund data %s has withholding tax but no "
+                        "withholding tax was found in the system."
+                    ) % welfareLine.TipoCassa)
+                line_vals['invoice_line_tax_wt_ids'] = [
+                    (6, 0, [wt.id for wt in wt_founds])]
+            if self.env.user.company_id.cassa_previdenziale_product_id:
+                cassa_previdenziale_product = self.env.user.company_id \
+                    .cassa_previdenziale_product_id
+                line_vals['product_id'] = cassa_previdenziale_product.id
+                line_vals['name'] = cassa_previdenziale_product.name
+                self.adjust_accounting_data(
+                    cassa_previdenziale_product, line_vals
+                )
+            self.env['account.invoice.line'].create(line_vals)
 
     def set_delivery_data(self, FatturaBody, invoice):
         Delivery = FatturaBody.DatiGenerali.DatiTrasporto

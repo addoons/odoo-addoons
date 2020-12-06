@@ -44,6 +44,7 @@ ERROR_CODE = [
     ('0013', 'Si è verificato un errore in fase di registrazione della richiesta'),
     ('0018', 'Errore validazione firma fattura elettronica inviata, il file non risulta firmato'),
     ('0033', 'Il file fattura elettronica inviato supera la dimensione massima accettata'),
+    ('0034', 'File già inviato di recente'),
     ('0071', 'Errore in fase di verifica nome file per utente'),
     ('0072', 'Errore in fase di caricamento lista fatture per utente'),
     ('0082', 'Si è verificato un errore in fase di recupero notifiche'),
@@ -51,6 +52,7 @@ ERROR_CODE = [
     ('0093', 'Errore deleghe non valide'),
     ('0094', 'La fattura che stai inviando contiene ID e/o contatti dei trasmittenti differenti dai dati dell’intermediario Aruba PEC.'),
     ('0095', 'Servizio momentaneamente non disponibile. Il controllo dei permessi è fallito. Si prega di riprovare più tardi.'),
+    ('0097', 'Spazio esaurito o non sufficiente, è necessario effettuare un aumento di spazio.'),
 ]
 
 SDI_STATE = [

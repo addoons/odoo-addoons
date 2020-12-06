@@ -1,18 +1,18 @@
 <odoo>
 
-    <record id="addoons_scheduler_fiscal_documents" model="ir.cron">
-        <field name="name">Esportazione documenti fiscali</field>
-        <field name="interval_number">6</field>
-        <field name="interval_type">hours</field>
+    <record id="addoons_export_fe_credemtel" model="ir.cron">
+        <field name="name">Esportazione FE Credemtel</field>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
         <field name="active">0</field>
         <field name="numbercall">-1</field>
         <field name="model_id" ref="model_ir_cron_fiscal_documents"/>
         <field name="state">code</field>
-        <field name="code">model.export_fiscal_documents()</field>
+        <field name="code">model.export_credemtel_fiscal_documents()</field>
         <field name="doall">1</field>
     </record>
 
-    <record id="addoons_scheduler_fiscal_documents" model="ir.cron">
+    <record id="addoons_fe_notify" model="ir.cron">
         <field name="name">NOTIFICHE SDI - FATTURE ELETTRONICHE</field>
         <field name="interval_number">2</field>
         <field name="interval_type">hours</field>

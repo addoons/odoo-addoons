@@ -14,7 +14,7 @@
 
     <act_window id="action_download_zip_fatture"
                 key2="client_action_multi"
-                name="Scarica fatture elettroniche"
+                name="Invia FE Credemtel"
                 res_model="wizard.send.credemtel"
                 src_model="fatturapa.attachment.out"
                 target="new"
