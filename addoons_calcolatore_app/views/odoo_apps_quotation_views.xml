@@ -9,6 +9,14 @@
         <field name="arch" type="xml">
             <!-- add state field in header -->
             <xpath expr="//notebook" position="inside">
+                <page string="Server Cloud">
+                    <group>
+                        <field name="cpu"/>
+                        <field name="memory"/>
+                        <field name="os"/>
+                        <field name="disk"/>
+                    </group>
+                </page>
                 <page string="Calcolatore app">
                     <group>
                         <group>

@@ -1,0 +1,78 @@
+<odoo>
+    <data>
+
+
+        <template id="external_layout_addoons_flat">
+
+
+            <div class="header">
+                <div class="row" style="border-bottom: none; padding-bottom: 20px; background-color: #A16692;">
+                    <div class="col-3">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" alt="Logo" style="margin-left: 30px; margin-top: 30px; max-height: 70px;"/>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
+                <t t-raw="0" />
+            </div>
+
+
+            <div class="footer" style="margin:0 !important; padding:0 !important; height:400px; width:100%; background-color: #A16692;">
+
+                <style>
+                    body,html{
+                    margin:0 !important;
+                    padding: 0 !important;
+                    }
+
+                    .skewed {
+                    position: relative;
+                    top: 0;
+                    bottom: 0;
+                    right: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 150px;
+                    background-image: url('/addoons_report_template/static/src/img/divider.png');
+                    background-size:cover;
+                    z-index: 0;
+                    }
+
+
+                </style>
+
+
+
+                <div class="skewed"></div>
+
+                <div style="float:left; position:relative; text-align:left; width: 200px;  margin-left: 20px; margin-top: -110px;  color:white; font-size:16px;">
+                    <strong>addOons srl</strong><br/>
+                    Via Camillo Terni 26/A<br/>
+                    24047 Treviglio (BG)<br/>
+                    P.Iva/CF IT 04321130165<br/>
+                    www.addoons.it<br/>
+                </div>
+                <div style="float:right; position:relative; text-align:right; width: 200px;  margin-right: 10px; margin-bottom: 10px;  color:white; font-size:16px; font-weight:bolder !important;">
+                    <span>Pag: </span><span class="page"/> / <span class="topage"/>
+                </div>
+
+            </div>
+
+        </template>
+
+
+
+
+        <record id="report_layout_addoons_flat" model="report.layout">
+            <field name="view_id" ref="external_layout_addoons_flat"/>
+            <field name="image">/addoons_report_template/static/src/img/preview_background.png</field>
+            <field name="pdf">/addoons_report_template/static/src/img/preview_background.png</field>
+        </record>
+
+
+
+
+    </data>
+</odoo>

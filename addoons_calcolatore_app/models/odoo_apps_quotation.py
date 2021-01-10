@@ -16,6 +16,11 @@ class SaleOrderInherit(models.Model):
     odoo_app_ids = fields.Many2many('odoo.app.lines')
     users_count = fields.Integer()
 
+    cpu = fields.Integer()
+    memory = fields.Integer()
+    disk = fields.Integer()
+    os = fields.Char()
+
     def create_app_orderlines(self):
         app_count = 0
         app_total_monthly = 0
