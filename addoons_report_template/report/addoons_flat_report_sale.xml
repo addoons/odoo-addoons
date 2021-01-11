@@ -49,7 +49,7 @@
                         color: #292929;
                         border: none !important;
                         border-bottom: none !important;
-                        font-size: 18px;
+                        font-size: 17px;
                         }
                         .iva-table th, .table-cloud th{
                         background-color: #f8f8f8 !important;
@@ -60,11 +60,11 @@
                         }
                         .sale-table td, .iva-table td, .table-cloud td{
                         padding: 10px !important;
-                        font-size: 18px;
+                        font-size: 15px;
                         border:none;
                         background-color:#f5f5f5;
                         border-bottom: solid 1px #e6e6e6;
-                        font-weight: 100;
+                        font-weight: 100 !important;
                         }
                         .table-extra th{
                         background-color:#e6e6e6;
@@ -234,27 +234,27 @@
                     <div class="row" style="background-color:#A16692; ">
                         <br/>
                         <div class="row" id="info-docs">
-                            <div class="col-3">
+                            <div style="display:inline-block; width: 180px;">
                                 <br/><br/>
                                 <img src="/addoons_report_template/static/src/img/date.png" alt="Logo" width="45" /><br/>
-                                <strong style="color:white;" t-if="doc.state in ['draft','sent']">Data Preventivo:</strong>
-                                <p style="color:white;" t-field="doc.date_order"  t-field-options='{"format": "dd/MM/yyyy"}'/>
+                                <strong style="color:white;" t-if="doc.state in ['draft','sent']">Data Preventivo</strong>
+                                <strong style="color:white;" t-if="doc.state in ['sale']">Data Ordine</strong>
+                                <p style="color:white;" t-field="doc.date_order"  t-options='{"format": "dd/MM/yyyy"}'/>
                             </div>
-                            <div class="col-3">
+                            <div style="display:inline-block; width: 180px;">
                                 <br/><br/>
                                 <img src="/addoons_report_template/static/src/img/due.png" alt="Logo" width="45" /><br/>
-                                <strong style="color:white;">Data Scadenza:</strong>
-                                <p style="color:white;" t-field="doc.validity_date"/>
+                                <strong style="color:white;">Data Scadenza</strong>
+                                <p style="color:white;" t-field="doc.validity_date" t-options='{"format": "dd/MM/yyyy"}'/>
                             </div>
-                            <div class="col-3">
+                            <div style="display:inline-block; width: 180px;">
                                 <br/><br/>
                                 <img src="/addoons_report_template/static/src/img/user.png" alt="Logo" width="45" /><br/>
-                                <strong style="color:white;">Commerciale:</strong>
+                                <strong style="color:white;">Commerciale</strong>
                                 <p style="color:white;" t-field="doc.user_id"/>
                             </div>
-                            <div class="col-3">
-                                <br/><br/>
-                                <span style="font-size: 52px;  font-weight:bolder; text-align:right;"><span t-field="doc.name"/></span>
+                            <div style="width: 290px; margin-top: 65px; height:60px; position:relative;">
+                                <span style="font-size: 44px;  font-weight:bolder; text-align:right;"><span t-field="doc.name"/></span>
                             </div>
 
                         </div>
@@ -431,7 +431,7 @@
                             </div>
                         </div>
                     </div>
-                    <br/><br/><br/><br/>
+                    <br/><br/><br/>
                     <div class="row" style="width:90%; margin:auto;">
                         <div class="col-6">
                             <center>
@@ -505,23 +505,23 @@
                                 <th style="font-size: 18px;">Capacità/Descrizione</th>
                             </tr>
                             <tr>
-                                <td><img src="/addoons_report_template/static/src/img/cpu.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="40" />CPU</td>
+                                <td><img src="/addoons_report_template/static/src/img/cpu.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="30" />CPU</td>
                                 <td><span t-field="doc.cpu"/></td>
                             </tr>
                             <tr>
-                                <td><img src="/addoons_report_template/static/src/img/memory.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="40" />Memoria</td>
+                                <td><img src="/addoons_report_template/static/src/img/memory.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="30" />Memoria</td>
                                 <td><span t-field="doc.memory"/> GB</td>
                             </tr>
                             <tr>
-                                <td><img src="/addoons_report_template/static/src/img/disk.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="40" />Disco</td>
+                                <td><img src="/addoons_report_template/static/src/img/disk.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="30" />Disco</td>
                                 <td><span t-field="doc.disk"/> GB SSD</td>
                             </tr>
                             <tr>
-                                <td><img src="/addoons_report_template/static/src/img/os.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="40" />Sistema Operativo</td>
+                                <td><img src="/addoons_report_template/static/src/img/os.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="30" />Sistema Operativo</td>
                                 <td><span t-field="doc.os"/></td>
                             </tr>
                             <tr>
-                                <td><img src="/addoons_report_template/static/src/img/backup.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="40" />Backup</td>
+                                <td><img src="/addoons_report_template/static/src/img/backup.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="30" />Backup</td>
                                 <td><span>Giornaliero</span></td>
                             </tr>
                         </table>
