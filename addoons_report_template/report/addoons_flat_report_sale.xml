@@ -610,7 +610,7 @@
 
                     <t t-if="doc.contratto_licenza">
                         <div style="page-break-after:always;"/>
-                        <br/><br/><br/><br/><br/><br/><br/><br/>
+                        <br/><br/><br/><br/><br/><br/><br/>
                         <h4><strong>CONTRATTO DI INSTALLAZIONE, CONFIGURAZIONE, SVILUPPO E MANUTENZIONE ORDINARIA DEL SOFTWARE ODOO 12 ENTERPRISE EDITION</strong></h4>
                         <br/><h4><strong>N. CONTRATTO <strong t-field="doc.name"/> DEL
                         <strong t-field="doc.date_order" t-field-options='{"format": "dd/MM/yyyy"}'/></strong></h4>
@@ -636,14 +636,14 @@
                             •	UNITÀ ASSOCIATE: L'UNITÀ VIDEO, WORKSTATION, PERSONAL COMPUTER, STAMPANTI, PERIFERICHE, SUPPORTI INTERNI; <br/>
                             •	USO: L’ELABORAZIONE E L’UTILIZZO DEL PROGRAMMA PER ELABORATORE. <br/>
 
-                            <br/><br/>
+                            <br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
                             <strong>ART. 2) OGGETTO DEL CONTRATTO.</strong>
                             CON IL PRESENTE CONTRATTO ADDOONS S.R.L. SI OBBLIGA AD INSTALLARE, CONFIGURARE, SVILUPPARE (*) E AD EFFETTUARE LA MANUTENZIONE ORDINARIA DEL SOFTWARE ODOO FORNITO DIRETTAMENTE ALLA SOCIETA’ <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> DA PARTE DELLA SOCIETA’ ODOO S.A.. LA SOCIETA’ <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>,
                             PERTANTO, SI OBBLIGA A UTILIZZARE E VISUALIZZARE IL SOFTWARE COME INSTALLATO, CONFIGURATO E SVILUPPATO DA ADDOONS S.R.L. SOLTANTO NEI MODI PREVISTI DALLA DOCUMENTAZIONE FORNITA CON IL SOFTWARE STESSO SOLO PER USI COMMERCIALI INTERNI, RISULTANDONE COSÌ VIETATA LA CESSIONE A TERZI E LA DISTRIBUZIONE AL PUBBLICO.
 
                             <br/><br/>
-                            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
                             <strong>ART. 2.1) OGGETTO DELLA MANUTENZIONE.</strong>
                             OGGETTO DELLA MANUTENZIONE. OLTRE ALL’ATTIVITA’ DI INSTALLAZIONE, CONFIGURAZIONE E SVILUPPO, ADDOONS S.R.L. METTE A DISPOSIZIONE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> IL SERVIZIO DI MANUTENZIONE ED ASSISTENZA, PER UN TOTALE COMPLESSIVO DI 60 ORE ANNUE, CHE PREVEDE:
                             1.	GLI AGGIORNAMENTI DI LEGGE, SUL SOLO SOFTWARE FORNITO DA ODOO S.A.;
@@ -682,7 +682,7 @@
                             IL PROGRAMMA VERRÀ SVILUPPATO SULLA BASE DELLE SPECIFICHE TECNICHE DI CUI AL DOCUMENTO DENOMINATO “URS-<span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>” CHE SI ALLEGA AL PRESENTE CONTRATTO QUALE DOCUMENTO A) E CHE, SIGLATO DALLE PARTI, NE DIVIENE PARTE INTEGRANTE. LE PARTI POTRANNO ESERCITARE LA FACOLTÀ DI RECESSO MEDIANTE L’INVIO DI LETTERA RACCOMANDATA O PEC CON UN PREAVVISO DI 30 GIORNI LAVORATIVI. IN CASO DI RISOLUZIONE ANTICIPATA PRIMA DEL COMPLETAMENTO DEL PROGRAMMA DA PARTE DI ADDOONS SRL,
                             LA STESSA SARA’ TENUTA A RESTITUIRE GLI IMPORTI RICEVUTI DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> PER CONTRO IN CASO DI RISOLUZIONE ANTICIPATA PRIMA DEL COMPLETAMENTO DEL PROGRAMMA DA PARTE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>, ADDOONS SRL TRATTERRA’ GLI IMPORTI RICEVUTI DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> ED AVRA’ IL DIRITTO AL PAGAMENTO DI UNA SOMMA PARI AL 20% DELL’IMPORTO PATTUITO DAL PRESENTE CONTRATTO E NEL PREVENTIVO N. SO/2020/0400 A TITOLO DI CLAUSOLA PENALE AI SENSI E PER GLI EFFETTI DEAL ARTICOLO 1382 DEL C.C.. PER “COMPLETAMENTO DEL PROGRAMMA” SI INTENDE QUANDO QUESTO – SVILUPPATO SULLA BASE DELLE SPECIFICHE TECNICHE DI CUI AL DOCUMENTO DENOMINATO “URS-<span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>” ALLEGATO AL PRESENTE CONTRATTO QUALE DOCUMENTO A) - SARA’ INSTALLATO, ATTIVO E OPERATIVO AL FINE DEL PIENO UTILIZZO DA PARTE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>
                             <br/><br/>
-                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/>
                             <strong>ART. 5) OBBLIGHI E RESPONSABILITÀ.</strong>
                             I VIZI E LE DIFFORMITÀ DOVRANNO ESSERE DENUNCIATI PER ISCRITTO DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.ENTRO 5 GIORNI LAVORATIVI DALLA SCOPERTA. A TAL FINE, ADDOONS S.R.L., NEL CASO IN CUI IL VIZIO O LA DIFFORMITÀ DENUNCIATA RENDA TOTALMENTE INOPERANTE IL SOFTWARE,
                             SI OBBLIGA AD INTERVENIRE DA REMOTO PER LA PRONTA RISOLUZIONE DEL PROBLEMA ENTRO E NON OLTRE LE 24 ORE LAVORATIVE DECORRENTI DALLA RICHIESTA DI INTERVENTO INOLTRATA DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.TRAMITE SERVIZIO DI HELP DESK FORNITO DA ADDOONS SRL O POSTA ELETTRONICA, NEL CASO IN CUI IL VIZIO O LA DIFFORMITÀ DENUNCIATA
