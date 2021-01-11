@@ -13,7 +13,7 @@
                 id="sale.report_sale_order"
                 string="Preventivo/Ordine (PDF)"
                 model="sale.order"
-                report_type="qweb-pdf"
+                report_type="qweb-html"
                 file="addoons_report_template.report_saleorder"
                 name="addoons_report_template.report_saleorder"
                 paperformat="addoons_report_template.paperformat_flat_addoons_report"
@@ -487,7 +487,7 @@
                     </div>
 
                     <br/><br/><br/><br/>
-                    <div class="row" style="width:500px; margin:auto;">
+                    <div class="row" style="width:100%; margin:auto;">
 
                         <img src="/addoons_report_template/static/src/img/cloud.png" style="margin-top: -20px; margin-right: 10px; " alt="Logo" width="75" />
                         <h3>
