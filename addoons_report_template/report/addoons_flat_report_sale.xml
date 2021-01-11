@@ -13,10 +13,11 @@
                 id="sale.report_sale_order"
                 string="Preventivo/Ordine (PDF)"
                 model="sale.order"
-                report_type="qweb-html"
+                report_type="qweb-pdf"
                 file="addoons_report_template.report_saleorder"
                 name="addoons_report_template.report_saleorder"
                 paperformat="addoons_report_template.paperformat_flat_addoons_report"
+                print_report_name="'%s' % (object.name)"
         />
 
 
@@ -443,26 +444,26 @@
                                 </h3>
                             </center>
                             <div style="background-color: #f8f8f8; padding: 6px; min-height:170px;">
-                            <table class="iva-table" style="min-height: 200px;">
-                                <thead>
-                                    <th style="width:30%; padding-left: 5px;">IMPOSTA</th>
-                                    <th style="width:55%;">DESCRIZIONE</th>
-                                    <th style="width:15%;">IMPORTO</th>
-                                </thead>
-                                <tbody>
-                                    <t t-set="valori_imposte" t-value="doc.get_amount_by_tax()"/>
-                                    <t t-foreach="valori_imposte" t-as="tassa">
-                                        <tr>
-                                            <td style="padding-left: 5px;"><t t-esc="tassa_value['etichetta']"/></td>
-                                            <td><t t-esc="tassa_value['nome']"/></td>
-                                            <td style="text-align: right;">
-                                                <t t-esc="tassa_value['totale']"
-                                                   t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
+                                <table class="iva-table" style="min-height: 200px;">
+                                    <thead>
+                                        <th style="width:30%; padding-left: 5px;">IMPOSTA</th>
+                                        <th style="width:55%;">DESCRIZIONE</th>
+                                        <th style="width:15%;">IMPORTO</th>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="valori_imposte" t-value="doc.get_amount_by_tax()"/>
+                                        <t t-foreach="valori_imposte" t-as="tassa">
+                                            <tr>
+                                                <td style="padding-left: 5px;"><t t-esc="tassa_value['etichetta']"/></td>
+                                                <td><t t-esc="tassa_value['nome']"/></td>
+                                                <td style="text-align: right;">
+                                                    <t t-esc="tassa_value['totale']"
+                                                       t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="col-6">
@@ -487,14 +488,15 @@
                     </div>
 
                     <br/><br/><br/><br/>
-                    <div class="row" style="width:100%; margin:auto;">
-
-                        <img src="/addoons_report_template/static/src/img/cloud.png" style="margin-top: -20px; margin-right: 10px; " alt="Logo" width="75" />
-                        <h3>
-                            <strong>
-                                Server Cloud
-                            </strong>
-                        </h3>
+                    <div class="row" >
+                        <div class="col-6">
+                            <img src="/addoons_report_template/static/src/img/cloud.png" style="margin-top: -20px; margin-right: 10px; " alt="Logo" width="75" />
+                            <h3>
+                                <strong>
+                                    Server Cloud
+                                </strong>
+                            </h3>
+                        </div>
                     </div>
                     <br/>
                     <div class="row" style="width:95%; margin:auto;">
