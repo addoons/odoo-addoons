@@ -441,7 +441,7 @@
                                         Imposte
                                     </strong>
                                 </h3>
-                            </center><br/>
+                            </center>
                             <div style="background-color: #f8f8f8; padding: 6px; min-height:170px;">
                             <table class="iva-table" style="min-height: 200px;">
                                 <thead>
@@ -473,7 +473,7 @@
                                         Banca
                                     </strong>
                                 </h3>
-                            </center><br/>
+                            </center>
                             <div style="background-color: #f8f8f8; padding: 6px; min-height:170px;">
                                 <p t-if="doc.payment_term_id.name">
                                     <strong style="font-size: 16px;">Termini: </strong><span style="font-size: 16px;" t-field="doc.payment_term_id.name"/>
