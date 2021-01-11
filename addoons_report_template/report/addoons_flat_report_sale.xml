@@ -254,7 +254,7 @@
                                 <p style="color:white;" t-field="doc.user_id"/>
                             </div>
                             <div style="width: 290px; margin-top: 65px; height:60px; position:relative;">
-                                <span style="font-size: 44px;  font-weight:bolder; text-align:right;"><span t-field="doc.name"/></span>
+                                <span style="font-size: 42px;  font-weight:bolder; text-align:right;"><span t-field="doc.name"/></span>
                             </div>
 
                         </div>
@@ -431,7 +431,7 @@
                             </div>
                         </div>
                     </div>
-                    <br/><br/><br/>
+                    <br/><br/>
                     <div class="row" style="width:90%; margin:auto;">
                         <div class="col-6">
                             <center>
@@ -486,7 +486,7 @@
                         </div>
                     </div>
 
-                    <br/><br/><br/>
+                    <br/><br/>
                     <div class="row" style="width:100%; margin:auto;">
 
                         <img src="/addoons_report_template/static/src/img/cloud.png" style="margin-top: -20px; margin-right: 10px; " alt="Logo" width="75" />
