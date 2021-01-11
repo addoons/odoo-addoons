@@ -490,7 +490,7 @@
                     <br/><br/><br/><br/>
                     <div class="row" >
                         <div class="col-6">
-                            <img src="/addoons_report_template/static/src/img/cloud.png" style="margin-top: -20px; margin-right: 10px; " alt="Logo" width="75" />
+                            <img src="/addoons_report_template/static/src/img/cloud.png" style="float:left; margin-top: -20px; margin-right: 10px; " alt="Logo" width="75" />
                             <h3>
                                 <strong>
                                     Server Cloud
