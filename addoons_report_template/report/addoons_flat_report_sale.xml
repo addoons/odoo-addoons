@@ -431,7 +431,7 @@
                             </div>
                         </div>
                     </div>
-                    <br/><br/>
+                    <br/><br/><br/>
                     <div class="row" style="width:90%; margin:auto;">
                         <div class="col-6">
                             <center>
@@ -519,10 +519,6 @@
                             <tr>
                                 <td><img src="/addoons_report_template/static/src/img/os.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="30" />Sistema Operativo</td>
                                 <td><span t-field="doc.os"/></td>
-                            </tr>
-                            <tr>
-                                <td><img src="/addoons_report_template/static/src/img/backup.png" style="float:left; margin-top: -6px; margin-right: 10px; " alt="Logo" width="30" />Backup</td>
-                                <td><span>Giornaliero</span></td>
                             </tr>
                         </table>
                     </div>
