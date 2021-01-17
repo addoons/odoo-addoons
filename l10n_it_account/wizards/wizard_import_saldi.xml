@@ -1,0 +1,72 @@
+<odoo>
+    <data>
+
+        <record id="import_saldi_view_form" model="ir.ui.view">
+            <field name="name">wizard.import.saldi.form</field>
+            <field name="model">wizard.import.saldi</field>
+            <field name="arch" type="xml">
+                <form string="Import Saldi">
+                    <group>
+                        <field name="excel_import" string="Caricare file xlsx" required="1"/>
+                        <field name="conto_dare_id" string="Conto Dare" required="1"/>
+                        <field name="conto_avere_id" string="Conto Avere" required="1"/>
+                        <field name="move_date" string="Data" required="1"/>
+                        <field name="journal_id" string="Registro" required="1"/>
+                        <field name="riferimento" string="Riferimento" required="1"/>
+                    </group>
+                    <span><strong>Esempio Tracciato:</strong></span><br/>
+                    <group>
+
+                        <table class="o_list_view table table-sm table-hover table-striped o_list_view_grouped">
+                            <thead>
+                                <tr>
+                                    <th>SCRITTURA CONTABILE</th>
+                                    <th>CLIENTE</th>
+                                    <th>CONTO DARE</th>
+                                    <th>CONTO AVERE</th>
+                                    <th>IMPORTO</th>
+                                    <th>CAUSALE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>01/01/2020</td>
+                                    <td>MARIO ROSSI</td>
+                                    <td>55/0005/0005 Bilancio di Apertura</td>
+                                    <td>14/00****** Crediti v/ Clienti</td>
+                                    <td>-1.390,00</td>
+                                    <td>Bilanco Apertura Clienti</td>
+                                </tr>
+                                <tr>
+                                    <td>01/01/2020</td>
+                                    <td>PAOLO ROSSI</td>
+                                    <td>14/00****** Crediti v/ Clienti</td>
+                                    <td>55/0005/0005 Bilancio di Apertura</td>
+                                    <td>17.542,32</td>
+                                    <td>Bilanco Apertura Clienti</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </group>
+                    <footer>
+                        <button string="Import Saldi" name="import_saldi" type="object" default_focus="1" class="btn-primary"/>
+                        <button string="Cancella" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_import_saldi"
+                    name="Import Saldi"
+                    res_model="wizard.import.saldi"
+                    view_mode="form" target="new" view_type="form" view_id="import_saldi_view_form"/>
+
+
+        <menuitem id="menu_import_saldi"
+                  name="Import Saldi"
+                  parent="l10n_it_account.accounting_tools_menu_root"
+                  sequence="2"
+                  action="action_import_saldi"/>
+
+    </data>
+</odoo>

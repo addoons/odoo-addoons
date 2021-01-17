@@ -9,9 +9,34 @@
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_supplier_form"/>
         <field name="arch" type="xml">
-            <!--<xpath expr="//field[@name='date_invoice']" position="after">-->
-            <!--<field name="fatturapa_state" string="Stato e-Fattura"/>-->
-            <!--</xpath>-->
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Scadenza Pagamenti">
+                    <field name="fatturapa_payments">
+                        <tree>
+                            <field name="payment_terms" string="Termini"/>
+                            <field name="payment_methods" string="Metodo"/>
+                        </tree>
+                        <form>
+                            <field name="payment_terms" string="Termini"/>
+                            <field name="payment_methods" string="Scadenze">
+                                <tree>
+                                    <field name="payment_due_date" string="Data Scadenza"/>
+                                    <field name="payment_data_id" string="Metodo" />
+                                    <field name="payment_bank" string="Banca"/>
+                                    <field name="payment_bank_iban" string="IBAN"/>
+                                    <field name="payment_amount" string="Importo" />
+                                </tree>
+                            </field>
+                        </form>
+                    </field>
+                </page>
+                <page string="Fattura Elettronica">
+                    <field name="tax_stamp" string="Bollo Virtuale"/>
+                    <field name="fatturapa_attachment_in_id" string="Fattura XML"/>
+                    <field name="fatturapa_doc_attachments" string="Allegati"/>
+                </page>
+            </xpath>
 
             <field name="move_id" position="after">
                 <field name="split_payment" invisible="1"/>

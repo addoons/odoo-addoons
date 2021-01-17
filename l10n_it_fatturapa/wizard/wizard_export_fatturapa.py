@@ -456,7 +456,7 @@ class WizardExportFatturapa(models.TransientModel):
     def _setDatiAnagraficiCessionario(self, partner, fatturapa):
         fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
             DatiAnagrafici = DatiAnagraficiCessionarioType()
-        if not partner.vat and not partner.fiscalcode:
+        if (not partner.vat and not partner.fiscalcode) or partner.country_id.code != 'IT':
             if (
                     partner.codice_destinatario == 'XXXXXXX'
                     and partner.country_id.code
@@ -479,21 +479,33 @@ class WizardExportFatturapa(models.TransientModel):
         if partner.vat and partner.company_type == 'company':
             if 'IT' not in partner.vat and partner.country_id.code == 'IT' :
                 partner.vat = 'IT' + partner.vat
-            fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
-                DatiAnagrafici.IdFiscaleIVA = IdFiscaleType(
-                IdPaese=partner.vat[0:2], IdCodice=partner.vat[2:])
+            if partner.country_id.code != 'CH':
+                fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
+                    DatiAnagrafici.IdFiscaleIVA = IdFiscaleType(
+                    IdPaese=partner.vat[0:2], IdCodice=partner.vat[2:])
+
         if partner.company_name:
             # This is valorized by e-commerce orders typically
             fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
                 DatiAnagrafici.Anagrafica = AnagraficaType(
                 Denominazione=partner.company_name)
-        elif partner.company_type == 'company':
+
+        if partner.company_type == 'company':
             fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
                 DatiAnagrafici.Anagrafica = AnagraficaType(
                 Denominazione=partner.name)
         elif partner.company_type == 'person':
             firstname = False
             lastname = False
+            #Se ha la partita iva la mettiamo
+            if partner.country_id and partner.vat:
+                if 'IT' not in partner.vat and partner.country_id.code == 'IT':
+                    partner.vat = 'IT' + partner.vat
+                if partner.country_id.code != 'CH':
+                    fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
+                        DatiAnagrafici.IdFiscaleIVA = IdFiscaleType(
+                        IdPaese=partner.vat[0:2], IdCodice=partner.vat[2:])
+
             if (not partner.lastname or not partner.firstname) and partner.name:
                 #Se il cliente ha il NAME provo a calcolare il nome e cognome
                 partner._inverse_name()
@@ -1014,11 +1026,17 @@ class WizardExportFatturapa(models.TransientModel):
             move_line_pool = self.env['account.move.line']
             for move_line_id in payment_line_ids:
                 move_line = move_line_pool.browse(move_line_id)
+                #Cerco il Metodo di Pagamento
+                payment_method = invoice.payment_term_id.fatturapa_pm_id.code
+                for payment_due in invoice.payment_due_ids:
+                    if move_line.date_maturity == payment_due.date and move_line.balance == payment_due.amount:
+                        if payment_due.fatturapa_payment_method_id:
+                            payment_method = payment_due.fatturapa_payment_method_id.code
+
                 ImportoPagamento = '%.2f' % (
                         move_line.amount_currency or move_line.debit)
                 DettaglioPagamento = DettaglioPagamentoType(
-                    ModalitaPagamento=(
-                        invoice.payment_term_id.fatturapa_pm_id.code),
+                    ModalitaPagamento=(payment_method),
                     DataScadenzaPagamento=move_line.date_maturity,
                     ImportoPagamento=ImportoPagamento
                 )
@@ -1029,9 +1047,9 @@ class WizardExportFatturapa(models.TransientModel):
                         DettaglioPagamento.IBAN = (
                             ''.join(invoice.partner_bank_id.acc_number.split())
                         )
-                    # if invoice.partner_bank_id.bank_bic:
-                    #     DettaglioPagamento.BIC = (
-                    #         invoice.partner_bank_id.bank_bic)
+                    if invoice.partner_bank_id.bank_bic:
+                        DettaglioPagamento.BIC = (
+                            invoice.partner_bank_id.bank_bic)
                 DatiPagamento.DettaglioPagamento.append(DettaglioPagamento)
             body.DatiPagamento.append(DatiPagamento)
 
@@ -1121,6 +1139,7 @@ class WizardExportFatturapa(models.TransientModel):
 
             partner._compute_commercial_partner()
             partner._compute_commercial_company_name()
+            partner._compute_display_name()
 
             if partner.is_pa:
                 fatturapa = FatturaElettronica(versione='FPA12')

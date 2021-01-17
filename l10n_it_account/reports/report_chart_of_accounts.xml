@@ -80,6 +80,12 @@
                                             <t t-set="aggregate_code" t-value="doc.parent_id.code"/>
                                         </t>
                                         <tr style="background-color: #e6e6e6;">
+                                            <t t-if="not aggregate_code">
+                                                <t t-set="aggregate_code" t-value="' '"/>
+                                            </t>
+                                            <t t-if="not aggregate">
+                                                <t t-set="aggregate" t-value="'Non definito'"/>
+                                            </t>
                                             <th width="5%" style="border: none;background-color: white;!important" t-esc="' '"/>
                                                 <th width="95%" colspan="4" t-esc="aggregate_code + ' ' + aggregate"/>
                                             <t t-if="doc.parent_id">

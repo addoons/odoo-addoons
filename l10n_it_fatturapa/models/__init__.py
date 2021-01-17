@@ -11,5 +11,7 @@ from . import mail_thread
 from . import partner
 from . import product
 from . import sdi_channel
+from . import account_payment_term_line
+from . import payment_due_item
 
 

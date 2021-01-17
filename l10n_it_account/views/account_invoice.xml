@@ -91,6 +91,9 @@
                     </tree>
 
                 </field>
+                <group>
+                    <field name="differenza_ordini" string="Differenza Ordini Acquisto" readonly="1" force_save="1" widget="monetary"/>
+                </group>
             </xpath>
 
             <xpath expr="//group[hasclass('oe_subtotal_footer', 'oe_right')]/field[@name='amount_total']" position="after">
@@ -115,6 +118,9 @@
             <field name="price_subtotal" position="after">
                 <field name="rc"/>
             </field>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='rc']" position="after">
+                <field name="purchase_order_id" string="Ordine Acquisto"/>
+            </xpath>
 
 
             <!--Bolletta Doganale-->
@@ -135,6 +141,7 @@
                         <field name="am_tax_id" string="Imposte"/>
                         <field name="am_rda" string="Ritenuta d'acconto"/>
                         <field name="am_rc" string="RC"/>
+                        <field name="purchase_order_id" string="Ordine Acquisto"/>
                     </group>
                 </group>
             </xpath>
@@ -154,6 +161,8 @@
             <xpath expr="//header" position="inside">
                 <button name="set_fiscal_positon" type="object" string="Imposta Posizione Fiscale" class="btn btn-danger"/>
             </xpath>
+
+
 
             <xpath expr="//field[@name='move_id']" position="before">
                 <field name="fiscal_document_type_id" class="oe_inline" string="Tipo Documento"/>
@@ -313,6 +322,7 @@
 
             <xpath expr="//form/group/group/field[@name='currency_id']" position="after">
                 <field name="rc"/>
+                <field name="purchase_order_id" string="Ordine Acquisto"/>
             </xpath>
 
         </field>
@@ -330,6 +340,9 @@
             <xpath expr="//tree/field[@name='date_invoice']" position="after">
                 <field name="data_ricezione" string="Data Ricezione"/>
             </xpath>
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="payment_term_id" string="Pagamento"/>
+            </xpath>
         </field>
     </record>
 
@@ -340,6 +353,7 @@
         <field name="arch" type="xml">
             <search position="inside">
                 <field name="comment" string="Note"/>
+                <filter name="differenza_ordini_acquisto" string="Differenza Ordini" domain="[('differenza_ordini', '!=',0)]" />
             </search>
         </field>
     </record>

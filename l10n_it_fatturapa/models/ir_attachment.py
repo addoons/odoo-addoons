@@ -3,6 +3,8 @@
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 import datetime
 import json
+from time import sleep
+
 import lxml.etree as ET
 import re
 import base64
@@ -52,30 +54,22 @@ ERROR_CODE = [
     ('0093', 'Errore deleghe non valide'),
     ('0094', 'La fattura che stai inviando contiene ID e/o contatti dei trasmittenti differenti dai dati dell’intermediario Aruba PEC.'),
     ('0095', 'Servizio momentaneamente non disponibile. Il controllo dei permessi è fallito. Si prega di riprovare più tardi.'),
+    ('0096', 'Errore Non Mappato'),
     ('0097', 'Spazio esaurito o non sufficiente, è necessario effettuare un aumento di spazio.'),
 ]
 
-SDI_STATE = [
-    ('Presa in carico', 'Presa in carico'),
-    ('Errore Elaborazione', 'Errore Elaborazione'),
-    ('Inviata', 'Inviata'),
-    ('Scartata', 'Scartata'),
-    ('Non Consegnata', 'Non Consegnata'),
-    ('Recapito Impossibile', 'Recapito Impossibile'),
-    ('Consegnata', 'Consegnata'),
-    ('Accettata', 'Accettata'),
-    ('Rifiutata', 'Rifiutata'),
-    ('Decorrenza Termini', 'Decorrenza Termini'),
-]
+
 
 #Elenco degli Stati SDI che indicano che la fattura è in stato "Chiusa"
 #Questi stati verranno saltati nelle successive richieste di Aggiornamento SDI
 SDI_COMPLETED = [
     ('Consegnata', 'Consegnata'),
     ('Non Consegnata', 'Non Consegnata'),
+    ('Non consegnata', 'Non Consegnata'), #Minuscolo anche per bug di Aruba
 ]
 
 WS_ENDPOINT_NOTIFICATION_FILENAME = '/services/invoice/out/getByFilename'
+WS_ENDPOINT_NOTIFICATION_USERNAME = '/services/invoice/out/findByUsername'
 WS_ENDPOINT_UPLOAD_INVOICE = '/services/invoice/upload'
 
 class Attachment(models.Model):
@@ -223,31 +217,72 @@ class FatturaPAAttachmentIn(models.Model):
         """
         Import Aruba Supplier Invoice
         """
+
         ws_ids = self.env['sdi.channel'].get_default_ws()
         for ws in ws_ids:
             ws.web_auth()
-            header = {'Authorization': 'Bearer ' + ws.web_server_token}
-            data = {
-                'username': ws.web_server_login,
-                'countrySender': 'IT',
-                'countryReceiver': 'IT'
-            }
-            r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE, headers=header,
-                             params=data).json()
-            for invoice in r['content']:
-                filename = invoice['filename']
-                invoice_id = self.search([('aruba_filename', '=', filename)])
-                if not invoice_id:
-                    # LA FATTURA MANCA, IMPORTA
-                    invoice_data = {'filename': filename}
-                    r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE_XML, headers=header,
-                                     params=invoice_data).json()
-                    if r:
-                        # CREA LA FATTURA
-                        self.create({
-                            'aruba_filename': filename,
-                            'datas': r['file'],
-                        })
+            cron_id = self.env.ref('l10n_it_fatturapa.addoons_fe_import')
+            if cron_id:
+                from_date = cron_id.nextcall - datetime.timedelta(days=3)
+                from_date = from_date.strftime("%Y-%m-%d")
+
+                to_date = cron_id.nextcall
+                to_date = to_date.strftime("%Y-%m-%d")
+
+                page_number = 1
+                header = {
+                    'Authorization': 'Bearer ' + ws.web_server_token,
+                }
+                data = {
+                    'username': ws.web_server_login,
+                    'countryReceiver': 'IT',
+                    'vatcodeReceiver': self.env.user.company_id.vat.replace('IT', ''),
+                    'size': 100,
+                    'page': page_number,
+                    'startDate': from_date,
+                    'endDate': to_date
+                }
+                r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE,
+                                 headers=header, params=data)
+
+                if r.status_code == 200:
+                    r = r.json()
+                    page_number = 1
+                    total_pages = r['totalPages']
+                    while page_number <= total_pages:
+                        sleep(5)
+                        data['page'] = page_number
+                        page_number += 1
+                        r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE,
+                                         headers=header, params=data)
+                        if r.status_code == 200:
+                            r = r.json()
+                            for invoice in r['content']:
+                                filename = invoice['filename']
+                                invoice_id = self.search([('aruba_filename', '=', filename)])
+                                if not invoice_id:
+                                    # LA FATTURA MANCA, IMPORTA
+                                    invoice_data = {'filename': filename}
+                                    r = requests.get(ws.web_server_method_address + WS_ENDPOINT_IMPORT_INVOICE_XML, headers=header,
+                                                     params=invoice_data).json()
+                                    sleep(6)
+                                    if r:
+                                        # CREA LA FATTURA
+                                        if r['file']:
+                                            try:
+                                                logging.info(filename)
+                                                if filename == 'IT02098391200_40WEx.xml.p7m':
+                                                    print("Ok")
+                                                self.create({
+                                                    'name': r['sender']['description'] if 'description' in r['sender'] else filename,
+                                                    'aruba_filename': filename,
+                                                    'datas': r['file'],
+                                                })
+                                                #logging.info("FATTURA IMPORTATA")
+                                            except Exception as e:
+                                                logging.info("Scartata")
+                                        else:
+                                            logging.info("Scartata")
 
     @api.onchange('datas_fname')
     def onchagne_datas_fname(self):
@@ -302,14 +337,24 @@ class FatturaPAAttachmentIn(models.Model):
                 'format': attach.FormatoAttachment or '',
                 'invoice_id': invoice_id,
             }
-            AttachModel.create(_attach_dict)
+            fatturapa_attachment_id = AttachModel.create(_attach_dict)
+            #modifico l'ir.attachment per agganciarlo alla fattura
+            # che mostra l'anteprima nel chatter
+            if fatturapa_attachment_id:
+                fatturapa_attachment_id.ir_attachment_id.write({
+                    'res_model': 'account.invoice',
+                    'res_id': invoice_id,
+                })
+                self.env['account.invoice'].browse(invoice_id).message_post(attachment_ids=[fatturapa_attachment_id.ir_attachment_id.id])
+
+
 
 class SdiNotification(models.Model):
     _name = 'sdi.notification'
 
     attachment_out_id = fields.Many2one('fatturapa.attachment_out')
     date = fields.Datetime()
-    sdi_state = fields.Selection(SDI_STATE)
+    sdi_state = fields.Char()
     sdi_description = fields.Text()
 
 class FatturaPAAttachmentOut(models.Model):
@@ -337,9 +382,40 @@ class FatturaPAAttachmentOut(models.Model):
 
     aruba_upload_filename = fields.Char()
     aruba_error_code = fields.Selection(selection=ERROR_CODE)
-    aruba_sdi_state = fields.Selection(selection=SDI_STATE)
+    aruba_sdi_state = fields.Char()
     aruba_error_description = fields.Text()
     aruba_sent = fields.Boolean()
+
+
+    def get_single_sdi_notification(self):
+        ws_ids = self.env['sdi.channel'].get_default_ws()
+        for ws in ws_ids:
+            if ws.provider == 'aruba':
+                # Ora gestiamo solo le notifiche di Aruba
+                ws.web_auth()
+                header = {
+                    'Authorization': 'Bearer ' + ws.web_server_token,
+                }
+                data = {
+                    'filename': str(self.aruba_upload_filename),
+                    'includePdf': False,
+                }
+                r = requests.get(ws.web_server_method_address + WS_ENDPOINT_NOTIFICATION_FILENAME,
+                                 headers=header, params=data)
+                if r.status_code == 200:
+                    r = r.json()
+                    invoices = r['invoices']
+                    for inv in invoices:
+                        notification = [(5,)]
+                        self.aruba_sdi_state = inv['status']
+                        notification_date = re.sub(r'([-+]\d{2}):(\d{2})(?:(\d{2}))?$', r'\1\2\3', inv['invoiceDate'])
+                        date = datetime.datetime.strptime(notification_date, '%Y-%m-%dT%H:%M:%S.%f%z')
+                        notification.append((0, 0, {
+                            'sdi_state': inv['status'],
+                            'date': date.strftime('%Y-%m-%d %H:%M:%S'),
+                            'sdi_description': inv['statusDescription']
+                        }))
+                        self.sdi_notification_ids = notification
 
 
     def get_sdi_notification(self):
@@ -351,40 +427,72 @@ class FatturaPAAttachmentOut(models.Model):
             if ws.provider == 'aruba':
                 #Ora gestiamo solo le notifiche di Aruba
                 ws.web_auth()
-                last_week = datetime.datetime.now() - datetime.timedelta(days=7)
+                #last_week = datetime.datetime.now() - datetime.timedelta(days=7)
                 #12 è il limite massimo ogni 1 minuto ARUBA
-                for attachment in self.search([('create_date', '>=', last_week), ('aruba_sdi_state', 'not in', SDI_COMPLETED)], limit=12):
-                    if attachment.aruba_upload_filename:
-                        header = {
-                            'Authorization': 'Bearer ' + ws.web_server_token,
-                        }
-                        data = {
-                            'filename': str(attachment.aruba_upload_filename),
-                            'includePdf': False,
-                        }
-                        r = requests.get(ws.web_server_method_address + WS_ENDPOINT_NOTIFICATION_FILENAME,
-                                         headers=header, params=data)
+                #for attachment in self.search([('aruba_sdi_state', 'not in', SDI_COMPLETED)], limit=12):
+                #if attachment.aruba_upload_filename:
 
-                        if r.status_code == 200:
-                            r = r.json()
-                            invoices = r['invoices']
-                            notification = [(5, )]
-                            for inv in invoices:
-                                # Cicla tutte le notifiche relative alla fattura
-                                # Salva l'ultimo stato
-                                attachment.aruba_sdi_state = inv['status']
-                                notification_date = re.sub(r'([-+]\d{2}):(\d{2})(?:(\d{2}))?$', r'\1\2\3', inv['invoiceDate'])
-                                date = datetime.datetime.strptime(notification_date, '%Y-%m-%dT%H:%M:%S.%f%z')
-                                notification.append((0, 0, {
-                                    'sdi_state': inv['status'],
-                                    'date': date.strftime('%Y-%m-%d %H:%M:%S'),
-                                    'sdi_description': inv['statusDescription']
-                                }))
-                            attachment.sdi_notification_ids = notification
-                        else:
-                            attachment.aruba_sdi_state = 'Errore Elaborazione' #Errore Elaborazione
-                    else:
-                        attachment.aruba_sdi_state = 'Errore Elaborazione' #Errore Elaborazione
+                cron_id = self.env.ref('l10n_it_fatturapa.addoons_fe_notify')
+                if cron_id:
+                    from_date = cron_id.nextcall - datetime.timedelta(days=15)
+                    from_date = from_date.strftime("%Y-%m-%d")
+
+                    to_date = cron_id.nextcall
+                    to_date = to_date.strftime("%Y-%m-%d")
+
+                    page_number = 1
+                    header = {
+                        'Authorization': 'Bearer ' + ws.web_server_token,
+                    }
+                    data = {
+                        #'filename': str(attachment.aruba_upload_filename),
+                        #'includePdf': False,
+                        'username': ws.web_server_login,
+                        'countrySender': 'IT',
+                        'vatcodeSender': self.env.user.company_id.vat.replace('IT', ''),
+                        'size': 100,
+                        'page': page_number,
+                        'startDate': from_date,
+                        'endDate': to_date
+                    }
+                    r = requests.get(ws.web_server_method_address + WS_ENDPOINT_NOTIFICATION_USERNAME,
+                                     headers=header, params=data)
+
+                    if r.status_code == 200:
+                        r = r.json()
+                        page_number = 1
+                        total_pages = r['totalPages']
+                        while page_number <= total_pages:
+                            sleep(5)
+                            data['page'] = page_number
+                            page_number += 1
+                            r = requests.get(ws.web_server_method_address + WS_ENDPOINT_NOTIFICATION_USERNAME,
+                                             headers=header, params=data)
+                            if r.status_code == 200:
+                                r = r.json()
+                                contents = r['content']
+                                for elem in contents:
+                                    for inv in elem['invoices']:
+                                        #Cerco l'XML
+                                        if inv['status'] not in SDI_COMPLETED:
+                                            invoice_id = self.env['account.invoice'].search([('number', '=', inv['number'])])
+                                            #logging.info(inv['number'])
+                                            if invoice_id:
+                                                attachment = invoice_id.fatturapa_attachment_out_id
+                                                if attachment:
+                                                    notification = [(5,)]
+                                                    attachment.aruba_sdi_state = inv['status']
+                                                    notification_date = re.sub(r'([-+]\d{2}):(\d{2})(?:(\d{2}))?$', r'\1\2\3', inv['invoiceDate'])
+                                                    date = datetime.datetime.strptime(notification_date, '%Y-%m-%dT%H:%M:%S.%f%z')
+                                                    notification.append((0, 0, {
+                                                        'sdi_state': inv['status'],
+                                                        'date': date.strftime('%Y-%m-%d %H:%M:%S'),
+                                                        'sdi_description': inv['statusDescription']
+                                                    }))
+                                                    attachment.sdi_notification_ids = notification
+                                                    logging.info('Aggiornata notifica SDI')
+                                            else:
+                                                logging.info('NON TROVATA: ' + inv['number'])
 
 
     def send_to_aruba(self):

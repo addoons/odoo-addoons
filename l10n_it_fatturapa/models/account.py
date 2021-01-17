@@ -6,7 +6,7 @@ from odoo import fields, models, api, _, exceptions
 import odoo.addons.decimal_precision as dp
 
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, relativedelta
 
 RELATED_DOCUMENT_TYPES = {
     'order': 'DatiOrdineAcquisto',
@@ -513,6 +513,7 @@ class AccountInvoice(models.Model):
         compute='_compute_fatturapa_state',
         store='true',
     )
+    fatturapa_state_sdi = fields.Char(related='fatturapa_attachment_out_id.aruba_sdi_state')
     tax_stamp = fields.Boolean(
         "Tax Stamp", readonly=True, states={'draft': [('readonly', False)]})
     auto_compute_stamp = fields.Boolean(related='company_id.tax_stamp_product_id.auto_compute')
@@ -553,6 +554,55 @@ class AccountInvoice(models.Model):
 
     e_invoice_force_validation = fields.Boolean(
         string='Force E-Invoice Validation')
+
+    payment_due_ids = fields.Many2many('payment.due.item')
+
+
+
+    @api.onchange('payment_term_id')
+    def compute_payment_due_ids(self):
+        date_ref = self.date_invoice or fields.Date.today()
+        amount = self.amount_total
+        sign = 1 < 0 and -1 or 1
+        due_ids = [(5,)]
+        result = []
+        if self.env.context.get('currency_id'):
+            currency = self.env['res.currency'].browse(self.env.context['currency_id'])
+        else:
+            currency = self.env.user.company_id.currency_id
+        for line in self.payment_term_id.line_ids:
+            if line.value == 'fixed':
+                amt = sign * currency.round(line.value_amount)
+            elif line.value == 'percent':
+                amt = currency.round(self.amount_total * (line.value_amount / 100.0))
+            elif line.value == 'balance':
+                amt = currency.round(amount)
+            if amt:
+                next_date = fields.Date.from_string(date_ref)
+                if line.option == 'day_after_invoice_date':
+                    next_date += relativedelta(days=line.days)
+                    if line.day_of_the_month > 0:
+                        months_delta = (line.day_of_the_month < next_date.day) and 1 or 0
+                        next_date += relativedelta(day=line.day_of_the_month, months=months_delta)
+                elif line.option == 'after_invoice_month':
+                    next_first_date = next_date + relativedelta(day=1, months=1)  # Getting 1st of next month
+                    next_date = next_first_date + relativedelta(days=line.days - 1)
+                elif line.option == 'day_following_month':
+                    next_date += relativedelta(day=line.days, months=1)
+                elif line.option == 'day_current_month':
+                    next_date += relativedelta(day=line.days, months=0)
+                result.append((fields.Date.to_string(next_date), amt))
+
+                # Aggiungo la riga all'array
+                due_ids.append((0, 0, {
+                    'amount': amt,
+                    'date': next_date,
+                    'fatturapa_payment_method_id': line.fatturapa_payment_method_id.id
+                }))
+                amount -= amt
+
+
+        self.payment_due_ids = due_ids
 
 
     def process_negative_lines(self):

@@ -1,0 +1,20 @@
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+
+    <record id="view_account_payment_term_line" model="ir.ui.view">
+        <field name="name">view.account.payment.term.line</field>
+        <field name="model">account.payment.term.line</field>
+        <field name="inherit_id" ref="account.view_payment_term_line_form"/>
+        <field name="arch" type="xml">
+            <field name="value" position="after">
+                <field name="fatturapa_payment_method_id" string="Metodo"/>
+            </field>
+        </field>
+    </record>
+
+
+</odoo>

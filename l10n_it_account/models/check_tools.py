@@ -437,7 +437,7 @@ class CheckTools(models.Model):
 
             iva_corretta = imponibile * (imposta / 100)
             differenza = abs(iva_corretta - iva)
-            if differenza >= 0.04:
+            if differenza >= 0.10:
                 if move.id not in iva_calcolata_errata:
                     iva_calcolata_errata.append(move.id)
             logging.info('11 - IVA Calolata Errata')

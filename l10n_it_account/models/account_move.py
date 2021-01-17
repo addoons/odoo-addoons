@@ -37,6 +37,61 @@ class AccountMove(models.Model):
     def set_correggi_importo_registrazione(self):
         # Corregge la registrazione contabile delle move del registro
         # dei corrispettivi
+        if 'FATTURE' in self.journal_id.name:
+            if self.correggi_importo_registrazione > 0:
+                move_id = self.browse(self.id)
+                if move_id.state == 'posted':
+                    move_id.button_cancel()
+                partner_id = False
+                for line in move_id.line_ids:
+                    partner_id = line.partner_id
+                    line.remove_move_reconcile()
+                iva_s_corr = self.env['account.account'].search([('name', '=', 'IVA SU VENDITE')])
+                iva_corr_id = self.env['account.tax'].search([('name', '=', 'Iva al 22% FATT (inclusa)')], limit=1)
+                corr_p_cessioni = self.env['account.account'].search([('name', '=', 'MERCI C/VENDITE')])
+                crediti_v_clienti = self.env['account.account'].search([('name', '=', 'CREDITI V/CLIENTI')], limit=1)
+                move_id.company_id = 1
+                line_ids = [(5,)]
+                # Crediti
+                line_ids.append((0, 0, {
+                    'debit': move_id.correggi_importo_registrazione,
+                    'credit': 0,
+                    'name': move_id.ref,
+                    'partner_id': partner_id.id if partner_id else False,
+                    'account_id': crediti_v_clienti.id,
+                    'date_maturity': move_id.date,
+                    'company_id': 1,
+                    'move_id': move_id.id,
+                }))
+                # IVA
+                line_ids.append((0, 0, {
+                    'debit': 0,
+                    'credit': move_id.correggi_importo_registrazione - (move_id.correggi_importo_registrazione / 1.22),
+                    'name': move_id.ref,
+                    'partner_id': partner_id.id if partner_id else False,
+                    'account_id': iva_s_corr.id,
+                    'date_maturity': move_id.date,
+                    'tax_line_id': iva_corr_id.id,
+                    'company_id': 1,
+                    'move_id': move_id.id,
+                }))
+                # Merci
+                line_ids.append((0, 0, {
+                    'debit': 0,
+                    'credit': (move_id.correggi_importo_registrazione / 1.22),
+                    'name': move_id.ref,
+                    'partner_id': partner_id.id if partner_id else False,
+                    'account_id': corr_p_cessioni.id,
+                    'date_maturity': move_id.date,
+                    'tax_ids': [(4, iva_corr_id.id)],
+                    'company_id': 1,
+                    'move_id': move_id.id,
+                }))
+
+                move_id.line_ids = line_ids
+                logging.info("modificata")
+                if move_id.state == 'draft':
+                    move_id.action_post()
         if 'CORR' in self.journal_id.name:
             if self.correggi_importo_registrazione > 0:
                 move_id = self.browse(self.id)

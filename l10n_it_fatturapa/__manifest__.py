@@ -41,6 +41,7 @@
         'views/ir_mail_server.xml',
         'views/sdi_view.xml',
         'views/account_rc.xml',
+        'views/account_payment_term_line.xml',
         'security/ir.model.access.csv',
         'wizard/link_to_existing_invoice.xml',
         'wizard/send_to_aruba.xml',

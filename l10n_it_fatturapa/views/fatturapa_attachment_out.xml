@@ -53,8 +53,8 @@
                 <header>
                     <button name="send_via_pec" states="ready" string="Invia PEC" type="object" class="oe_highlight"/>
                     <button name="reset_to_ready" states="sender_error" string="Imposta in Bozza" type="object" />
-                    <button name="send_to_aruba" string="Send To Aruba" class="btn btn-primary btn-default" type="object" attrs="{'invisible': [('aruba_sent', '=', True)]}"/>
-                    <button name="get_sdi_notification" string="Update Aruba State" class="btn btn-primary btn-default" type="object" attrs="{'invisible': [('aruba_sent', '!=', True)]}"/>
+                    <button name="send_to_aruba" string="Invia Fattura Elettronica" class="btn btn-primary btn-default" type="object" attrs="{'invisible': [('aruba_sent', '=', True)]}"/>
+                    <button name="get_single_sdi_notification" string="Aggiorna Notifica FE" class="btn btn-primary btn-default" type="object" attrs="{'invisible': [('aruba_sent', '!=', True)]}"/>
                     <field name="state" widget="statusbar" clickable="1" invisible="1"/>
                 </header>
                 <sheet>
@@ -75,47 +75,53 @@
                                 <field name="exported_zip"/>
                             </group>
                         </group>
-                        <separator string="Fatture Clienti"/>
-                        <field name="out_invoice_ids" context="{'form_view_ref': 'account.invoice_form', 'tree_view_ref': 'account.invoice_tree'}"/>
-                        <field name="sdi_notification_ids">
-                            <tree>
-                                <field name="date"/>
-                                <field name="sdi_state"/>
-                                <field name="sdi_description"/>
-                            </tree>
-                        </field>
-                        <group string="Storico">
-                            <label for="create_uid" string="Creato Da"/>
-                            <div name="creation_div">
-                                <field name="create_uid" readonly="1" class="oe_inline"/> on
-                                <field name="create_date" readonly="1" class="oe_inline"/>
-                            </div>
-                        </group>
-                        <group name="last_sdi_response" string="Ultima Risposta dallo SDI" attrs="{'invisible':[('state', '=', 'ready')]}">
-                            <field name="last_sdi_response" nolabel="1"/>
-                        </group>
-                        <label for="sending_user" string="Inviato Da" attrs="{'invisible': [('sending_user' ,'=', False)]}"/>
-                        <div name="sending_user" attrs="{'invisible': [('sending_user' ,'=', False)]}">
-                            <field name="sending_user" readonly="1" class="oe_inline"/> on
-                            <field name="sending_date" readonly="1" class="oe_inline"/>
-                        </div>
-                        <label for="delivered_date" string="Spedito" attrs="{'invisible': [('delivered_date' ,'=', False)]}"/>
-                        <div name="delivered_date" attrs="{'invisible': [('delivered_date' ,'=', False)]}">
-                            <field name="delivered_date" readonly="1" class="oe_inline"/>
-                        </div>
+                        <notebook>
+                            <page string="Fatture">
+                                <field name="out_invoice_ids" context="{'form_view_ref': 'account.invoice_form', 'tree_view_ref': 'account.invoice_tree'}"/>
+                                <field name="sdi_notification_ids">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="sdi_state"/>
+                                        <field name="sdi_description"/>
+                                    </tree>
+                                </field>
+                                <group string="Storico">
+                                    <label for="create_uid" string="Creato Da"/>
+                                    <div name="creation_div">
+                                        <field name="create_uid" readonly="1" class="oe_inline"/> on
+                                        <field name="create_date" readonly="1" class="oe_inline"/>
+                                    </div>
+                                </group>
+                                <group name="last_sdi_response" string="Ultima Risposta dallo SDI" attrs="{'invisible':[('state', '=', 'ready')]}">
+                                    <field name="last_sdi_response" nolabel="1"/>
+                                </group>
+                                <label for="sending_user" string="Inviato Da" attrs="{'invisible': [('sending_user' ,'=', False)]}"/>
+                                <div name="sending_user" attrs="{'invisible': [('sending_user' ,'=', False)]}">
+                                    <field name="sending_user" readonly="1" class="oe_inline"/> on
+                                    <field name="sending_date" readonly="1" class="oe_inline"/>
+                                </div>
+                                <label for="delivered_date" string="Spedito" attrs="{'invisible': [('delivered_date' ,'=', False)]}"/>
+                                <div name="delivered_date" attrs="{'invisible': [('delivered_date' ,'=', False)]}">
+                                    <field name="delivered_date" readonly="1" class="oe_inline"/>
+                                </div>
+                            </page>
+                            <page string="Esito Invio">
+                                <group string="Aruba WS">
+                                    <field name="aruba_sent" string="Aruba Sent" readonly="1"/>
+                                    <field name="aruba_sdi_state" string="SDI State" readonly="1"/>
+                                    <field name="aruba_upload_filename" string="Filename" readonly="1"/>
+                                    <field name="aruba_error_code" string="Error Code" readonly="1"/>
+                                    <field name="aruba_error_description" string="Error Description" readonly="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+
                     </div>
 
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="message_ids" widget="mail_thread"/>
-                    <group string="Aruba WS">
-                        <field name="aruba_sent" string="Aruba Sent" readonly="1"/>
-                        <field name="aruba_sdi_state" string="SDI State" readonly="1"/>
-                        <field name="aruba_upload_filename" string="Filename" readonly="1"/>
-                        <field name="aruba_error_code" string="Error Code" readonly="1"/>
-                        <field name="aruba_error_description" string="Error Description" readonly="1"/>
-                    </group>
                 </div>
             </form>
         </field>

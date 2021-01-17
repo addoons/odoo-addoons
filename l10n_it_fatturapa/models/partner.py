@@ -3,7 +3,7 @@
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 STANDARD_ADDRESSEE_CODE = '0000000'
 
@@ -160,3 +160,20 @@ class ResPartner(models.Model):
             self.codice_destinatario = STANDARD_ADDRESSEE_CODE
         else:
             self.codice_destinatario = 'XXXXXXX'
+
+    @api.model
+    def create(self, vals):
+        # Setta SDI in maiuscolo
+        if 'codice_destinatario' in vals.keys():
+            if vals['codice_destinatario']:
+                vals['codice_destinatario'] = vals['codice_destinatario'].upper()
+        return super(ResPartner, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        for record in self:
+            # Setta SDI in maiuscolo
+            if 'codice_destinatario' in vals.keys():
+                if vals['codice_destinatario']:
+                    vals['codice_destinatario'] = vals['codice_destinatario'].upper()
+            return super(ResPartner, record).write(vals)

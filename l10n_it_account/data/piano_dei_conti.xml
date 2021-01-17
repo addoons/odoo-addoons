@@ -8,7 +8,9 @@
         <record model="account.account.type" id="account_type_aggregate">
             <field name="name">Aggregato</field>
         </record>
-
+        <record model="account.account.type" id="account_type_ordine">
+            <field name="name">Conti D'ordine</field>
+        </record>
 
 
         <!-- STATO PATRIMONIALE -->

@@ -13,7 +13,8 @@ class AccountAccountInherit(models.Model):
     parent_id = fields.Many2one('account.account', string='Aggregato')
     code = fields.Char(size=64, required=False, index=True)
     child_ids = fields.One2many('account.account', 'parent_id')
-    area = fields.Selection([('conto_economico', 'Conto Economico'), ('stato_patrimoniale', 'Stato Patrimoniale')], default='conto_economico')
+    area = fields.Selection([('conto_economico', 'Conto Economico'), ('stato_patrimoniale', 'Stato Patrimoniale'),
+                             ('conti_ordine', "Conti D'ordine")], default='conto_economico')
     account_move_lines = fields.One2many('account.move.line', 'account_id', string='Move Lines', copy=False)
     credit = fields.Monetary(string='Credit', readonly=True, compute='_find_account_balance', store=True)
     debit = fields.Monetary(string='Debit', readonly=True, compute='_find_account_balance', store=True)
@@ -113,7 +114,7 @@ class AccountAccountInherit(models.Model):
 
     def get_all_accounts(self):
         accounts = self.search([])
-        return sorted(accounts, key=lambda x: x.parent_id.id, reverse=True)
+        return sorted(accounts, key=lambda x: x.parent_id.id)
 
     def get_aggregate_balance(self):
         accounts = self.env['account.account'].search([('parent_id.id', '=', self.id)])

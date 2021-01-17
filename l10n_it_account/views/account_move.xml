@@ -14,6 +14,7 @@
                 <field name="partner_id" domain="['|', ('parent_id', '=', False), ('is_company', '=', True)]" attrs="{'column_invisible': [('parent.account_move_template', '!=', False)]}"/>
             </xpath>
             <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='tax_ids']" position="replace">
+                <field name="date_maturity" string="Scadenza"/>
                 <field name="tax_ids" string="Imposte applicate" widget="many2many_tags"
                                            domain="[('type_tax_use', '=?', parent.tax_type_domain)]"
                                            context="{'append_type_to_tax_name': not parent.tax_type_domain}"

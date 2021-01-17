@@ -54,6 +54,7 @@ class CronDocumentiFiscali(models.Model):
 
 
             docs = self.env['fatturapa.attachment.out'].search(['&', ('create_date', '>=', '2020-10-01 00:00:00'), ('exported_zip', '=', False)])
+            logging.info(docs)
             for doc in docs:
                 if doc.out_invoice_ids[0].fiscal_document_type_id.id == invoice:
                     zipf.writestr(doc.name, base64.b64decode(doc.datas))

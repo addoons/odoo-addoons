@@ -87,6 +87,10 @@
         'wizards/wizard_invoice_date.xml',
         'wizards/wizard_invoice_due_date.xml',
         'wizards/wizard_annulla_fattura.xml',
+        'wizards/wizard_import_partner_xls.xml',
+        'wizards/wizard_import_product_xls.xml',
+        'wizards/wizard_import_chart_account_xls.xml',
+        'wizards/wizard_import_saldi.xml'
     ],
     'installable': True,
 }

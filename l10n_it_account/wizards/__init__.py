@@ -19,3 +19,7 @@ from . import cambio_conti
 from . import wizard_invoice_date
 from . import wizard_invoice_due_date
 from . import wizard_annulla_fattura
+from . import wizard_import_chart_account_xls
+from . import wizard_import_product_xls
+from . import wizard_import_partner_xls
+from . import wizard_import_saldi

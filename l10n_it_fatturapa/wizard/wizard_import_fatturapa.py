@@ -1349,14 +1349,17 @@ class WizardImportFatturapa(models.TransientModel):
         #Durante la conversione vengono rimossi tag che non sono valorizzati
         #oppure contengono uno Spazio
         toRemove = ['IstitutoFinanziario']
+        # parser = etree.XMLParser(recover=True)
         xml = etree.fromstring(xml_string)
         for element in xml.iter():
             if element.tag in toRemove:
                 if element.text == '' or element.text == ' ' or element.text == None:
                     parent = element.getparent()
                     parent.remove(element)
+                # if '\n' in element.text:
+                #     element.text.replace('\n', '')
 
-        xml_string = etree.tostring(xml)
+        xml_string = etree.tostring(xml, pretty_print=True)
         return fatturapa.CreateFromDocument(xml_string)
 
     @api.multi

@@ -6,7 +6,7 @@ import datetime
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import float_is_zero
+from odoo.tools import float_is_zero, relativedelta
 
 
 class AccountInvoice(models.Model):
@@ -30,6 +30,55 @@ class AccountInvoice(models.Model):
                                 "means direct payment.")
     giroconto_bolletta_doganale_id = fields.Many2one('account.move')
     is_dogana = fields.Boolean(related='partner_id.is_dogana')
+    purchase_order_id = fields.Many2one('purchase.order')
+    differenza_ordini = fields.Float(compute="compute_differenza_ordini", store=True)
+    invoice_year = fields.Integer(compute='get_year', store=True)
+
+
+    #Fix: Odoo non permette in anni differenti di avere la stessa sequenza di fattura
+    _sql_constraints = [
+        ('number_uniq', 'unique(number, company_id, journal_id, type, invoice_year)', 'Invoice Number must be unique per Company!'),
+    ]
+
+
+
+
+
+    @api.depends('date_invoice')
+    def get_year(self):
+        for x in self:
+            if x.date_invoice:
+                date = datetime.datetime.strptime(str(x.date_invoice), '%Y-%m-%d')
+                x.invoice_year = date.year
+
+    def compute_differenza_ordini(self):
+        i = 0
+        for invoice in self:
+            if invoice.type == 'in_invoice':
+                i += 1
+                diff_ordini = 0
+                list_ordini = []
+                for line in invoice.invoice_line_ids:
+                    if line.purchase_order_id and line.purchase_order_id.id not in list_ordini:
+                        list_ordini.append(line.purchase_order_id.id)
+                        diff_ordini -= line.purchase_order_id.amount_total
+                    if line.purchase_order_id:
+                        diff_ordini += line.price_total
+
+                if len(list_ordini) > 0:
+                    invoice.differenza_ordini = diff_ordini
+                else:
+                    invoice.differenza_ordini = 0
+                print(i)
+            else:
+                invoice.differenza_ordini = 0
+
+    @api.one
+    @api.depends('invoice_line_ids.price_subtotal', 'tax_line_ids.amount', 'tax_line_ids.amount_rounding',
+                 'currency_id', 'company_id', 'date_invoice', 'type', 'date', 'invoice_line_ids.purchase_order_id')
+    def _compute_amount(self):
+        super(AccountInvoice, self)._compute_amount()
+        self.compute_differenza_ordini()
 
     def set_fiscal_positon(self):
 
@@ -1027,9 +1076,12 @@ class AccountInvoice(models.Model):
                         l.invoice_line_tax_wt_ids = [(5,0), (4, self.am_rda.id)]
                     if self.am_rc != l.rc:
                         l.rc = self.am_rc
+                    if self.purchase_order_id:
+                        l.purchase_order_id = self.purchase_order_id.id
                 l.selected = False
             self.compute_taxes()
             self._onchange_invoice_line_wt_ids()
+            self.compute_differenza_ordini()
 
 
     def get_tax_amount_added_for_rc(self):
@@ -1051,7 +1103,7 @@ class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
     selected = fields.Boolean()
-
+    purchase_order_id = fields.Many2one('purchase.order')
 
     @api.model
     def _default_withholding_tax(self):

@@ -54,10 +54,19 @@
             </field>
         </record>
 
+        <!--Cambio Conti - Menu Azione Account Move-->
         <act_window id="action_cambia_conti"
             multi="True"
             key2="client_action_multi" name="Cambia Conti"
             res_model="cambio.conti" src_model="account.move"
+            view_mode="form" target="new" view_id="cambio_conti_view" view_type="form"
+            />
+
+        <!--Cambio Conti - Menu Azione Account Move Line-->
+        <act_window id="action_cambia_conti_move_line"
+            multi="True"
+            key2="client_action_multi" name="Cambia Conti"
+            res_model="cambio.conti" src_model="account.move.line"
             view_mode="form" target="new" view_id="cambio_conti_view" view_type="form"
             />
 

@@ -1,3 +1,5 @@
+import logging
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
@@ -54,6 +56,7 @@ class CambioConti(models.TransientModel):
     inverti = fields.Boolean()
     analytic_account_id = fields.Many2one('account.analytic.account')
     conti_doppi_crediti = fields.Boolean()
+
 
 
 
@@ -130,91 +133,96 @@ class CambioConti(models.TransientModel):
             account_analytic = self.env['account.analytic.account'].search([('name', 'like', registrazione.journal_id.name[:3])], limit=1)
 
             if registrazione.state == 'posted':
-                # La registrazione è generata, la reimposta in bozza
-                registrazione.button_cancel()
+                try:
+                    # La registrazione è generata, la reimposta in bozza
+                    registrazione.button_cancel()
 
-            difference = 0
-            debit = 0
-            credit = 0
-            for line in registrazione.line_ids:
-                debit += line.debit
-                credit += line.credit
+                    difference = 0
+                    debit = 0
+                    credit = 0
+                    for line in registrazione.line_ids:
+                        debit += line.debit
+                        credit += line.credit
 
 
 
-            difference = abs(debit - credit)
+                    difference = abs(debit - credit)
 
-            #ci sono più valori in DEBIT
-            more_debit = False
-            find_debit = False
-            for line in registrazione.line_ids:
-                if line.debit > 0 and find_debit:
-                    more_debit = True
-                if line.debit > 0:
-                    find_debit = True
+                    #ci sono più valori in DEBIT
+                    more_debit = False
+                    find_debit = False
+                    for line in registrazione.line_ids:
+                        if line.debit > 0 and find_debit:
+                            more_debit = True
+                        if line.debit > 0:
+                            find_debit = True
 
-            registrazione.line_ids.remove_move_reconcile()
+                    registrazione.line_ids.remove_move_reconcile()
 
-            for line in registrazione.line_ids:
+                    for line in registrazione.line_ids:
 
-                if 'BONUS MOBILI' in line.account_id.name:
-                    break
-
-                if not more_debit:
-                    #Se ce un solo valore in debit aumenta i crediti v/clienti oppure l'iva
-                    if credit > debit:
-                    # Aumentare crediti v/clienti
-                        if line.account_id.name != 'CREDITI V/CLIENTI' and line.account_id.name != 'IVA SU VENDITE' and line.account_id.name != 'IVA SU CORRISPETTIVI':
-                            if line.credit - difference > 0:
-                                line.credit -= difference
-                                break
-                    else:
-                        # Aumentare iva
-                        if line.account_id.name == 'IVA SU VENDITE' or line.account_id.name == 'IVA SU CORRISPETTIVI':
-                            line.credit += difference
+                        if 'BONUS MOBILI' in line.account_id.name:
                             break
-                else:
-                    #Se ci sono più valori in DEBIT fa altro, cerca il pagamento
-                    order = self.env['pos.order'].search([('name', '=', registrazione.ref)], limit=1)
-                    if order:
-                        #Cerco il pagamento più simile
-                        scostamento_pagamento = 1000000000
-                        payment_found = False
-                        for payment in order.statement_ids:
-                            if abs(payment.amount - registrazione.amount) < scostamento_pagamento:
-                                scostamento_pagamento = abs(payment.amount - registrazione.amount)
-                                payment_found = payment
 
-                        if payment_found:
-                            crediti = payment_found.amount
-                            merci = (crediti / 1.22)
-                            iva = (merci * 0.22)
-                            registrazione.line_ids = [(5, )]
+                        if not more_debit:
+                            #Se ce un solo valore in debit aumenta i crediti v/clienti oppure l'iva
+                            if credit > debit:
+                            # Aumentare crediti v/clienti
+                                if line.account_id.name != 'CREDITI V/CLIENTI' and line.account_id.name != 'IVA SU VENDITE' and line.account_id.name != 'IVA SU CORRISPETTIVI':
+                                    if line.credit - difference > 0:
+                                        line.credit -= difference
+                                        break
+                            else:
+                                # Aumentare iva
+                                if line.account_id.name == 'IVA SU VENDITE' or line.account_id.name == 'IVA SU CORRISPETTIVI':
+                                    line.credit += difference
+                                    break
+                        else:
+                            #Se ci sono più valori in DEBIT fa altro, cerca il pagamento
+                            order = self.env['pos.order'].search([('name', '=', registrazione.ref)], limit=1)
+                            if order:
+                                #Cerco il pagamento più simile
+                                scostamento_pagamento = 1000000000
+                                payment_found = False
+                                for payment in order.statement_ids:
+                                    if abs(payment.amount - registrazione.amount) < scostamento_pagamento:
+                                        scostamento_pagamento = abs(payment.amount - registrazione.amount)
+                                        payment_found = payment
 
-                            registrazione.line_ids = [(0, 0, {
-                                            'account_id': crediti_v_clienti.id,
-                                            'debit': abs(float(crediti)),
-                                            'partner_id': order.partner_id.id,
-                                            }),
-                                            (0, 0, {
-                                                'account_id': iva_s_vendite.id if 'FATT' in registrazione.journal_id.name else iva_s_corr.id,
-                                                'credit': abs(float(iva)),
-                                                'partner_id': order.partner_id.id,
-                                                'tax_line_id': iva_id.id if 'FATT' in registrazione.journal_id.name else iva_corr_id.id
-                                            }),
-                                            (0, 0, {
-                                                'account_id': merci_c_vendite.id if 'FATT' in registrazione.journal_id.name else corr_p_cessioni.id,
-                                                'credit': abs(float(merci)),
-                                                'partner_id': order.partner_id.id,
-                                                'analytic_account_id': account_analytic.id,
-                                                'tax_ids': [(4, iva_id.id)] if 'FATT' in registrazione.journal_id.name else [(4, iva_corr_id.id)]
-                                            }),]
+                                if payment_found:
+                                    crediti = payment_found.amount
+                                    merci = (crediti / 1.22)
+                                    iva = (merci * 0.22)
+                                    registrazione.line_ids = [(5, )]
+
+                                    registrazione.line_ids = [(0, 0, {
+                                                    'account_id': crediti_v_clienti.id,
+                                                    'debit': abs(float(crediti)),
+                                                    'partner_id': order.partner_id.id,
+                                                    }),
+                                                    (0, 0, {
+                                                        'account_id': iva_s_vendite.id if 'FATT' in registrazione.journal_id.name else iva_s_corr.id,
+                                                        'credit': abs(float(iva)),
+                                                        'partner_id': order.partner_id.id,
+                                                        'tax_line_id': iva_id.id if 'FATT' in registrazione.journal_id.name else iva_corr_id.id
+                                                    }),
+                                                    (0, 0, {
+                                                        'account_id': merci_c_vendite.id if 'FATT' in registrazione.journal_id.name else corr_p_cessioni.id,
+                                                        'credit': abs(float(merci)),
+                                                        'partner_id': order.partner_id.id,
+                                                        'analytic_account_id': account_analytic.id,
+                                                        'tax_ids': [(4, iva_id.id)] if 'FATT' in registrazione.journal_id.name else [(4, iva_corr_id.id)]
+                                                    }),]
 
 
-            if registrazione.state == 'draft':
-                #La registrazione è in bozza, la reimposta in generata
-                registrazione.action_post()
-
+                    if registrazione.state == 'draft':
+                        #La registrazione è in bozza, la reimposta in generata
+                        registrazione.action_post()
+                except Exception as e:
+                    logging.info("Impossibile correggere registrazione")
+                    if registrazione.state == 'draft':
+                        #La registrazione è in bozza, la reimposta in generata
+                        registrazione.action_post()
 
     def view_unbalanced(self):
         move_unbalanced = []
@@ -249,99 +257,119 @@ class CambioConti(models.TransientModel):
         active_ids = context.get('active_ids', []) or []
         crediti_v_clienti = self.env['account.account'].search([('name', '=', 'CREDITI V/CLIENTI')], limit=1)
 
+        #Questo per verificare se l'action menu è stato premuto dalle account.move o account.move.line
+        origin_active_ids = context.get('active_model', False)
+
+        registrazioni = []
+        if origin_active_ids == 'account.move':
+            registrazioni = self.env['account.move'].browse(active_ids)
+        elif origin_active_ids == 'account.move.line':
+            registrazioni = self.env['account.move.line'].browse(active_ids)
 
 
-        for registrazione in self.env['account.move'].browse(active_ids):
+        for registrazione in registrazioni:
 
-            if registrazione.state == 'posted':
-                # La registrazione è generata, la reimposta in bozza
-                registrazione.button_cancel()
+            line_id = False
+            if origin_active_ids == 'account.move.line':
+                line_id = registrazione.id
+                registrazione = registrazione.move_id
+
+            if self.ins_imposta_ids or self.creato_imposte_ids or self.ins_creato_imposta_ids or self.conti_doppi_crediti or self.analytic_account_id or self.add_analytic:
+                #Viene annullata solamente se non bisogna cambiare dei conti, altrimenti sarebbe molto lento
+                if registrazione.state == 'posted':
+                    # La registrazione è generata, la reimposta in bozza
+                    registrazione.button_cancel()
+
+            logging.info("CAMBIO")
 
             for line in registrazione.line_ids:
 
-                if 'BONUS MOBILI' in line.account_id.name:
-                    break
-
-                id_cambio_conto = 0
+                if (origin_active_ids == 'account.move.line' and line.id == line_id) or origin_active_ids == 'account.move':
 
 
-                for ins in self.ins_imposta_ids:
-                    if line.account_id.id == ins.conto_sorgente.id:
-                        #Cambio l'imposta
-                        if ins.imposta_destinazione:
-                            line.write({'tax_ids': [(5,), (4, ins.imposta_destinazione.id)]})
-                        else:
-                            line.write({'tax_ids': [(5,)]})
+                    if 'BONUS MOBILI' in line.account_id.name:
+                        break
 
-                for regola in self.conti_ids:
-                    if line.account_id.id == regola.conto_sorgente.id:
-                        id_cambio_conto = regola.conto_destinazione.id
-                if id_cambio_conto > 0:
-                    line.write({'account_id': id_cambio_conto})
-
-                if len(line.tax_ids) > 0:
-                    id_cambio_imposta = 0
-                    for regola in self.imposte_ids:
-
-                        if line.tax_ids[0].id == regola.imposta_sorgente.id:
-                            id_cambio_imposta = regola.imposta_destinazione.id
-                    if id_cambio_imposta > 0:
-                        line.write({'tax_ids': [(6, 0, [id_cambio_imposta])]})
+                    id_cambio_conto = 0
 
 
-                if line.tax_line_id:
-                    for regola in self.creato_imposte_ids:
-                        if line.tax_line_id.id == regola.imposta_sorgente.id:
-                            line.write({'tax_line_id': regola.imposta_destinazione.id})
+                    for ins in self.ins_imposta_ids:
+                        if line.account_id.id == ins.conto_sorgente.id:
+                            #Cambio l'imposta
+                            if ins.imposta_destinazione:
+                                line.write({'tax_ids': [(5,), (4, ins.imposta_destinazione.id)]})
+                            else:
+                                line.write({'tax_ids': [(5,)]})
 
-                if line.account_id:
-                    for regola in self.ins_creato_imposta_ids:
+                    for regola in self.conti_ids:
                         if line.account_id.id == regola.conto_sorgente.id:
-                            line.write({'tax_line_id': regola.imposta_destinazione.id})
+                            id_cambio_conto = regola.conto_destinazione.id
+                    if id_cambio_conto > 0:
+                        self.env.cr.execute("update account_move_line set account_id = %s where id = %s", (id_cambio_conto, line.id))
+                        # line.write({'account_id': id_cambio_conto})
+
+                    if len(line.tax_ids) > 0:
+                        id_cambio_imposta = 0
+                        for regola in self.imposte_ids:
+
+                            if line.tax_ids[0].id == regola.imposta_sorgente.id:
+                                id_cambio_imposta = regola.imposta_destinazione.id
+                        if id_cambio_imposta > 0:
+                            line.write({'tax_ids': [(6, 0, [id_cambio_imposta])]})
 
 
-                if self.conti_doppi_crediti:
-                    if line.credit != 0:
-                        line.account_id = crediti_v_clienti.id
+                    if line.tax_line_id:
+                        for regola in self.creato_imposte_ids:
+                            if line.tax_line_id.id == regola.imposta_sorgente.id:
+                                line.write({'tax_line_id': regola.imposta_destinazione.id})
+
+                    if line.account_id:
+                        for regola in self.ins_creato_imposta_ids:
+                            if line.account_id.id == regola.conto_sorgente.id:
+                                line.write({'tax_line_id': regola.imposta_destinazione.id})
 
 
-                if self.analytic_account_id:
-                    if line.account_id in self.account_ids:
-                        #Per tutte le account.move.line che hanno conto finanziario soggetto e conto analitico mancante
-                        line.analytic_account_id = self.analytic_account_id.id
+                    if self.conti_doppi_crediti:
+                        if line.credit != 0:
+                            line.account_id = crediti_v_clienti.id
 
-                if self.add_analytic:
-                    if line.account_id in self.account_ids:
-                        #Per tutte le account.move.line che hanno conto finanziario soggetto e conto analitico mancante
-                        if registrazione.ref:
-                            analytic_code = registrazione.ref[:3]
-                            if analytic_code:
-                                analytic_account = self.env.cr.execute(
-                                    "select id from account_analytic_account where name like '%s%%' and length(name) > 3" % (
-                                    analytic_code,))
-                                analytic_account = self.env.cr.fetchall()
-                                if analytic_account:
-                                    line.analytic_account_id = analytic_account[0][0]
-                                else:
-                                    if 'FATTURE' not in registrazione.journal_id.name:
-                                        analytic_code = registrazione.journal_id.name[:3]
-                                        if analytic_code:
-                                            analytic_account = self.env.cr.execute("select id from account_analytic_account where name like '%s%%' and length(name) > 3" % (analytic_code, ))
-                                            analytic_account = self.env.cr.fetchall()
-                                            if analytic_account:
-                                                line.analytic_account_id = analytic_account[0][0]
+
+                    if self.analytic_account_id:
+                        if line.account_id in self.account_ids:
+                            #Per tutte le account.move.line che hanno conto finanziario soggetto e conto analitico mancante
+                            line.analytic_account_id = self.analytic_account_id.id
+
+                    if self.add_analytic:
+                        if line.account_id in self.account_ids:
+                            #Per tutte le account.move.line che hanno conto finanziario soggetto e conto analitico mancante
+                            if registrazione.ref:
+                                analytic_code = registrazione.ref[:3]
+                                if analytic_code:
+                                    analytic_account = self.env.cr.execute(
+                                        "select id from account_analytic_account where name like '%s%%' and length(name) > 3" % (
+                                        analytic_code,))
+                                    analytic_account = self.env.cr.fetchall()
+                                    if analytic_account:
+                                        line.analytic_account_id = analytic_account[0][0]
                                     else:
-                                        analytic_code = registrazione.ref[:3]
-                                        if analytic_code:
-                                            analytic_account = self.env.cr.execute(
-                                                "select id from account_analytic_account where name like '%s%%' and length(name) > 3" % (
-                                                analytic_code,))
-                                            analytic_account = self.env.cr.fetchall()
-                                            if analytic_account:
-                                                line.analytic_account_id = analytic_account[0][0]
+                                        if 'FATTURE' not in registrazione.journal_id.name:
+                                            analytic_code = registrazione.journal_id.name[:3]
+                                            if analytic_code:
+                                                analytic_account = self.env.cr.execute("select id from account_analytic_account where name like '%s%%' and length(name) > 3" % (analytic_code, ))
+                                                analytic_account = self.env.cr.fetchall()
+                                                if analytic_account:
+                                                    line.analytic_account_id = analytic_account[0][0]
+                                        else:
+                                            analytic_code = registrazione.ref[:3]
+                                            if analytic_code:
+                                                analytic_account = self.env.cr.execute(
+                                                    "select id from account_analytic_account where name like '%s%%' and length(name) > 3" % (
+                                                    analytic_code,))
+                                                analytic_account = self.env.cr.fetchall()
+                                                if analytic_account:
+                                                    line.analytic_account_id = analytic_account[0][0]
 
-
-
-            if registrazione.state == 'draft':
-                #La registrazione è in bozza, la reimposta in generata
-                registrazione.action_post()
+            if self.ins_imposta_ids or self.creato_imposte_ids or self.ins_creato_imposta_ids or self.conti_doppi_crediti or self.analytic_account_id or self.add_analytic:
+                if registrazione.state == 'draft':
+                    #La registrazione è in bozza, la reimposta in generata
+                    registrazione.action_post()
