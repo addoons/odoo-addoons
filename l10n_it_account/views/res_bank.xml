@@ -46,6 +46,7 @@
         </field>
     </record>
 
+    <!--Menu Banche  -->
     <record id="action_res_bank" model="ir.actions.act_window">
         <field name="name">Banche</field>
         <field name="res_model">res.bank</field>
@@ -55,4 +56,16 @@
 
     <menuitem name="Banche" id="menu_res_bank"
               parent="account.account_account_menu" action="action_res_bank" sequence="7"/>
+
+    <!--Menu Banche Partner  -->
+    <record id="action_res_partner_bank" model="ir.actions.act_window">
+        <field name="name">Banche Partner</field>
+        <field name="res_model">res.partner.bank</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem name="Banche Partner" id="menu_res_partner_bank"
+              parent="account.account_account_menu" action="action_res_partner_bank" sequence="8"/>
+
 </odoo>

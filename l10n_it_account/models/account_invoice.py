@@ -47,9 +47,13 @@ class AccountInvoice(models.Model):
     @api.depends('date_invoice')
     def get_year(self):
         for x in self:
-            if x.date_invoice:
+            if x.date:
                 date = datetime.datetime.strptime(str(x.date_invoice), '%Y-%m-%d')
                 x.invoice_year = date.year
+            else:
+                if x.date_invoice:
+                    date = datetime.datetime.strptime(str(x.date_invoice), '%Y-%m-%d')
+                    x.invoice_year = date.year
 
     def compute_differenza_ordini(self):
         i = 0
