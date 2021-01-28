@@ -261,10 +261,9 @@
                         </div>
                     </div>
 
-                    <br/><br/>
-
 
                     <t t-if="doc.check_description()">
+                        <br/><br/>
                         <br/>
                         <div style="width:90%; margin:auto;">
                             <h3>
@@ -663,7 +662,7 @@
                             7.	IL SERVIZIO DI MANUTENZIONE DI CUI AL PRESENTE CONTRATTO NON COMPRENDE LA CORREZIONE DI MALFUNZIONAMENTI DOVUTI ALL'UTILIZZO IMPROPRIO DEL SOFTWARE DA PARTE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> O DEL SUO PERSONALE.
                             8.	ADDOONS S.R.L. FORNIRÀ ALTRESÌ, SU RICHIESTA DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>, FORMAZIONE AL PERSONALE INDICATO DA QUEST’ULTIMO AFFINCHÉ POSSA APPRENDERE LE CARATTERISTICHE E LE FUNZIONALITÀ OGGETTO DEL PRESENTE SOFTWARE.
                             <br/><br/>
-                            <br/><br/><br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
                             <strong>ART. 3) PROPRIETÀ DEL SOFTWARE.</strong>
                             CON LA SOTTOSCRIZIONE DEL PRESENTE CONTRATTO, <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> ACQUISTA LA PROPRIETÀ DEL SOFTWARE DENOMINATO ODOO S.A. COME INSTALLATO, MODIFICATO, IMPLEMENTATO, CONFIGURATO E SVILUPPATO DA ADDOONS S.R.L. TUTTAVIA, <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>. SI OBBLIGA AD UTILIZZARE IL SOFTWARE COSI’ COME INSTALLATO, MODIFICATO, IMPLEMENTATO, CONFIGURATO E SVILUPPATO DA ADDOONS S.R.L.
                             PER FINI MERAMENTE INTERNI, RISULTANDONE COSÌ VIETATA LA CESSIONE A TERZI E LA DISTRIBUZIONE AL PUBBLICO.
@@ -680,7 +679,6 @@
                             IL PROGRAMMA VERRÀ SVILUPPATO SULLA BASE DELLE SPECIFICHE TECNICHE DI CUI AL DOCUMENTO DENOMINATO “URS-<span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>” CHE SI ALLEGA AL PRESENTE CONTRATTO QUALE DOCUMENTO A) E CHE, SIGLATO DALLE PARTI, NE DIVIENE PARTE INTEGRANTE. LE PARTI POTRANNO ESERCITARE LA FACOLTÀ DI RECESSO MEDIANTE L’INVIO DI LETTERA RACCOMANDATA O PEC CON UN PREAVVISO DI 30 GIORNI LAVORATIVI. IN CASO DI RISOLUZIONE ANTICIPATA PRIMA DEL COMPLETAMENTO DEL PROGRAMMA DA PARTE DI ADDOONS SRL,
                             LA STESSA SARA’ TENUTA A RESTITUIRE GLI IMPORTI RICEVUTI DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> PER CONTRO IN CASO DI RISOLUZIONE ANTICIPATA PRIMA DEL COMPLETAMENTO DEL PROGRAMMA DA PARTE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>, ADDOONS SRL TRATTERRA’ GLI IMPORTI RICEVUTI DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> ED AVRA’ IL DIRITTO AL PAGAMENTO DI UNA SOMMA PARI AL 20% DELL’IMPORTO PATTUITO DAL PRESENTE CONTRATTO E NEL PREVENTIVO N. SO/2020/0400 A TITOLO DI CLAUSOLA PENALE AI SENSI E PER GLI EFFETTI DEAL ARTICOLO 1382 DEL C.C.. PER “COMPLETAMENTO DEL PROGRAMMA” SI INTENDE QUANDO QUESTO – SVILUPPATO SULLA BASE DELLE SPECIFICHE TECNICHE DI CUI AL DOCUMENTO DENOMINATO “URS-<span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>” ALLEGATO AL PRESENTE CONTRATTO QUALE DOCUMENTO A) - SARA’ INSTALLATO, ATTIVO E OPERATIVO AL FINE DEL PIENO UTILIZZO DA PARTE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>
                             <br/><br/>
-                            <br/><br/><br/>
                             <strong>ART. 5) OBBLIGHI E RESPONSABILITÀ.</strong>
                             I VIZI E LE DIFFORMITÀ DOVRANNO ESSERE DENUNCIATI PER ISCRITTO DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.ENTRO 5 GIORNI LAVORATIVI DALLA SCOPERTA. A TAL FINE, ADDOONS S.R.L., NEL CASO IN CUI IL VIZIO O LA DIFFORMITÀ DENUNCIATA RENDA TOTALMENTE INOPERANTE IL SOFTWARE,
                             SI OBBLIGA AD INTERVENIRE DA REMOTO PER LA PRONTA RISOLUZIONE DEL PROBLEMA ENTRO E NON OLTRE LE 24 ORE LAVORATIVE DECORRENTI DALLA RICHIESTA DI INTERVENTO INOLTRATA DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.TRAMITE SERVIZIO DI HELP DESK FORNITO DA ADDOONS SRL O POSTA ELETTRONICA, NEL CASO IN CUI IL VIZIO O LA DIFFORMITÀ DENUNCIATA
@@ -713,7 +711,7 @@
                             E CONTRATTUALI DALLO STESSO DERIVANTI. I DATI VERRANNO TRATTATI PER TUTTA LA DURATA DEL RAPPORTO CONTRATTUALE IN ESSERE, NONCHÉ ANCHE SUCCESSIVAMENTE, PER L’ESPLETAMENTO DEGLI ADEMPIMENTI DI LEGGE E PER FUTURE FINALITÀ DI CARATTERE COMMERCIALE. ALLE PARTI COMPETONO I DIRITTI DI CUI ALL’ART. 7 D.LGS. 196/03 E,
                             IN PARTICOLARE, IL DIRITTO DI CONOSCERE I PROPRI DATI, DI FARLI INTEGRARE, MODIFICARE, CANCELLARE PER VIOLAZIONE DI LEGGE E/O DI OPPORSI AL LORO TRATTAMENTO.
                             <br/><br/>
-                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
                             <strong>ART. 9) GARANZIE PER IL LICENZIATARIO.</strong>
                             ADDOONS S.R.L. GARANTISCE <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.CONTRO TUTTE LE EVENTUALI RIVENDICAZIONI DI TERZI AVENTI AD OGGETTO, PRETESI DIRITTI D’AUTORE SUL SOFTWARE DI CUI AL PRESENTE CONTRATTO. ADDOONS S.R.L. NON PUÒ, COMUNQUE, RITENERSI RESPONSABILE PER OGNI TIPO DI DANNO DEL SOFTWARE DERIVANTE DA CASO
                             FORTUITO O FORZA MAGGIORE E NON FORNISCE PER ESSI ALCUNA GARANZIA. ADDOONS S.R.L. GARANTISCE L’INSTALLAZIONE, LA MODIFICA, L’IMPLEMENTAMENTO, LA CONFIGURAZIONE E LO SVILUPPO DEL SOFTWARE SECONDO LA REGOLA DELL’ARTE. TALE GARANZIA È SUBORDINATA ALLO STATO ATTUALE DEL SOFTWARE, QUELLO ATTUALMENTE
