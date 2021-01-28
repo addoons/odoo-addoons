@@ -634,7 +634,7 @@
                             •	USO: L’ELABORAZIONE E L’UTILIZZO DEL PROGRAMMA PER ELABORATORE. <br/>
 
                             <br/><br/><br/><br/><br/><br/>
-                            <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/><br/>
 
                             <strong>ART. 2) OGGETTO DEL CONTRATTO.</strong>
                             CON IL PRESENTE CONTRATTO ADDOONS S.R.L. SI OBBLIGA AD INSTALLARE, CONFIGURARE, SVILUPPARE (*) E AD EFFETTUARE LA MANUTENZIONE ORDINARIA DEL SOFTWARE ODOO FORNITO DIRETTAMENTE ALLA SOCIETA’ <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/> DA PARTE DELLA SOCIETA’ ODOO S.A.. LA SOCIETA’ <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>,
@@ -687,7 +687,7 @@
                             L’ESTRAZIONE DI COPIE ANCHE PARZIALI, NONCHÉ LA CONSULTAZIONE. ADDOONS S.R.L. NON È RESPONSABILE DI ALCUN DANNO CAUSATO A COSE O PERSONE PER IL FUNZIONAMENTO DIFETTOSO DELLE APPARECCHIATURE O DEI SOFTWARE INSTALLATI, NON IMPUTABILI AL SUO INTERVENTO E IN CASO DI MANUTENZIONE EFFETTUATA DA TERZI NON AUTORIZZATI. ESSO RISPONDE DEI DANNI CAUSATI
                             O SUBITI DAL PROPRIO PERSONALE TECNICO DURANTE LE OPERAZIONI DI MANUTENZIONE O DI ASSISTENZA PRESSO IL LICENZIATARIO ADDOONS S.R.L., SI IMPEGNA AD INTERVENIRE NEL PIÙ BREVE TEMPO, EVITANDO CHE IL RITARDO NEL SUO INTERVENTO POSSA OLTREMODO TURBARE L’ATTIVITÀ LAVORATIVA DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.
                             <br/><br/>
-                            <br/><br/><br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/>
                             <strong>ART. 6) INSTALLAZIONE ED ACCETTAZIONE DEL SOFTWARE.</strong>
                             ESAURITA LA FASE DI INSTALLAZIONE IL PROGRAMMA (CHE POTRÀ AVVENIRE SIA SU STRUMENTI DI PROPRIETÀ ADDOONS SRL CHE ALTERNATIVAMENTE FORNITI DA <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.) TRASCORSI TRENTA GIORNI DALLA DATA DI INSTALLAZIONE DEL PROGRAMMA
                             SENZA CHE SIANO PERVENUTE DA PARTE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.DELLE LAMENTELE, IL PROGRAMMA SI INTENDERÀ ACCETTATO, RITENENDOSI IL PERIODO DI TEMPO SOPRA INDICATO ADEGUATO PER VERIFICARE L’IDONEITÀ DEL PROGRAMMA STESSO DA PARTE DI <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>..
@@ -711,7 +711,7 @@
                             E CONTRATTUALI DALLO STESSO DERIVANTI. I DATI VERRANNO TRATTATI PER TUTTA LA DURATA DEL RAPPORTO CONTRATTUALE IN ESSERE, NONCHÉ ANCHE SUCCESSIVAMENTE, PER L’ESPLETAMENTO DEGLI ADEMPIMENTI DI LEGGE E PER FUTURE FINALITÀ DI CARATTERE COMMERCIALE. ALLE PARTI COMPETONO I DIRITTI DI CUI ALL’ART. 7 D.LGS. 196/03 E,
                             IN PARTICOLARE, IL DIRITTO DI CONOSCERE I PROPRI DATI, DI FARLI INTEGRARE, MODIFICARE, CANCELLARE PER VIOLAZIONE DI LEGGE E/O DI OPPORSI AL LORO TRATTAMENTO.
                             <br/><br/>
-                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
                             <strong>ART. 9) GARANZIE PER IL LICENZIATARIO.</strong>
                             ADDOONS S.R.L. GARANTISCE <span t-field="doc.partner_id.name" style="text-transform:uppercase;"/>.CONTRO TUTTE LE EVENTUALI RIVENDICAZIONI DI TERZI AVENTI AD OGGETTO, PRETESI DIRITTI D’AUTORE SUL SOFTWARE DI CUI AL PRESENTE CONTRATTO. ADDOONS S.R.L. NON PUÒ, COMUNQUE, RITENERSI RESPONSABILE PER OGNI TIPO DI DANNO DEL SOFTWARE DERIVANTE DA CASO
                             FORTUITO O FORZA MAGGIORE E NON FORNISCE PER ESSI ALCUNA GARANZIA. ADDOONS S.R.L. GARANTISCE L’INSTALLAZIONE, LA MODIFICA, L’IMPLEMENTAMENTO, LA CONFIGURAZIONE E LO SVILUPPO DEL SOFTWARE SECONDO LA REGOLA DELL’ARTE. TALE GARANZIA È SUBORDINATA ALLO STATO ATTUALE DEL SOFTWARE, QUELLO ATTUALMENTE
