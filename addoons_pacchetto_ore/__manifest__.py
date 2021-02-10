@@ -8,7 +8,7 @@
     'website': 'www.addoons.it',
     'support': 'support@addoons.it',
     'depends': [
-        'base', 'sale', 'sale_management', 'account', 'project', 'addoons_reports', 'hr_timesheet'
+        'base', 'sale', 'sale_management', 'account', 'project', 'addoons_reports', 'hr_timesheet', 'hr_attendance', 'report_xlsx'
     ],
     'data': [
         'views/addoons_ore_views.xml',
@@ -18,7 +18,8 @@
         'security/ir.model.access.csv',
         'report/reports.xml',
         'report/report_sommario_ore.xml',
-        'report/report_sommario_ore_interne.xml'
+        'report/report_sommario_ore_interne.xml',
+        'wizard/wizard_report_presenze.xml',
     ],
 
     'installable': True,

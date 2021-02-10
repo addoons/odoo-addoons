@@ -1,6 +1,7 @@
-from odoo import models,api,fields, _
+from odoo import models, api, fields, _
 from datetime import datetime
 from odoo.exceptions import ValidationError
+
 
 class pacchettoOre(models.Model):
     _name = 'pacchetti.ore'
@@ -30,7 +31,6 @@ class pacchettoOre(models.Model):
 
 
 class AccountAnalyticLine(models.Model):
-
     _inherit = 'account.analytic.line'
 
     type = fields.Selection([
@@ -42,5 +42,7 @@ class AccountAnalyticLine(models.Model):
 
     def write(self, vals):
         super(AccountAnalyticLine, self).write(vals)
-        if self.pacchetto_ore_id:
-            self.pacchetto_ore_id._compute_ore_residue()
+
+        for rec in self:
+            if rec.pacchetto_ore_id:
+                rec.pacchetto_ore_id._compute_ore_residue()

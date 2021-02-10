@@ -1,0 +1,53 @@
+<odoo>
+    <data>
+
+        <record id="wizard_report_presenze_form" model="ir.ui.view">
+            <field name="name">Report Presenze</field>
+            <field name="model">pacchetto.ore.presenze</field>
+            <field name="view_mode">form</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <span>Selezionare il periodo desiderato</span>
+                    <group>
+                        <group>
+                            <field name="da_data" string="Da data"/>
+                            <field name="a_data" string="A data"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button class="btn btn-primary" name="stampa_report_presenze" type="object" string="Report Presenze"/>
+                        <button class="btn btn-primary" string="Cancella" special="cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="wizard_report_presenze_action" model="ir.actions.act_window">
+            <field name="name">Wizard Report Presenze</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pacchetto.ore.presenze</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+
+        </record>
+
+        <report id="report_presenze_xlsx"
+                model="pacchetto.ore.presenze"
+                string="Presenze Dipendenti"
+                report_type="xlsx"
+                menu="False"
+                name="addoons_pacchetto_ore.presenze_xlsx"
+                file="addoons_pacchetto_ore.presenze_xlsx"
+        />
+
+        <menuitem
+                id = "addoons_pacchetto_ore_report_presenze"
+                name = "Report Presenze"
+                parent = "hr_attendance.menu_hr_attendance_manage_attendances"
+                action = "wizard_report_presenze_action"
+        />
+
+
+    </data>
+</odoo>
