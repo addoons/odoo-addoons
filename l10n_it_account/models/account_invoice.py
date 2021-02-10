@@ -31,7 +31,6 @@ class AccountInvoice(models.Model):
     giroconto_bolletta_doganale_id = fields.Many2one('account.move')
     is_dogana = fields.Boolean(related='partner_id.is_dogana')
     purchase_order_id = fields.Many2one('purchase.order')
-    differenza_ordini = fields.Float(compute="compute_differenza_ordini", store=True)
     invoice_year = fields.Integer(compute='get_year', store=True)
 
 
@@ -40,8 +39,10 @@ class AccountInvoice(models.Model):
         ('number_uniq', 'unique(number, company_id, journal_id, type, invoice_year)', 'Invoice Number must be unique per Company!'),
     ]
 
-
-
+    @api.constrains('partner_id', 'partner_bank_id')
+    def validate_partner_bank_id(self):
+        for record in self:
+            return True
 
 
     @api.depends('date_invoice')
@@ -55,34 +56,23 @@ class AccountInvoice(models.Model):
                     date = datetime.datetime.strptime(str(x.date_invoice), '%Y-%m-%d')
                     x.invoice_year = date.year
 
-    def compute_differenza_ordini(self):
-        i = 0
+    @api.multi
+    def _check_duplicate_supplier_reference(self):
+        """
+        Ereditiamo la funzione che controlla eventuali duplicati di fatture (riferimento fornitore)
+        aggiungendo il controllo dell'anno
+        """
         for invoice in self:
-            if invoice.type == 'in_invoice':
-                i += 1
-                diff_ordini = 0
-                list_ordini = []
-                for line in invoice.invoice_line_ids:
-                    if line.purchase_order_id and line.purchase_order_id.id not in list_ordini:
-                        list_ordini.append(line.purchase_order_id.id)
-                        diff_ordini -= line.purchase_order_id.amount_total
-                    if line.purchase_order_id:
-                        diff_ordini += line.price_total
-
-                if len(list_ordini) > 0:
-                    invoice.differenza_ordini = diff_ordini
-                else:
-                    invoice.differenza_ordini = 0
-                print(i)
-            else:
-                invoice.differenza_ordini = 0
-
-    @api.one
-    @api.depends('invoice_line_ids.price_subtotal', 'tax_line_ids.amount', 'tax_line_ids.amount_rounding',
-                 'currency_id', 'company_id', 'date_invoice', 'type', 'date', 'invoice_line_ids.purchase_order_id')
-    def _compute_amount(self):
-        super(AccountInvoice, self)._compute_amount()
-        self.compute_differenza_ordini()
+            # refuse to validate a vendor bill/credit note if there already exists one with the same reference for the same partner,
+            # because it's probably a double encoding of the same bill/credit note
+            if invoice.type in ('in_invoice', 'in_refund') and invoice.reference:
+                if self.search([('type', '=', invoice.type), ('reference', '=', invoice.reference),
+                                ('company_id', '=', invoice.company_id.id),
+                                ('invoice_year', '=', invoice.invoice_year),
+                                ('commercial_partner_id', '=', invoice.commercial_partner_id.id),
+                                ('id', '!=', invoice.id)]):
+                    raise UserError(_(
+                        "Duplicated vendor reference detected. You probably encoded twice the same vendor bill/credit note."))
 
     def set_fiscal_positon(self):
 
@@ -1080,12 +1070,9 @@ class AccountInvoice(models.Model):
                         l.invoice_line_tax_wt_ids = [(5,0), (4, self.am_rda.id)]
                     if self.am_rc != l.rc:
                         l.rc = self.am_rc
-                    if self.purchase_order_id:
-                        l.purchase_order_id = self.purchase_order_id.id
                 l.selected = False
             self.compute_taxes()
             self._onchange_invoice_line_wt_ids()
-            self.compute_differenza_ordini()
 
 
     def get_tax_amount_added_for_rc(self):
@@ -1107,7 +1094,6 @@ class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
     selected = fields.Boolean()
-    purchase_order_id = fields.Many2one('purchase.order')
 
     @api.model
     def _default_withholding_tax(self):

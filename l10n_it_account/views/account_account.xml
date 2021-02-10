@@ -44,6 +44,8 @@
                 <search position="inside">
                     <filter name="area" string="Conto Economico" domain="[('area', '=', 'conto_economico')]"/>
                     <filter name="area" string="Stato Patrimoniale" domain="[('area', '=', 'stato_patrimoniale')]"/>
+                    <filter name="macroaggregati" string="Macroaggregati" domain="[('hierarchy_type_id', '=', %(l10n_it_account.account_type_macroaggregate)d)]"/>
+                    <filter name="aggregati" string="Aggregati" domain="[('hierarchy_type_id', '=', %(l10n_it_account.account_type_aggregate)d)]"/>
                 </search>
                 <group position="inside">
                     <filter string="Macroaggregato" name="macroaggregate_id" domain="[]" context="{'group_by':'macroaggregate_id'}"/>
@@ -112,5 +114,26 @@
             </field>
         </record>
 
+        <record model="ir.actions.act_window" id="aggregate_action">
+            <field name="name">Aggregati</field>
+            <field name="res_model">account.account</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="l10n_it_account.addoons_view_account_search"/>
+            <field name="context">{'search_default_aggregati': 1}</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="macroaggregate_action">
+            <field name="name">Macroaggregati</field>
+            <field name="res_model">account.account</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="l10n_it_account.addoons_view_account_search"/>
+            <field name="context">{'search_default_macroaggregati': 1}</field>
+        </record>
+
+        <menuitem id="macro_aggregate_menu" name="Macroaggregati" sequence="2" parent="account.account_account_menu" action="macroaggregate_action"/>
+        <menuitem id="aggregate_menu" name="Aggregati" sequence="2" parent="account.account_account_menu" action="aggregate_action"/>
+        <menuitem action="account.action_tax_form" id="account.menu_action_tax_form" parent="account.account_account_menu" sequence="3"/>
     </data>
 </odoo>

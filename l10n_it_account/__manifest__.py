@@ -90,7 +90,10 @@
         'wizards/wizard_import_partner_xls.xml',
         'wizards/wizard_import_product_xls.xml',
         'wizards/wizard_import_chart_account_xls.xml',
-        'wizards/wizard_import_saldi.xml'
+        'wizards/wizard_import_saldi.xml',
+        'wizards/wizard_account_partner.xml',
+        'wizards/wizard_struttura_piano_conti.xml',
+        'wizards/wizard_tipologia_conto.xml',
     ],
     'installable': True,
 }

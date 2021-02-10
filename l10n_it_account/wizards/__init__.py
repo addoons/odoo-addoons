@@ -23,3 +23,6 @@ from . import wizard_import_chart_account_xls
 from . import wizard_import_product_xls
 from . import wizard_import_partner_xls
 from . import wizard_import_saldi
+from . import wizard_account_partner
+from . import wizard_struttura_piano_conti
+from . import wizard_tipologia_conto

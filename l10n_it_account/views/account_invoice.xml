@@ -91,9 +91,6 @@
                     </tree>
 
                 </field>
-                <group>
-                    <field name="differenza_ordini" string="Differenza Ordini Acquisto" readonly="1" force_save="1" widget="monetary"/>
-                </group>
             </xpath>
 
             <xpath expr="//group[hasclass('oe_subtotal_footer', 'oe_right')]/field[@name='amount_total']" position="after">
@@ -118,9 +115,6 @@
             <field name="price_subtotal" position="after">
                 <field name="rc"/>
             </field>
-            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='rc']" position="after">
-                <field name="purchase_order_id" string="Ordine Acquisto"/>
-            </xpath>
 
 
             <!--Bolletta Doganale-->
@@ -141,7 +135,6 @@
                         <field name="am_tax_id" string="Imposte"/>
                         <field name="am_rda" string="Ritenuta d'acconto"/>
                         <field name="am_rc" string="RC"/>
-                        <field name="purchase_order_id" string="Ordine Acquisto"/>
                     </group>
                 </group>
             </xpath>
@@ -322,7 +315,6 @@
 
             <xpath expr="//form/group/group/field[@name='currency_id']" position="after">
                 <field name="rc"/>
-                <field name="purchase_order_id" string="Ordine Acquisto"/>
             </xpath>
 
         </field>
@@ -353,7 +345,6 @@
         <field name="arch" type="xml">
             <search position="inside">
                 <field name="comment" string="Note"/>
-                <filter name="differenza_ordini_acquisto" string="Differenza Ordini" domain="[('differenza_ordini', '!=',0)]" />
             </search>
         </field>
     </record>
