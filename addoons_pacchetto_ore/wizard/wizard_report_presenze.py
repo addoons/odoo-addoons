@@ -31,7 +31,7 @@ class TracciatoXlsx(models.AbstractModel):
             dict_tipi_permesso[permesso.id] = permesso.name
 
         # Recupero i dipendenti
-        dipendenti = self.env['hr.employee'].search([('name', '=', 'Mitchell Admin')])
+        dipendenti = self.env['hr.employee'].search([])
 
         for dipendente in dipendenti:
 
