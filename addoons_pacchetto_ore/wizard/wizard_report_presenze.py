@@ -10,7 +10,8 @@ class TracciatoXlsx(models.AbstractModel):
 
         header = workbook.add_format({'bold': True, 'text_wrap': True, 'border': True, 'border_color': 'black', 'font_name': 'Arial'})
         cell_text = workbook.add_format({'bold': False, 'text_wrap': True, 'font_name': 'Arial'})
-        cell_number = workbook.add_format({'bold': False, 'text_wrap': True, 'font_name': 'Arial', 'align': 'right'})
+        cell_number_empty = workbook.add_format({'bold': False, 'text_wrap': True, 'font_name': 'Arial', 'align': 'right'})
+        cell_number_full = workbook.add_format({'bold': False, 'text_wrap': True, 'font_name': 'Arial', 'align': 'right', 'bg_color': '#DCDCDC'})
         cell_total_text = workbook.add_format({'bold': True, 'text_wrap': True, 'font_name': 'Arial'})
         cell_total_number = workbook.add_format({'bold': True, 'text_wrap': True, 'bg_color': 'yellow', 'font_name': 'Arial', 'align': 'right'})
 
@@ -22,8 +23,15 @@ class TracciatoXlsx(models.AbstractModel):
         da_data = datetime.datetime.strptime(data['form']['da_data'], '%Y-%m-%d').date()
         a_data = datetime.datetime.strptime(data['form']['a_data'], '%Y-%m-%d').date()
 
+        # Tipi permesso
+        dict_tipi_permesso = {}
+        arr_tot_ore_ferie_100 = []
+
+        for permesso in self.env['hr.leave.type'].search([], order='id asc'):
+            dict_tipi_permesso[permesso.id] = permesso.name
+
         # Recupero i dipendenti
-        dipendenti = self.env['hr.employee'].search([])
+        dipendenti = self.env['hr.employee'].search([('name', '=', 'Mitchell Admin')])
 
         for dipendente in dipendenti:
 
@@ -37,15 +45,28 @@ class TracciatoXlsx(models.AbstractModel):
             sheet.write(0, 1, 'Data', header)
             sheet.write(0, 2, 'Ore Lavoro', header)
             sheet.write(0, 3, 'Ore Straordinari', header)
-            sheet.write(0, 4, 'Ore Ferie', header)
+
+            col = 4
+
+            # Creo gli header per le colonne dei permessi e
+            # resetto l'array che contiene i totali mensili
+            # di ogni permesso
+            for header_column_permesso in dict_tipi_permesso.keys():
+                sheet.write(0, col, dict_tipi_permesso[header_column_permesso], header)
+                arr_tot_ore_ferie_100.append(0)
+                col = col + 1
 
             # Imposto la larghezza delle colonne
             sheet.set_column(0, 0, 16)
             sheet.set_column(1, 1, 10)
-            sheet.set_column(2, 5, 14)
+            sheet.set_column(2, 3, 14)
+
+            # Larghezza delle colonne dei permessi
+            if len(dict_tipi_permesso) > 0:
+                sheet.set_column(4, 4 + len(dict_tipi_permesso), 23)
 
             # Calcolo i giorni di ferie e permessi
-            giorni_ferie = self.calcolo_ferie(dipendente.id, da_data, a_data, ore_giornaliere_da_contratto)
+            giorni_ferie = self.calcolo_ferie(dipendente.id, da_data, a_data, ore_giornaliere_da_contratto, dict_tipi_permesso)
 
             # Calcolo le ore lavorate per il periodo selezionato
             # e il dipendente che sto ciclando
@@ -55,11 +76,14 @@ class TracciatoXlsx(models.AbstractModel):
             row = 1
             tot_ore_lavorate_100 = 0
             tot_ore_straordinari_100 = 0
-            tot_ore_ferie_100 = 0
             giorni = a_data - da_data
+
+            # Inizio a scorrere giorno per giorno il
+            # periodo selezionato
 
             for giorno in range(giorni.days + 1):
 
+                col = 0
                 data_corrente = da_data + datetime.timedelta(days=giorno)
 
                 # Controllo se nella giornata che sto ciclando
@@ -71,37 +95,74 @@ class TracciatoXlsx(models.AbstractModel):
 
                 # Controllo se nella giornata che sto ciclando
                 # ci sono delle ore di ferie o permessi
-                if data_corrente in giorni_ferie.keys():
-                    ore_ferie_100 = round(giorni_ferie[data_corrente], 2)
-                else:
-                    ore_ferie_100 = 0
+                arr_ore_ferie_100 = []
+                tot_ferie_100_row = 0
 
-                # Controllo se nella giornata che sto ciclando
-                # ci sono delle ore lavorate o di ferie
-                if ore_lavorate_100 > 0 or ore_ferie_100 > 0:
-                    ore_straordinari_100 = ore_lavorate_100 + ore_ferie_100 - ore_giornaliere_da_contratto
+                # Ogni volta che cambia giorno imposto a 0
+                # il valore di ogni permesso
+                for index_permesso in range(len(dict_tipi_permesso)):
+                    arr_ore_ferie_100.append(0)
+
+                index_permesso = 0
+
+                if data_corrente in giorni_ferie.keys():
+
+                    for permesso in giorni_ferie[data_corrente].keys():
+                        arr_ore_ferie_100[index_permesso] += giorni_ferie[data_corrente][permesso]
+                        arr_tot_ore_ferie_100[index_permesso] += giorni_ferie[data_corrente][permesso]
+                        tot_ferie_100_row += giorni_ferie[data_corrente][permesso]
+                        index_permesso += 1
                 else:
-                    ore_straordinari_100 = 0
+                    tot_ferie_100_row = 0
+
+                # Calcolo le ore di straordinario, se nella giornata
+                # ci sono delle ore lavorate o di ferie
+
+                ore_straordinari_100 = 0
+
+                if ore_lavorate_100 > 0 or tot_ferie_100_row > 0:
+                    ore_straordinari_100 = ore_lavorate_100 + tot_ferie_100_row - ore_giornaliere_da_contratto
 
                 # Calcolo i totali
                 tot_ore_lavorate_100 += ore_lavorate_100
-                tot_ore_ferie_100 += ore_ferie_100
                 tot_ore_straordinari_100 += ore_straordinari_100
 
                 # Scrivo la row del foglio excel
                 sheet.write(row, col, dipendente.name, cell_text)
                 sheet.write(row, col + 1, data_corrente.strftime("%d/%m/%Y"), cell_text)
-                sheet.write(row, col + 2, self.convert_float_to_HH_MM_format(ore_lavorate_100), cell_number)
-                sheet.write(row, col + 3, self.convert_float_to_HH_MM_format(ore_straordinari_100), cell_number)
-                sheet.write(row, col + 4, self.convert_float_to_HH_MM_format(ore_ferie_100), cell_number)
+                if ore_lavorate_100 > 0:
+                    sheet.write(row, col + 2, self.convert_float_to_HH_MM_format(ore_lavorate_100), cell_number_full)
+                else:
+                    sheet.write(row, col + 2, self.convert_float_to_HH_MM_format(ore_lavorate_100), cell_number_empty)
 
+                if ore_straordinari_100 > 0:
+                    sheet.write(row, col + 3, self.convert_float_to_HH_MM_format(ore_straordinari_100), cell_number_full)
+                else:
+                    sheet.write(row, col + 3, self.convert_float_to_HH_MM_format(ore_straordinari_100), cell_number_empty)
+                # Scrivo le ogni colonna di permesso per la
+                # riga che sto ciclando
+                for permesso in arr_ore_ferie_100:
+                    if permesso > 0:
+                        sheet.write(row, col + 4, self.convert_float_to_HH_MM_format(permesso), cell_number_full)
+                    else:
+                        sheet.write(row, col + 4, self.convert_float_to_HH_MM_format(permesso), cell_number_empty)
+
+                    col += 1
+
+                col = 0
                 row += 1
 
-            # Scrivo i totali delle ore e delle ferie
+            # Scrivo i totali delle ore e degli straordinari
             sheet.write(row, col, 'Totale', cell_total_text)
             sheet.write(row, col + 2, self.convert_float_to_HH_MM_format(tot_ore_lavorate_100), cell_total_number)
             sheet.write(row, col + 3, self.convert_float_to_HH_MM_format(tot_ore_straordinari_100), cell_total_number)
-            sheet.write(row, col + 4, self.convert_float_to_HH_MM_format(tot_ore_ferie_100), cell_total_number)
+
+            # Scrivo i totali delle ferie
+            col = 4
+
+            for feria in arr_tot_ore_ferie_100:
+                sheet.write(row, col, self.convert_float_to_HH_MM_format(feria), cell_total_number)
+                col += 1
 
     def convert_float_to_HH_MM_format(self, ore_100):
 
@@ -115,13 +176,14 @@ class TracciatoXlsx(models.AbstractModel):
 
         return "%02d:%02d" % (int(ore_100), (ore_100 - int(ore_100)) * 60)
 
-    def calcolo_ferie(self, employee_id, da_data, a_data, ore_giornaliere_da_contratto):
+    def calcolo_ferie(self, employee_id, da_data, a_data, ore_giornaliere_da_contratto, dict_permessi):
 
         """
         La funzione crea un dizionario, dove le chiavi sono i giorni
         del periodo che si sta analizzanzo, e ogni chiave come valore
         ha il numero di ore di ferie per quella giornata
 
+        :param dict_permessi:
         :param employee_id:
         :param da_data:
         :param a_data:
@@ -137,7 +199,7 @@ class TracciatoXlsx(models.AbstractModel):
         # nel periodo selezionato dal wizard
         giorni_ferie = self.env['hr.leave'].search(
             [('employee_id', '=', employee_id), ('request_date_from', '<=', a_data),
-             ('request_date_to', '>=', da_data), ('state', '=', 'validate')], order='request_date_from asc')
+             ('request_date_to', '>=', da_data), ('state', '=', 'validate')], order='request_date_from asc, holiday_status_id asc')
 
         # ciclo ogni singola riga e calcolo per ogni giorno
         # le ore di ferie e permessi
@@ -145,22 +207,34 @@ class TracciatoXlsx(models.AbstractModel):
             if giorno.number_of_days_display >= 1:
                 days = giorno.request_date_to - giorno.request_date_from
                 for day in range(days.days + 1):
-                    dict_giorni_ferie[
-                        giorno.request_date_from + datetime.timedelta(days=day)] = ore_giornaliere_da_contratto
+                    if giorno.request_date_from + datetime.timedelta(days=day) not in dict_giorni_ferie.keys():
+                        dict_giorni_ferie[giorno.request_date_from + datetime.timedelta(days=day)] = {}
+
+                        # Creo il modello del dizionario, come chiavi ha
+                        # gli id dei tipi permesso e come valore 0
+                        for permesso_model in dict_permessi.keys():
+                            dict_giorni_ferie[giorno.request_date_from + datetime.timedelta(days=day)][permesso_model] = 0
+
+                    dict_giorni_ferie[giorno.request_date_from + datetime.timedelta(days=day)][giorno.holiday_status_id.id] += ore_giornaliere_da_contratto
             else:
                 if giorno.request_date_from not in dict_giorni_ferie.keys():
-                    dict_giorni_ferie[giorno.request_date_from] = 0
+                    dict_giorni_ferie[giorno.request_date_from] = {}
+
+                    # Creo il modello del dizionario, come chiavi ha
+                    # gli id dei tipi permesso e come valore 0
+                    for permesso_model in dict_permessi.keys():
+                        dict_giorni_ferie[giorno.request_date_from][permesso_model] = 0
 
                 if giorno.request_unit_half:
                     ore = ore_giornaliere_da_contratto / 2
-                    dict_giorni_ferie[giorno.request_date_from] += ore
+                    dict_giorni_ferie[giorno.request_date_from][giorno.holiday_status_id.id] += ore
 
                 elif giorno.request_unit_hours:
 
                     # Chiamata la funzione del modello hr.leave, perchè il campo
                     # number_of_hours_display è compute
                     giorni_ferie._compute_number_of_hours_display()
-                    dict_giorni_ferie[giorno.request_date_from] += giorno.number_of_hours_display
+                    dict_giorni_ferie[giorno.request_date_from][giorno.holiday_status_id.id] += giorno.number_of_hours_display
 
         return dict_giorni_ferie
 
