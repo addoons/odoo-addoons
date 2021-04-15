@@ -149,7 +149,7 @@
             <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>
             <field name="area">stato_patrimoniale</field>
         </record>
-       
+        
 
 
         <!--AGGREGATI STATO PATRIMONIALE PASSIVO-->
@@ -217,14 +217,7 @@
             <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
             <field name="area">stato_patrimoniale</field>
         </record>
-        <record model="account.account" id="aggregato_sp_passivo_9">
-            <field name="name">UTILE (PERDITA) DELL'ESERVIZIO</field>
-            <field name="code">210</field>
-            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
-            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
-            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
-            <field name="area">stato_patrimoniale</field>
-        </record>
+       
         <record model="account.account" id="aggregato_sp_passivo_10">
             <field name="name">Riserva negativa per azioni proprie in portafogli</field>
             <field name="code">220</field>
