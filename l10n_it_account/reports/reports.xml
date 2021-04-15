@@ -32,4 +32,15 @@
             file="l10n_it_account.report_bilancio_verifica"
             paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
     />
+
+    <report
+            id="certificazione_rda"
+            string="Certificazione RdA"
+            model="withholding.tax.statement"
+            report_type="qweb-pdf"
+            file="l10n_it_account.certificazione_rda_report_document"
+            name="l10n_it_account.certificazione_rda_report_document"
+            print_report_name="('Certificazione dei Compensi - %s') % object.partner_id.name"
+            paperformat="l10n_it_account.l10n_it_account_a4_landscape"
+    />
 </odoo>

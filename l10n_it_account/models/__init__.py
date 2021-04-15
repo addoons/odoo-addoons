@@ -32,6 +32,7 @@ from . import account_report
 from . import check_tools
 from . import account_partner_ledger
 from . import bollette_doganali
+from . import res_config_settings
 
 
 

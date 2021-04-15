@@ -25,7 +25,6 @@ class TracciatoXlsx(models.AbstractModel):
 
         # Tipi permesso
         dict_tipi_permesso = {}
-        arr_tot_ore_ferie_100 = []
 
         for permesso in self.env['hr.leave.type'].search([], order='id asc'):
             dict_tipi_permesso[permesso.id] = permesso.name
@@ -38,6 +37,9 @@ class TracciatoXlsx(models.AbstractModel):
             # Prendo le ore medie giornaliere dall'ananagrafica
             # del dipendente
             ore_giornaliere_da_contratto = dipendente.resource_calendar_id.hours_per_day
+
+            # Riga totali ferie
+            arr_tot_ore_ferie_100 = []
 
             # Per ogni dipendente crea una sheet con l'intestazione
             sheet = workbook.add_worksheet(dipendente.name)

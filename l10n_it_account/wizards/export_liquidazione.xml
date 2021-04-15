@@ -8,12 +8,12 @@
             <form string="Export File">
                 <div>
                     <p>
-                    Click on <strong>Export</strong> to generate VAT statement communication file.
+                    Clicca su <strong>Esporta</strong> per generare il tracciato LIPE.
                     </p>
                 </div>
                 <footer>
                     <button name="export"
-                            string="Export"
+                            string="Esporta"
                             type="object"
                             class="oe_highlight"  />
                     or
@@ -27,7 +27,7 @@
         <field name="name">Export file - Done</field>
         <field name="model">comunicazione.liquidazione.export.file</field>
         <field name="arch" type="xml">
-            <form string="Export">
+            <form string="Esporta">
                 <group>
                     <field name="file_export" readonly="1" filename="name"/>
                     <field name="file_pdf_export" readonly="1" filename="name_pdf"/>
@@ -36,14 +36,14 @@
                     <field name="name_pdf" invisible="1"/>
                 </group>
                 <footer>
-                    <button string="Close" class="oe_link" special="cancel" />
+                    <button string="Chiudi" class="oe_link" special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_liquidazione_export_file" model="ir.actions.act_window">
-        <field name="name">Export VAT statement communication file</field>
+        <field name="name">Esporta Tracciati LIPE</field>
         <field name="res_model">comunicazione.liquidazione.export.file</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

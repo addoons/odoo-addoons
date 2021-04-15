@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.addons import decimal_precision as dp
@@ -174,6 +173,8 @@ class AccountPartialReconcile(models.Model):
 
 
 
+
+
 class AccountAbstractPayment(models.AbstractModel):
     _inherit = "account.abstract.payment"
 
@@ -198,14 +199,17 @@ class AccountAbstractPayment(models.AbstractModel):
         if not invoices:
             invoices = self.invoice_ids
         original_values = {}
+
+        for invoice in original_values:
+            invoice.residual_signed = original_values[invoice]
+
         for invoice in invoices:
             if invoice.withholding_tax:
                 original_values[invoice] = invoice.residual_signed
                 invoice.residual_signed = invoice.amount_net_pay_residual
         res = super(AccountAbstractPayment, self)._compute_payment_amount(
             invoices, currency)
-        for invoice in original_values:
-            invoice.residual_signed = original_values[invoice]
+
         return res
 
 

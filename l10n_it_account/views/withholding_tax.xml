@@ -102,6 +102,7 @@
             <tree string="Withholding Tax statement" create="false" edit="false" delete="false">
                 <field name="partner_id"/>
                 <field name="date"/>
+                <field name="date_maturity" string="Data Scadenza"/>
                 <field name="move_id"/>
                 <field name="invoice_id"/>
                 <field name="withholding_tax_id"/>
@@ -133,6 +134,7 @@
                             <field name="move_id"/>
                             <field name="invoice_id"/>
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="date_maturity" string="Data Scadenza"/>
                         </group>
                     </group>
                     <newline/>
@@ -167,6 +169,7 @@
                     <filter name="group_by_partners" string="Partners" icon="terp-personal" domain="[]" context="{'group_by':'partner_id'}"/>
                     <filter name="group_by_wt" string="Withholding Tax" icon="terp-personal" domain="[]" context="{'group_by':'withholding_tax_id'}"/>
                     <filter name="group_by_date" string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                    <filter name="group_by_date_maturity" string="Data Scadenza" domain="[]" context="{'group_by':'date_maturity'}"/>
                 </group>
             </search>
         </field>

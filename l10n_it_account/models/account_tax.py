@@ -68,7 +68,7 @@ class AccountTax(models.Model):
         amount_tax_exig = 0 #Esigibili
 
 
-        if 'cash_move_ids' in data:
+        if 'cash_move_ids' in data and data['cash_move_ids']:
             for move in data['move_ids']:
                 move_id = self.env['account.move'].browse(int(move))
                 # 1° Calcolo quali sarebbero le imposte e l'imponibile
@@ -76,7 +76,6 @@ class AccountTax(models.Model):
                     if line.tax_line_id.id == tax.id:
                         amount_untaxed += line.tax_base_amount
                         amount_tax += line.credit
-
             for move, cash_move_ids in data['cash_move_ids'].items():
                 # 2° Calcolo in reale imponibile ed imposte Esigibili, guardando i giroconti del Principio di Cassa
                 for cash_move in cash_move_ids:

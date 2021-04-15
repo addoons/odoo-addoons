@@ -20,6 +20,25 @@ class AccountAccountInherit(models.Model):
     debit = fields.Monetary(string='Debit', readonly=True, compute='_find_account_balance', store=True)
     balance = fields.Monetary(string='Balance', readonly=True, compute='_find_account_balance', store=True)
 
+    sottoconto_terzo_livello = fields.Many2one('account.account', string='Sottoconto Terzo Livello')
+    sottoconto_quarto_livello = fields.Many2one('account.account', string='Sottoconto Quarto Livello')
+
+    def get_terzo_liv_balance(self):
+        accounts = self.env['account.account'].search([('sottoconto_terzo_livello.id', '=', self.id)])
+        balance_aggregate = 0
+        for account in accounts:
+            balance_aggregate += account.balance
+        self.balance = balance_aggregate
+        return balance_aggregate
+
+    def get_quarto_liv_balance(self):
+        accounts = self.env['account.account'].search([('sottoconto_quarto_livello.id', '=', self.id)])
+        balance_aggregate = 0
+        for account in accounts:
+            balance_aggregate += account.balance
+        self.balance = balance_aggregate
+        return balance_aggregate
+
     @api.depends('account_move_lines')
     def _find_account_balance(self):
         """

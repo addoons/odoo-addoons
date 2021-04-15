@@ -11,6 +11,13 @@
         <record model="account.account.type" id="account_type_ordine">
             <field name="name">Conti D'ordine</field>
         </record>
+        <!--Tipi Di Conto, Sottoconto LV3,Sottoconto LV4-->
+        <record model="account.account.type" id="account_type_sottoconto_3">
+            <field name="name">Sottoconto Terzo Livello</field>
+        </record>
+        <record model="account.account.type" id="account_type_sottoconto_4">
+            <field name="name">Sottoconto Quarto Livello</field>
+        </record>
 
 
         <!-- STATO PATRIMONIALE -->
@@ -142,6 +149,14 @@
             <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>
             <field name="area">stato_patrimoniale</field>
         </record>
+        <record model="account.account" id="aggregato_sp_attivo_9">
+            <field name="name">RATEI E RISCONTI ATTIVI</field>
+            <field name="code">125</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
 
 
         <!--AGGREGATI STATO PATRIMONIALE PASSIVO-->
@@ -209,6 +224,14 @@
             <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
             <field name="area">stato_patrimoniale</field>
         </record>
+        <record model="account.account" id="aggregato_sp_passivo_9">
+            <field name="name">UTILE (PERDITA) DELL'ESERVIZIO</field>
+            <field name="code">210</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
         <record model="account.account" id="aggregato_sp_passivo_10">
             <field name="name">Riserva negativa per azioni proprie in portafogli</field>
             <field name="code">220</field>
@@ -265,6 +288,14 @@
             <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>
             <field name="area">stato_patrimoniale</field>
         </record>
+        <record model="account.account" id="aggregato_sp_passivo_17">
+            <field name="name">RATEI E RISCONTI PASSIVI</field>
+            <field name="code">300</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_e"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
 
 
         <!-- CONTO ECONOMICO -->
@@ -278,13 +309,19 @@
             <field name="area">conto_economico</field>
         </record>
         <record model="account.account" id="macro_ce_costi_c">
-            <field name="name">ONERI FINANZIARI</field>
+            <field name="name">PROVENTI ED ONERI FINANZIARI</field>
             <field name="user_type_id" ref="account.data_account_type_expenses"/>
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
             <field name="area">conto_economico</field>
         </record>
         <record model="account.account" id="macro_ce_costi_d">
             <field name="name">RETTIFICHE DI VALORE DI ATTIVITA' E PASSIVITA' FINANZIARIE</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="macro_ce_costi_e">
+            <field name="name">IMPOSTE DELL'ESERCIZIO CORRENTI DIFFERITE/ANTICIPATE</field>
             <field name="user_type_id" ref="account.data_account_type_expenses"/>
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
             <field name="area">conto_economico</field>
@@ -297,18 +334,13 @@
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
             <field name="area">conto_economico</field>
         </record>
-        <record model="account.account" id="macro_ce_ricavi_c">
-            <field name="name">PROVENTI FINANZIARI</field>
+        <record model="account.account" id="macro_ce_ricavi_b">
+            <field name="name">IMPOSTE DELL'ESERCIZIO CORRENTI/DIFFERITE/ANTICIPATE</field>
             <field name="user_type_id" ref="account.data_account_type_revenue"/>
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
             <field name="area">conto_economico</field>
         </record>
-        <record model="account.account" id="macro_ce_ricavi_d">
-            <field name="name">RETTIFICHE DI VALORE DI ATTIVITA' E PASSIVITA' FINANZIARIE</field>
-            <field name="user_type_id" ref="account.data_account_type_revenue"/>
-            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
-            <field name="area">conto_economico</field>
-        </record>
+
 
 
         <!--AGGREGATI CONTO ECONOMICO COSTI-->
@@ -455,7 +487,7 @@
             <field name="code">570</field>
             <field name="user_type_id" ref="account.data_account_type_revenue"/>
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
-            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_c"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
             <field name="area">conto_economico</field>
         </record>
         <record model="account.account" id="aggregato_ce_ricavi_6">
@@ -463,7 +495,7 @@
             <field name="code">580</field>
             <field name="user_type_id" ref="account.data_account_type_revenue"/>
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
-            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_c"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
             <field name="area">conto_economico</field>
         </record>
         <record model="account.account" id="aggregato_ce_ricavi_7">
@@ -471,7 +503,7 @@
             <field name="code">590</field>
             <field name="user_type_id" ref="account.data_account_type_revenue"/>
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
-            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_c"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
             <field name="area">conto_economico</field>
         </record>
         <record model="account.account" id="aggregato_ce_ricavi_8">
@@ -479,7 +511,7 @@
             <field name="code">600</field>
             <field name="user_type_id" ref="account.data_account_type_revenue"/>
             <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
-            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_d"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_b"/>
             <field name="area">conto_economico</field>
         </record>
 

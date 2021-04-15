@@ -87,15 +87,19 @@ class WizardImportChartAccountXls(models.TransientModel):
                         if column == 4:
                             # Legame al macroaggregato
                             if cell.value:
+                                if isinstance(cell.value, float):
+                                    cell.value = int(cell.value)
                                 macroaggregato_obj = self.env['account.account'].search([
-                                    ('hierarchy_type_id', '=', macroaggregato),('code', '=', str(int(cell.value)))],limit=1)
+                                    ('hierarchy_type_id', '=', macroaggregato),('code', '=', str(cell.value))],limit=1)
                                 if macroaggregato_obj:
                                     account['macroaggregate_id'] = macroaggregato_obj.id
                         if column == 5:
                             # Legame all'aggregato
                             if cell.value:
+                                if isinstance(cell.value, float):
+                                    cell.value = int(cell.value)
                                 aggregato_obj = self.env['account.account'].search([
-                                    ('hierarchy_type_id', '=', aggregato),('code', '=', str(int(cell.value)))])
+                                    ('hierarchy_type_id', '=', aggregato),('code', '=', str(cell.value))])
                                 if aggregato_obj:
                                     account['parent_id'] = aggregato_obj.id
                 if account != {}:
@@ -107,7 +111,8 @@ class WizardImportChartAccountXls(models.TransientModel):
                         account['hierarchy_type_id'] = aggregato
                     try:
                         if len(account['name']) > 0:
-                            existing_account = self.env['account.account'].search([('code', '=', account['code'])])
+                            existing_account = self.env['account.account'].search([('code', '=', account['code']),
+                                                                                   ('name', '=', account['name'])])
                             if not existing_account:
                                 self.env['account.account'].create(account)
                                 logging.info("Creato: " + account['code'])

@@ -43,6 +43,7 @@
                         <field name="file5" string="Prima Nota Fin (XLSX)"/>
                         <field name="file6" string="Ingressi"/>
                         <field name="json" string="Json Anagrafiche"/>
+                        <button name="generate_picking_from_purchase" string="Genera Picking Mancanti" class="btn btn-success" type="object"/>
                     </group>
                     <footer>
                         <button name="on_upload" string="Aggiorna Clienti" class="btn btn-success" type="object"/>

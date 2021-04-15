@@ -55,8 +55,10 @@
                                         <tr>
                                             <th width="15%">Data</th>
                                             <th width="25%">Registr.</th>
+                                            <th>Fattura</th>
                                             <th width="30%" t-if="type == 'partner' ">Conto</th>
                                             <th width="30%" t-if="type == 'conto' ">Partner</th>
+                                            <th>Etichetta</th>
                                             <th style="text-align: center" width="10%">Dare</th>
                                             <th style="text-align: center" width="10%">Avere</th>
                                             <th style="text-align: center" width="10%">Saldo</th>
@@ -66,7 +68,7 @@
                                         <!--AGGIUNTA RIGA SALDO INIZIALE-->
                                         <tr class="saldo_iniziale">
                                             <td colspan="1"/>
-                                            <td colspan="2" style="text-align:right;">Saldo Iniziale</td>
+                                            <td colspan="4" style="text-align:right;">Saldo Iniziale</td>
                                             <t t-if="key in saldo_precedente">
                                                 <td><span t-esc="saldo_precedente[key]['saldo_dare_prec']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
                                                 <td><span t-esc="saldo_precedente[key]['saldo_avere_prec']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
@@ -86,11 +88,13 @@
                                             <t t-if="elem['journal_id'] in journal_ids">
                                                 <td><span t-esc="elem['date']" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
                                                 <td><span t-esc="elem['move_id']"/></td>
+                                                <td><span t-esc="elem['invoice_number']"/> </td>
                                                 <td t-if="type == 'partner' "><span t-esc="elem['account_id']"/></td>
                                                 <td t-if="type == 'conto' ">
                                                     <span t-if="elem['partner']" t-esc="elem['partner']"/>
                                                     <span t-if="not elem['partner']" t-esc="elem['name']"/>
                                                 </td>
+                                                <td><span t-esc="elem['ref']"/></td>
                                                 <td style="text-align: right;"><span t-if="elem['debit'] != 0" t-esc="elem['debit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
                                                 <td style="text-align: right;"><span t-if="elem['credit'] != 0" t-esc="elem['credit']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
                                                 <td style="text-align: right;">
@@ -107,7 +111,7 @@
                                         <!--AGGIUNTA SALDO FINALE-->
                                         <tr class="saldo_finale">
                                             <td colspan="1"/>
-                                            <td colspan="2"><span><strong>Saldo Finale</strong></span></td>
+                                            <td colspan="4"><span><strong>Saldo Finale</strong></span></td>
                                             <td><span><strong t-esc="totale_dare" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></span></td>
                                             <td><span><strong t-esc="totale_avere" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></span></td>
                                             <td>

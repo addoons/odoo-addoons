@@ -212,6 +212,14 @@ class WithholdingTaxStatement(models.Model):
     move_ids = fields.One2many('withholding.tax.move',
                                'statement_id', 'Moves')
     display_name = fields.Char(compute='_compute_display_name')
+    date_maturity = fields.Date(help="Data di Scadenza RdA", compute="_calculate_date_maturity",store=True)
+
+    @api.depends("move_ids")
+    def _calculate_date_maturity(self):
+        for record in self:
+            if record.move_ids:
+                if record.move_ids[0] and record.move_ids[0].date_maturity:
+                    record.date_maturity = record.move_ids[0].date_maturity
 
     def get_wt_competence(self, amount_reconcile):
         dp_obj = self.env['decimal.precision']

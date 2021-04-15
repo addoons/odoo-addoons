@@ -178,6 +178,7 @@ class ComunicazioneLiquidazione(models.Model):
             'SUBFORNITURE' + str(count): quadro_vp_id.subcontracting,
             'EVENTI_ECCEZIONALI' + str(count): quadro_vp_id.exceptional_events,
             'OPERAZIONI_STRAORDINARIE' + str(count): '',
+            'ACCONTO_DOVUTO' + str(count): str(quadro_vp_id.metodo_acconto_dovuto),
             'VP2' + str(count): str(quadro_vp_id.imponibile_operazioni_attive).replace('.', ' '),
             'VP3' + str(count): str(quadro_vp_id.imponibile_operazioni_passive).replace('.', ' '),
             'VP4' + str(count): str(quadro_vp_id.iva_esigibile).replace('.', ' '),
@@ -579,6 +580,10 @@ class ComunicazioneLiquidazione(models.Model):
             xModulo, etree.QName(NS_IV, "Acconto"))
         Acconto.text = "{:.2f}".format(
             quadro.accounto_dovuto).replace('.', ',')
+        if quadro.metodo_acconto_dovuto:
+            Metodo = etree.SubElement(
+                xModulo, etree.QName(NS_IV, "Metodo"))
+            Metodo.text = str(quadro.metodo_acconto_dovuto)
         # 1.2.2.1.18 ImportoDaVersare
         ImportoDaVersare = etree.SubElement(
             xModulo, etree.QName(NS_IV, "ImportoDaVersare"))
@@ -671,6 +676,7 @@ class ComunicazioneLiquidazioneVp(models.Model):
     interessi_dovuti = fields.Float(
         string='Due interests for quarterly statements')
     accounto_dovuto = fields.Float(string='Due down payment')
+    metodo_acconto_dovuto = fields.Integer()
     iva_da_versare = fields.Float(
         string='VAT to pay',
         compute="_compute_VP14_iva_da_versare_credito", store=True)
@@ -697,6 +703,7 @@ class ComunicazioneLiquidazioneVp(models.Model):
             quadro.crediti_imposta = 0
             quadro.interessi_dovuti = 0
             quadro.accounto_dovuto = 0
+            quadro.metodo_acconto_dovuto = 0
 
     def _get_tax_context(self, period):
         return {

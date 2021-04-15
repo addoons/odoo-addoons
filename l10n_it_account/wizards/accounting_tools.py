@@ -154,6 +154,8 @@ class WizardCaricaClienti(models.TransientModel):
         for session in session_ids:
             session.sudo(user=session.user_id.id).action_pos_session_closing_control()
 
+
+
     def on_upload(self):
 
         if self.file6:

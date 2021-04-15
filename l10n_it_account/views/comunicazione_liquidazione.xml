@@ -122,6 +122,7 @@
                         <field name="quarter"
                                attrs="{'invisible': [('period_type', '!=', 'quarter')],
                                     'required': [('period_type', '=', 'quarter')]}"/>
+                        <field name="metodo_acconto_dovuto" string="Metodo Acconto Dovuto"/>
                     </group>
                     <group>
                         <field name="subcontracting"/>

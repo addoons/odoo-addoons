@@ -6,7 +6,7 @@ import datetime
 from odoo import models, fields, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import float_is_zero, relativedelta
+from odoo.tools import float_is_zero, relativedelta, re
 
 
 class AccountInvoice(models.Model):
@@ -116,9 +116,9 @@ class AccountInvoice(models.Model):
                 else:
                     residual += line.company_id.currency_id._convert(line.amount_residual, self.currency_id,
                                                                      line.company_id, line.date or fields.Date.today())
-        self.residual_company_signed = abs(residual_company_signed) * sign
-        self.residual_signed = abs(residual) * sign
-        self.residual = abs(residual)
+        self.residual_company_signed = (abs(residual_company_signed) * sign )- self.amount_sp # Rimuovo dal residuo lo split payment
+        self.residual_signed = (abs(residual) * sign) - self.amount_sp #Rimuovo dal residuo lo split payment
+        self.residual = abs(residual - self.amount_sp) #Rimuovo dal residuo lo split payment
         digits_rounding_precision = self.currency_id.rounding
         if float_is_zero(self.residual, precision_rounding=digits_rounding_precision):
             self.reconciled = True
@@ -889,7 +889,9 @@ class AccountInvoice(models.Model):
         Crea la movimentazione contabile del giroconto e l'aggancia alla fattura della bolletta doganale
         """
         account_move_id = self.env['account.move']
-        journal_varie_id = self.env['account.journal'].search([('code', '=', 'VARIE')])
+        journal_varie_id = self.env['account.journal'].search([('name', '=', 'Operazioni varie'),('company_id', '=', 1)])
+        if not journal_varie_id:
+            raise UserError("Non e' stato trovato il registro con nome 'Operazioni varie' ")
         amount_conto_transitorio = 0
         amount_spese_anticipate = 0
         bollette_doganali_conf_id = self.env['bollette.doganali'].browse(1)
@@ -1057,6 +1059,8 @@ class AccountInvoice(models.Model):
         return True
 
     def apply_partner_account(self):
+        if self.state != 'draft':
+            raise UserError("Per modificare la fattura riportarla in stato BOZZA")
         if self.partner_id:
             for l in self.invoice_line_ids:
                 if l.selected and (not self.row_description or self.row_description in l.name):
@@ -1088,6 +1092,85 @@ class AccountInvoice(models.Model):
                     res += tax['amount']
         return res
 
+    @api.multi
+    def action_invoice_open(self):
+        """
+        Controllo sulla data di fattura per impedire che fatture validate in questo momento
+        abbiano sequenza antecedente all'ultima emesse (quindi una data fattura successiva)
+        """
+        super(AccountInvoice, self).action_invoice_open()
+        # controllo su anno fiscale
+        impostazione_attivata = self.env['ir.config_parameter'].sudo().get_param('l10n_it_account.account_controllo_protocollo')
+        if impostazione_attivata:
+            today = datetime.datetime.today()
+            if self.date_invoice.year != today.year:
+                raise UserError("La data fattura appartiene ad un anno fiscale diverso da quello corrente")
+
+            # controlla l'ultima fattura validata
+            last_invoice = self.env['account.invoice'].search([('state', 'not in', ('draft', 'cancel')),('type', '=', self.type),
+                                                               ('id', '!=', self.id),('invoice_year', '=', self.invoice_year),
+                                                               ('journal_id', '=', self.journal_id.id)
+                                                               ], limit=1, order='date_invoice desc')
+            # estrapola il sequenziale della fattura corrente e dell'ultima fattura validata
+            last_invoice_number = int(re.split('/|-', last_invoice.number)[-1])
+            current_invoice_number = int(re.split('/|-',self.number)[-1])
+            # BLOCCATA VALIDAZIONE se
+            # la fattura corrente dovrebbe avere un sequenziale maggiore dell'ultima e una data di fattura precedente
+            # OPPURE
+            # la fattura corrente dovrebbe avere un sequenziale minore dell'ultima e una data di fattura uguale o successiva
+
+            # CASO LIMITE:
+            # Fattura annullata con sequenziale minore e data precedente all'ultima fattura validata
+            # MA esiste almeno un'altra fattura con sequenziale MAGGIORE e data PRECEDENTE
+            last_invoice_before_current_invoice_date = self.env['account.invoice'].search(
+                [('state', 'not in', ('draft', 'cancel')), ('type', '=', self.type),
+                 ('invoice_year', '=', self.invoice_year),('date_invoice', '<', self.date_invoice)], limit=1)
+            if last_invoice_before_current_invoice_date:
+                last_invoice_before_current_invoice_date_number = int(re.split('/|-', last_invoice_before_current_invoice_date.number)[-1])
+
+            if ((last_invoice_number < current_invoice_number and self.date_invoice < last_invoice.date_invoice) or
+                (last_invoice_number > current_invoice_number and self.date_invoice >= last_invoice.date_invoice
+                and (last_invoice_before_current_invoice_date and last_invoice_before_current_invoice_date_number > current_invoice_number))) \
+                    and last_invoice.invoice_year == self.invoice_year:
+                reference_text = ""
+
+                if self.reference and current_invoice_number < last_invoice_number:
+                    reference_text = "La fattura ha già un sequenziale: " + self.reference.rsplit('/',1)[-2] + " ed è precedente" \
+                                     " al sequenziale dell'ultima fattura validata."
+                raise UserError("Attenzione: la fattura non è nel corretto ordine cronologico. Cambiare la data di fattura.\n" +
+                                reference_text)
+
+            # GESTIONE BUCHI DI NUMERAZIONE
+            # Se esiste un sequenziale assegnato ad un documento annullato o non validato
+            # ad ogni validazione propone di sanare il buco di numerazione con la fattura corrente
+            invoice_not_validated_with_sequence = self.env['account.invoice'].search([('state', 'in', ('draft', 'cancel')),
+                                                    ('date_invoice', '<=', self.date_invoice), ('invoice_year', '=', self.invoice_year),
+                                                    ('type', '=', self.type),('move_name', '!=', False),('journal_id', '=', self.journal_id.id)], limit=1)
+            if invoice_not_validated_with_sequence:
+                self.env.cr.commit()
+                # apre un wizard per chiedere la sostituzione del buco di fattura
+                wizard_form = self.env.ref('l10n_it_account.wizard_fill_invoice_sequence_form', False)
+                view_id = self.env['wizard.fill.invoice.sequence']
+                # se si vuole rimpiazzare il buco di sequenza è necessario portare indietro di 1 la sequenza del registro
+                vals = {
+                    'current_invoice': self.id,
+                    'current_invoice_date_invoice': self.date_invoice,
+                    'current_invoice_number': self.number,
+                    'current_invoice_reference': self.reference,
+                    'invoice_not_validated_with_sequence': invoice_not_validated_with_sequence.id,
+                    'sequence_to_fill': invoice_not_validated_with_sequence.move_name,
+                }
+                wizard = view_id.create(vals)
+                return {
+                    'name': 'Wizard Errori Sequenza Fatturazione',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'wizard.fill.invoice.sequence',
+                    'res_id': wizard.id,
+                    'view_id': wizard_form.id,
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'target': 'new'
+                }
 
 
 class AccountInvoiceLine(models.Model):
