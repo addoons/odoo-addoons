@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
 
         <!--Tipi Di Conto, Aggregati,MacroAggregati-->
         <record model="account.account.type" id="account_type_macroaggregate">
