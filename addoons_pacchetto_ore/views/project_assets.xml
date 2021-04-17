@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="assets_backend" name="web_clipboard assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+
+            <script type="text/javascript" src="/addoons_pacchetto_ore/static/src/js/project_gant.js"/>
+            <script src="/addoons_pacchetto_ore/static/src/js/lib/dhtmlxgantt.js" />
+            <link href="/addoons_pacchetto_ore/static/src/js/lib/dhtmlxgantt.css" rel="stylesheet" />
+            <link href="/addoons_pacchetto_ore/static/src/js/lib/controls_styles.css" rel="stylesheet" />
+            <link href="/addoons_pacchetto_ore/static/src/css/custom_style_gantt.css" rel="stylesheet"/>
+        </xpath>
+    </template>
+</odoo>

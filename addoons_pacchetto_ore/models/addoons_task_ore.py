@@ -1,7 +1,8 @@
 import logging
 
 from odoo import models,api,fields, _
-from datetime import datetime
+import datetime
+import pytz
 from odoo.exceptions import ValidationError
 
 class taskPacchettoOre(models.Model):
@@ -18,10 +19,24 @@ class taskOreInherit(models.Model):
 
     _inherit = 'project.task'
 
+
+
     ore_lines = fields.One2many('task.pacchetto.ore', 'task_id')
     ore_sviluppo_disponibili = fields.Float(related='partner_id.ore_sviluppo_disponibili')
     ore_formazione_consulenza_disponibili = fields.Float(related='partner_id.ore_formazione_consulenza_disponibili')
     avviso_ore_terminate = fields.Html(compute='compute_avviso_ore_terminate')
+
+    # CAMPI VISTA GANTT
+    duration = fields.Float(default=3)
+    start_date = fields.Datetime(default=datetime.datetime.now())
+    end_date = fields.Datetime(default=datetime.datetime.now()+datetime.timedelta(days=3))
+    open = fields.Boolean(default=True)
+    parent = fields.Integer(compute='_compute_parent', store=True)
+
+    def _compute_parent(self):
+        for record in self:
+            if record.project_id:
+                record.parent = -record.project_id.id
 
     def compute_avviso_ore_terminate(self):
         for rec in self:
@@ -89,9 +104,6 @@ class taskOreInherit(models.Model):
         """
         super(taskOreInherit, self).write(vals)
 
-        if not self.partner_id:
-            raise ValidationError(
-                'Devi selezionare un cliente per salvare il record:')
         if not self.partner_id.parent_id:
             cliente = self.partner_id
         else:

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="addoons_project_gant">
+        <div>
+            <form class="gantt_control">
+                <input type="button" value="Zoom In" onclick="gantt.ext.zoom.zoomIn();" />
+                <input type="button" value="Zoom Out" onclick="gantt.ext.zoom.zoomOut();"/>
+
+                <input type="radio" id="scale1" class="gantt_radio" name="scale" value="hour"/>
+                <label for="scale1">Hour scale</label>
+
+                <input type="radio" id="scale2" class="gantt_radio" name="scale" value="day"/>
+                <label for="scale2">Day scale</label>
+
+                <input type="radio" id="scale3" class="gantt_radio" name="scale" value="week"/>
+                <label for="scale3">Week scale</label>
+
+                <input type="radio" id="scale4" class="gantt_radio" name="scale" value="month"/>
+                <label for="scale4">Month scale</label>
+
+                <input type="radio" id="scale5" class="gantt_radio" name="scale" value="quarter"/>
+                <label for="scale5">Quarter scale</label>
+
+                <input type="radio" id="scale6" class="gantt_radio" name="scale" value="year" />
+                <label for="scale6">Year scale</label>
+
+            </form>
+            <div id="gantt-graph" style='min-width:100%; height:800px'/>
+        </div>
+    </t>
+</templates>
