@@ -17,11 +17,6 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
 
     var ProjectGant = AbstractAction.extend(ControlPanelMixin, {
         events: {
-            "click a[type='action']": "_onClickAction",
-            "click .o_timesheet_plan_redirect": '_onRedirect',
-            "click .oe_stat_button": "_onClickStatButton",
-            "click .o_timesheet_plan_non_billable_task": "_onClickNonBillableTask",
-            "click .o_timesheet_plan_sale_timesheet_people_time .progress-bar": '_onClickEmployeeProgressbar',
         },
 
          init: function (parent, action) {
@@ -30,6 +25,30 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
             this.set('title', action.name || _t('Gant view'));
             this.project_ids = [];
             this.initialized = false;
+            gantt.eachSuccessor = function(callback, root){
+              if(!this.isTaskExists(root))
+                return;
+
+              // remember tasks we've already iterated in order to avoid infinite loops
+              var traversedTasks = arguments[2] || {};
+              if(traversedTasks[root])
+                return;
+              traversedTasks[root] = true;
+
+              var rootTask = this.getTask(root);
+              var links = rootTask.$source;
+              if(links){
+                for(var i=0; i < links.length; i++){
+                  var link = this.getLink(links[i]);
+                  if(this.isTaskExists(link.target) && !traversedTasks[link.target]){
+                    callback.call(this, this.getTask(link.target));
+
+                    // iterate the whole branch, not only first-level dependencies
+                    this.eachSuccessor(callback, link.target, traversedTasks);
+                  }
+                }
+              }
+            };
 
         },
         do_show: function () {
@@ -40,6 +59,10 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
                 active_id: this.action.context.active_id,
             });
         },
+
+        /*
+        * carica i fields per la search view
+        */
         willStart: function () {
             var self = this;
             var view_id = this.action && this.action.search_view_id && this.action.search_view_id[0];
@@ -105,12 +128,20 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
                     // renderizzo il template QWeb e inizializzo il gantt
                     var vista_gantt = QWeb.render( 'addoons_project_gant', {});
                     $(vista_gantt).prependTo(self.$el);
-                    self.set_gantt_configurations();
+                    if(gantt.config.date_format !== "%Y-%m-%d %H:%i"){
+                        self.set_gantt_configurations();
+                    }
                     gantt.init("gantt-graph", "2020-01-01", "2022-01-01");
                     self.initialized = true;
                 }
                 // una volta inizializzato pulisco e ripopolo il gantt con i dati presi da backend
                 gantt.clearAll();
+                gantt.addMarker({
+                    start_date: new Date().setHours(0,0,0,0),
+                    css: "today",
+                    text: "Oggi",
+                    title: "Oggi"
+                });
                 gantt.parse(result);
 
                 // update del control panel, ovvero della searchview
@@ -124,6 +155,21 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
         * tra gli eventi della gant e i suoi handler
         */
         set_gantt_configurations: function(){
+            // aggiungo il plugin che permette di mettere il flag al giorno di oggi. e fare il drag sulla timeline
+            gantt.plugins({
+                marker: true,
+                drag_timeline: true
+            });
+            gantt.config.date_format = "%Y-%m-%d %H:%i";
+
+            // permette di spostare le task in alto o in basso
+            gantt.config.order_branch = true;
+	        gantt.config.order_branch_free = true;
+
+            // larghezza grid
+            gantt.config.grid_width = 800;
+
+            // varie visualizzazioni: ora, giorno, mese, anno, settimana
             var zoomConfig = {
                 levels: [
                     {
@@ -192,29 +238,64 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
                 ]
             };
 
+            // il default è visualizzazione giorno
             gantt.ext.zoom.init(zoomConfig);
             gantt.ext.zoom.setLevel("day");
 //            gantt.ext.zoom.attachEvent("onAfterZoom", function(level, config){
 //                document.querySelector(".gantt_radio[value='" +config.name+ "']").checked = true;
 //            })
-            gantt.config.date_format = "%Y-%m-%d %H:%i";
+
+            // visualizza progetti in questi giorni
             gantt.templates.task_class = function (st, end, item) {
                 return item.$level == 0 ? "gantt_project" : ""
             };
             gantt.config.wide_form = 1;
 
+            // resize del della visualizzazione temporale: mese, settiman, giono, anno
             var radios = document.getElementsByName("scale");
             for (var i = 0; i < radios.length; i++) {
                 radios[i].onclick = function (event) {
                     gantt.ext.zoom.setLevel(event.target.value);
                 };
             }
+
+            // handler eventi gantt
             gantt.attachEvent("onAfterTaskUpdate", this.updateTask);
             gantt.attachEvent("onAfterTaskDelete", this.deleteTask);
             gantt.attachEvent("onAfterTaskAdd", this.createTask);
             gantt.attachEvent("onAfterLinkAdd", this.createLink);
             gantt.attachEvent("onAfterLinkUpdate", this.updateLink);
             gantt.attachEvent("onAfterLinkDelete", this.deleteLink);
+
+
+            gantt.attachEvent("onTaskDrag", function(id, mode, task, original){
+              var modes = gantt.config.drag_mode;
+              if(mode == modes.move){
+                var diff = task.start_date - original.start_date;
+                console.log(task.start_date);
+                console.log(original.start_date);
+                gantt.eachSuccessor(function(child){
+                  child.start_date = new Date(+child.start_date + diff);
+                  child.end_date = new Date(+child.end_date + diff);
+                  gantt.refreshTask(child.id, true);
+                },id );
+              }
+              return true;
+            });
+            gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
+              var modes = gantt.config.drag_mode;
+              if(mode == modes.move ){
+                gantt.eachSuccessor(function(child){
+                  child.start_date = gantt.roundDate(child.start_date);
+                  child.end_date = gantt.calculateEndDate(child.start_date, child.duration);
+                  gantt.updateTask(child.id);
+                },id );
+              }
+            });
+            gantt.attachEvent("onRowDragEnd", function(id, mode, e){
+                gantt.updateTask(id);
+            });
+            // testo da mostrare per il progress della task
             gantt.templates.progress_text=function(start, end, task){ return "<span style='text-align:left;'>" + Math.round(task.progress * 100) + "% </span>";};
         },
 
@@ -230,7 +311,7 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
                 }
             }).then(function (result) {
                 if(result){
-                    gantt.message({text: "Task Aggiornata con successo", expire: 10});
+//                    gantt.message({text: "Task Aggiornata con successo", expire: 10});
                 }
             });
         },
@@ -274,7 +355,7 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
                     'link': item
                 }
             }).then(function (result) {
-                gantt.message({text: "Link creato con successo", expire: 10});
+//                gantt.message({text: "Link creato con successo", expire: 10});
             });
             return false
         },
@@ -286,7 +367,7 @@ odoo.define('addoons_pacchetto_ore.project_gant', function (require) {
                     'link': item
                 }
             }).then(function (result) {
-                gantt.message({text: "Link Aggiornato con successo", expire: 10});
+//                gantt.message({text: "Link Aggiornato con successo", expire: 1000});
             });
             return false
         },

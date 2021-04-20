@@ -45,6 +45,11 @@ class Project(models.Model):
 
     @api.model
     def get_data(self, domain=None):
+        """
+        ottiene i dati per renderizzare task e progetti per la gantt view
+        :param domain: domain con cui filtrare le task/progetti
+        :return: dizionario contenete tutte le task con i dati utili alla gant
+        """
         for element in domain:
             if isinstance(element, list):
                 element = tuple(element)
@@ -63,10 +68,11 @@ class Project(models.Model):
                 'text': task.name,
                 'start_date': task.start_date,
                 'duration': task.duration,
-                'progress': round(task.progress/100,2),
+                'progress': round(task.progress/100, 2),
                 'open': True,
                 'parent': -task.project_id.id if task.project_id else False,
-                'color': switch_color[task.project_id.color] if task.project_id.color else switch_color[4]
+                'color': switch_color[task.project_id.color] if task.project_id.color else switch_color[4],
+                '$local_index': task.sequence
             })
 
         for project in projects:
@@ -77,7 +83,8 @@ class Project(models.Model):
                 'duration': project.duration,
                 'progress': 0,
                 'open': True,
-                'color': switch_color[project.color] if project.color else switch_color[4]
+                'color': switch_color[project.color] if project.color else switch_color[4],
+
             })
 
         link_ids = self.env['gantt.link'].sudo().search(['|', '|', '|', ('source_project_id', 'in', project_ids),
@@ -110,7 +117,8 @@ class Project(models.Model):
             'start_date': task['start_date'],
             'end_date': task['end_date'],
             'open': task['open'],
-            'parent': task['parent']
+            'parent': task['parent'],
+            'sequence': task['$local_index']+1
         })
         return True
 
@@ -123,7 +131,8 @@ class Project(models.Model):
             'duration': task['duration'],
             'start_date': task['start_date'],
             'end_date': task['end_date'],
-            'parent': task['parent']
+            'parent': task['parent'],
+            'sequence': task['$local_index']+1
         }
         if task['parent'] != 0:
             vals['project_id'] = abs(int(task['parent']))

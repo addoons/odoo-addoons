@@ -17,3 +17,6 @@
     font-weight: bold;
     padding-left: 5px;
 }
+.status_line {
+    background-color: #0ca30a;
+}
