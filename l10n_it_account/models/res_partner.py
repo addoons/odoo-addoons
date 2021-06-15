@@ -188,7 +188,7 @@ class ResPartner(models.Model):
         [('LS', 'In liquidation'),
          ('LN', 'Not in liquidation')], 'Liquidation State')
 
-    #region_id = fields.Many2one('alpha.region')
+    region_id = fields.Many2one('alpha.region')
 
 
     def compute_region(self):
