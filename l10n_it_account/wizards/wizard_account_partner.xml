@@ -1,0 +1,35 @@
+<odoo>
+    <record id="wizard_account_partner_form" model="ir.ui.view">
+        <field name="name">wizard_account_partner_form</field>
+        <field name="model">wizard.account.partner</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="debit_account" string="Conto di Debito"
+                        domain="[('internal_type', '=', 'payable')]"/>
+                        <field name="credit_account" string="Conto di Credito"
+                        domain="[('internal_type', '=', 'receivable')]"/>
+                        <field name="cost_account" string="Conto di Costo"
+                        domain="[('internal_type', '=', 'other')]"/>
+                        <field name="revenue_account" string="Conto di Ricavo"
+                        domain="[('internal_type', '=', 'other')]"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Assegna Conti" name="associa_conti" type="object" default_focus="1" class="btn-primary"/>
+                    <button string="Annulla" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window name="Associa Conti"
+                res_model="wizard.account.partner"
+                src_model="res.partner"
+                view_mode="form"
+                target="new"
+                key2="client_action_multi"
+                id="action_wizard_account_partner"
+                view_id="wizard_account_partner_form"/>
+</odoo>

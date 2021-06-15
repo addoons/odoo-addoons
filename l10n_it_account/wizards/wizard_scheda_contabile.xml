@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+    <record id="wizard_report_schede_contabili" model="ir.ui.view">
+        <field name="name">Schede Contabili</field>
+        <field name="model">wizard.schede.contabili</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Schede Contabili">
+                <group>
+                    <group>
+                        <field name="type" widget="radio" string="Tipo Scheda"/>
+                        <field name="from_date" string="Data Inizio"/>
+                        <field name="to_date" string="Data Fine"/>
+                    </group>
+                    <group>
+
+                    </group>
+                </group>
+                <notebook>
+                    <page string="Conti">
+                        <group>
+                            <field name="all_accounts" string="Tutti i Conti"/>
+                        </group>
+                        <div attrs="{'invisible': [('all_accounts', '=', True)]}">
+                            <field name="account_ids" string="Conti"/>
+                        </div>
+                    </page>
+                    <page string="Registri">
+                        <group>
+                            <field name="journal_ids" string="Reigistri" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </page>
+                    <page string="Partners">
+                        <group>
+                            <field name="all_partners" string="Tutti i Partners"/>
+                            <field name="only_suppliers" string="Solo Fornitori"/>
+                            <field name="only_customers" string="Solo Clienti"/>
+                        </group>
+                        <div attrs="{'invisible': [('all_partners', '=', True)]}">
+                            <field name="partner_ids" string="Partners"/>
+                        </div>
+                    </page>
+                </notebook>
+                <footer>
+                    <button string="Stampa" name="print_scheda_contabile" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_schede_contabili" model="ir.actions.act_window">
+        <field name="name">Schede Contabili</field>
+        <field name="res_model">wizard.schede.contabili</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem name="Scheda Contabile"
+              parent="account.account_reports_management_menu"
+              action="action_schede_contabili"
+              id="menu_schede_contabili"
+              sequence="1"/>
+</odoo>

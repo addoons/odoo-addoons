@@ -1,0 +1,15 @@
+<odoo>
+    <data noupdate="1">
+
+        <record id="res_partner_dogana" model="res.partner">
+            <field name="name">Dogana</field>
+            <field name="is_dogana">True</field>
+            <field name="supplier">True</field>
+        </record>
+
+        <record id="config_bollette_doganali" model="bollette.doganali">
+            <field name="name">Configurazione</field>
+        </record>
+
+    </data>
+</odoo>

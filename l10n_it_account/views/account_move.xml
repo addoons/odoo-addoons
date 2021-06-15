@@ -1,0 +1,62 @@
+<odoo>
+    <record id="view_account_move_form" model="ir.ui.view">
+        <field name="name">account.move.form</field>
+        <field name="model">account.move</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/group/group/field[@name='journal_id']" position="after">
+                <field name="account_move_template" string="Template" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
+                <field name="correggi_importo_registrazione" string="Correggi Importo" />
+                <button name="set_correggi_importo_registrazione" string="Correggi" class="btn btn-default btn-danger" groups="account.group_account_manager" type="object"/>
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='partner_id']" position="replace">
+                <field name="partner_id" domain="['|', ('parent_id', '=', False), ('is_company', '=', True)]" attrs="{'column_invisible': [('parent.account_move_template', '!=', False)]}"/>
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='tax_ids']" position="replace">
+                <field name="date_maturity" string="Scadenza"/>
+                <field name="tax_ids" string="Imposte applicate" widget="many2many_tags"
+                                           domain="[('type_tax_use', '=?', parent.tax_type_domain)]"
+                                           context="{'append_type_to_tax_name': not parent.tax_type_domain}"
+                                           options="{'no_create': True}"
+                attrs="{'column_invisible': [('parent.account_move_template', '!=', False)]}"/>
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='tax_ids']" position="after">
+                <field name="tax_line_id" string="Creato dall'Imposta"/>
+            </xpath>
+
+            <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='credit']" position="replace">
+                <field name="is_debit" invisible="1"/>
+                <field name="is_credit" invisible="1"/>
+                <field name="credit" sum="Total Credit" string="Avere" attrs="{'readonly':[('is_debit', '=', True)]}"/>
+            </xpath>
+            <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='debit']" position="replace">
+                <field name="debit" sum="Total Debit" string="Dare" attrs="{'readonly':[('is_credit', '=', True)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_move_line_tree" model="ir.ui.view">
+        <field name="name">account.move.line.tree</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='debit']" position="replace">
+                <field name="debit" sum="Total Debit" string="Dare" readonly="[('is_credit', '=', True)]"/>
+            </xpath>
+            <xpath expr="//tree/field[@name='credit']" position="replace">
+                <field name="credit" sum="Total Credit" string="Avere" readonly="[('is_debit', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_account_move_tree_inherit" model="ir.ui.view">
+        <field name="name">account.move.tree.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='amount']" position="replace">
+                <field name="amount"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

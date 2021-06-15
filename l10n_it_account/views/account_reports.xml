@@ -1,0 +1,13 @@
+<odoo>
+    <data>
+
+        <!--<template id="line_caret_options" inherit_id="account_reports.line_caret_options">-->
+            <!--<xpath expr="." position="inside">-->
+                <!--<li t-if="line['caret_options'] == 'account.invoice.in'">-->
+                    <!--<a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" t-att-data-action-context="line.get('action_context')" data-object="account.invoice" action="payment_document" class="dropdown-item" >Registra Pagamento</a>-->
+                <!--</li>-->
+            <!--</xpath>-->
+        <!--</template>-->
+
+    </data>
+</odoo>

@@ -1,0 +1,29 @@
+<odoo>
+    <record id="wizard_fill_invoice_sequence_form" model="ir.ui.view">
+        <field name="name">wizard.fill.invoice.sequence.form</field>
+        <field name="model">wizard.fill.invoice.sequence</field>
+        <field name="arch" type="xml">
+            <form string="Errori sequenza fatturazione">
+                <p>
+                    È stato rilevato un <strong>errore</strong> nella sequenza di fatturazione.
+                    <br/><br/>
+                    Premere <u>VALIDA</u> per coprire il buco di sequenza segnalato.
+                    <br/>
+                    Per ignorare questa operazione premere <u>CANCELLA</u>.
+                </p>
+                <group>
+                    <field name="sequence_to_fill" string="Sequenza da sanare" readonly="1"/>
+                </group>
+                <footer>
+                    <button string="Valida" name="fill_invoice_sequence" type="object" default_focus="1" class="btn-primary"/>
+                    <button string="Cancella" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+<!--    <act_window id="action_wizard_fill_invoice_sequence"-->
+<!--                key2="client_action_multi" name="Correggi Errori Sequenze"-->
+<!--                res_model="wizard.fill.invoice.sequence" src_model="account.invoice"-->
+<!--                view_mode="form" target="new" view_id="wizard_fill_invoice_sequence_form" />-->
+</odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    # -*- coding: utf-8 -*-
+    # Part of addOons srl. See LICENSE file for full copyright and licensing details.
+    # Copyright 2019 addOons srl (<http://www.addoons.it>)
+  -->
+<odoo>
+    <report
+            id="report_chart_of_accounts"
+            model="account.account"
+            string="Piano dei Conti(PDF)"
+            report_type="qweb-pdf"
+            name="l10n_it_account.report_cof"
+            file="l10n_it_account.report_cof"
+            paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
+    />
+    <report
+            id="report_schede_contabili"
+            model="account.move.line"
+            string="Scheda Contabile"
+            report_type="qweb-pdf"
+            name="l10n_it_account.report_scheda_contabile"
+            file="l10n_it_account.report_scheda_contabile"
+            paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
+    />
+    <report
+            id="report_bilancio"
+            model="wizard.bilancio.verifica"
+            string="Bilancio"
+            report_type="qweb-pdf"
+            name="l10n_it_account.report_bilancio_verifica"
+            file="l10n_it_account.report_bilancio_verifica"
+            paperformat="addoons_reports.l10n_it_addoons_a4_portrait"
+    />
+
+    <report
+            id="certificazione_rda"
+            string="Certificazione RdA"
+            model="withholding.tax.statement"
+            report_type="qweb-pdf"
+            file="l10n_it_account.certificazione_rda_report_document"
+            name="l10n_it_account.certificazione_rda_report_document"
+            print_report_name="('Certificazione dei Compensi - %s') % object.partner_id.name"
+            paperformat="l10n_it_account.l10n_it_account_a4_landscape"
+    />
+</odoo>

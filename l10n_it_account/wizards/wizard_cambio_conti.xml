@@ -1,0 +1,100 @@
+<odoo>
+    <data>
+
+        <record id="cambio_conti_view" model="ir.ui.view">
+            <field name="name">cambio.conti.form</field>
+            <field name="model">cambio.conti</field>
+            <field name="arch" type="xml">
+                <form string="Aggiusta Arrotondamento">
+                    <group string="Posizione Fiscale">
+                        <field name="fiscal_position_id" />
+                        <field name="inverti" />
+                    </group>
+                    <group>
+                        <field name="conti_ids" string="Regole Conto" >
+                            <tree editable="bottom">
+                                <field string="Conto Sorgente" name="conto_sorgente"></field>
+                                <field string="Conto Destinazione" name="conto_destinazione"></field>
+                            </tree>
+                        </field>
+                        <field name="imposte_ids" string="Regole Imposte" >
+                            <tree editable="bottom">
+                                <field string="Imposta Sorgente" name="imposta_sorgente"></field>
+                                <field string="Imposta Destinazione" name="imposta_destinazione"></field>
+                            </tree>
+                        </field>
+                        <field name="ins_imposta_ids" string="Inserimento Imposte" >
+                            <tree editable="bottom">
+                                <field string="Conto Sorgente" name="conto_sorgente"></field>
+                                <field string="Inserisci Imposta" name="imposta_destinazione"></field>
+                            </tree>
+                        </field>
+                        <field name="creato_imposte_ids" string="Imposta Creato Dall'Imposta" >
+                            <tree editable="bottom">
+                                <field string="Imposta Sorgente" name="imposta_sorgente"></field>
+                                <field string="Inserisci Imposta" name="imposta_destinazione"></field>
+                            </tree>
+                        </field>
+                        <field name="ins_creato_imposta_ids" string="Conto Creato Dall'Imposta" >
+                            <tree editable="bottom">
+                                <field string="Conto Sorgente" name="conto_sorgente"></field>
+                                <field string="Inserisci Imposta" name="imposta_destinazione"></field>
+                            </tree>
+                        </field>
+                        <field name="analytic_account_id" string="Conto Analitico Massivo" />
+                        <field name="add_analytic" string="Aggiungi Conti Analitici Mancanti"/>
+                        <field name="merge_account_line" string="Merge Righe Contabili"/>
+                        <field name="conti_doppi_crediti" string="Conti Doppi Crediti"/>
+                        <field name="account_ids" string="Conti" attrs="{'invisible': [('add_analytic','=', False)]}"/>
+                    </group>
+                    <footer>
+                        <button string="Cambia Conto" name="applica_regole_conto" type="object" default_focus="1" class="btn-primary"/>
+                        <button string="Cancella" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!--Cambio Conti - Menu Azione Account Move-->
+        <act_window id="action_cambia_conti"
+            multi="True"
+            key2="client_action_multi" name="Cambia Conti"
+            res_model="cambio.conti" src_model="account.move"
+            view_mode="form" target="new" view_id="cambio_conti_view" view_type="form"
+            />
+
+        <!--Cambio Conti - Menu Azione Account Move Line-->
+        <act_window id="action_cambia_conti_move_line"
+            multi="True"
+            key2="client_action_multi" name="Cambia Conti"
+            res_model="cambio.conti" src_model="account.move.line"
+            view_mode="form" target="new" view_id="cambio_conti_view" view_type="form"
+            />
+
+
+
+        <!--Mostra Registrazioni Sbilanciate-->
+
+        <record id="registrazioni_sbilanciate_view" model="ir.ui.view">
+            <field name="name">registrazioni_sbilanciate_view</field>
+            <field name="model">cambio.conti</field>
+            <field name="arch" type="xml">
+                <form string="Registrazioni Sbilanciate">
+                    <footer>
+                        <button string="Mostra" name="view_unbalanced" type="object" default_focus="1" class="btn-primary"/>
+                        <button string="Sistema" name="set_unbalanced" type="object" default_focus="1" class="btn-danger"/>
+                        <button string="IVA - IMPONIBILE ERRATO" name="get_iva_imponibile_errato" type="object" default_focus="1" class="btn-danger"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_unbalanced"
+            multi="True"
+            key2="client_action_multi" name="Mostra Registrazioni Sbilanciate"
+            res_model="cambio.conti" src_model="account.move"
+            view_mode="form" target="new" view_id="registrazioni_sbilanciate_view" view_type="form"
+            />
+
+    </data>
+</odoo>

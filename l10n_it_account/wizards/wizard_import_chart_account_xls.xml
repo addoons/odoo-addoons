@@ -1,0 +1,36 @@
+<odoo>
+
+    <!--IMPORT PIANO DEI CONTI-->
+    <record id="wizard_import_chart_account_form" model="ir.ui.view">
+        <field name="name">Import Chart of Account (XLS)</field>
+        <field name="model">wizard.import.chart.account.xls</field>
+        <field name="arch" type="xml">
+            <form string="Carica Piano dei Conti">
+                <sheet>
+                    <group string="Tracciato Piano dei Conti (xls/xlsx)">
+                        <field name="file_xls_chart_import" nolabel="1" filename="filename_file_xls_chart_import"/>
+                        <field name="filename_file_xls_chart_import" invisible="1"/>
+                    </group>
+                    <footer>
+                        <group>
+                            <button name="load_chart_from_xls" string="Importa Piano dei Conti" class="btn btn-primary" type="object"/>
+                            <button name="download_xls_piano_dei_conti" string="Scarica Nuovo Tracciato" class="btn btn-secondary" type="object"/>
+                        </group>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="carica_chart_account_action" model="ir.actions.act_window">
+        <field name="name">Carica Piano dei Conti</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wizard.import.chart.account.xls</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Carica Piano dei Conti -->
+    <menuitem id="accounting_import_piano_conti" name="Piano dei Conti" parent="accounting_import_menu_root" action="carica_chart_account_action" sequence="1"/>
+
+</odoo>
