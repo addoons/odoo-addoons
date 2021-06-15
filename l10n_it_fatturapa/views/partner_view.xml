@@ -30,12 +30,12 @@
                         </group>
                     </group>
                     <group attrs="{'invisible': [('is_pa','=', False)]}">
-<!--                        <field name="procurement_type" string="Tipo" attrs="{'required':[('is_pa', '=', True)]}"/>-->
-<!--                        <field name="procurement_name" string="Nome" attrs="{'required':[('is_pa', '=', True)]}"/>-->
-<!--                        <field name="procurement_date" string="Data"/>-->
-<!--                        <field name="procurement_code" string="Codice"/>-->
-<!--                        <field name="procurement_cig" string="CIG"/>-->
-<!--                        <field name="procurement_cup" string="CUP"/>-->
+                        <field name="procurement_type" string="Tipo" attrs="{'required':[('is_pa', '=', True)]}"/>
+                        <field name="procurement_name" string="Nome" attrs="{'required':[('is_pa', '=', True)]}"/>
+                        <field name="procurement_date" string="Data"/>
+                        <field name="procurement_code" string="Codice"/>
+                        <field name="procurement_cig" string="CIG"/>
+                        <field name="procurement_cup" string="CUP"/>
                     </group>
                 </page>
             </notebook>
