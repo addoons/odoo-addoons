@@ -76,16 +76,16 @@ class ResPartner(models.Model):
         "Do not update the contact from Electronic Invoice Details")
 
     # Gare d'appalto e investimenti pubblici
-    procurement_type = fields.Selection(
-        [
-            ('order', "Ordine d'acquisto"),
-            ('contract', 'Contratto'),
-            ('agreement', 'Convenzione'),
-            ('reception', 'Ricezione'),
-            ('invoice', 'Fattura Collegata')
-        ],
-        'Tipo Documento', help="Selezionare dal menu a tendina il documento da inserire, ad esempio"
-                                              " ordine acquisto, deve essere come quello in fattura")
+    # procurement_type = fields.Selection(
+    #     [
+    #         ('order', "Ordine d'acquisto"),
+    #         ('contract', 'Contratto'),
+    #         ('agreement', 'Convenzione'),
+    #         ('reception', 'Ricezione'),
+    #         ('invoice', 'Fattura Collegata')
+    #     ],
+    #     'Tipo Documento', help="Selezionare dal menu a tendina il documento da inserire, ad esempio"
+    #                                           " ordine acquisto, deve essere come quello in fattura")
     procurement_name = fields.Char('Nome Documento', size=20, help="Il numero del documento")
     procurement_date = fields.Date('Data', help="Data del documento")
     procurement_code = fields.Char('Codice', size=100, help="Codice della commessa o della convenzione collegata alla fattura")
