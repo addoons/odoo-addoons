@@ -101,3 +101,17 @@ class AddPickingToDdt(models.TransientModel):
             'views': [(form_id, 'form'), (tree_id, 'tree')],
             'type': 'ir.actions.act_window',
         }
+
+
+class ChangeWarehouse(models.TransientModel):
+    _name = 'picking.change.warehouse'
+
+    warehouse_id = fields.Many2one('stock.warehouse')
+
+    def change_warehouse(self):
+        if self.warehouse_id:
+            pickings = self.env['stock.picking'].browse(
+                self.env.context['active_ids'])
+            for picking in pickings:
+                picking.picking_type_id = self.warehouse_id.out_type_id.id
+

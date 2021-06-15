@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+
+        <record id="report_layout_addoons_default" model="report.layout">
+            <field name="view_id" ref="addoons_reports_external_layout"/>
+            <field name="image">/addoons_reports/static/img/preview_addoons.png</field>
+            <field name="pdf">/addoons_reports/static/pdf/preview_addoons.pdf</field>
+        </record>
+
+    </data>
+</odoo>

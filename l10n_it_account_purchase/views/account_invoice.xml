@@ -1,0 +1,45 @@
+<odoo>
+    <record model="ir.ui.view" id="italy_purchase_invoice_supplier_form">
+        <field name="name">italy.purchase.invoice.supplier.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="after">
+                <field name="purchase_id" string="Ordine Acquisto"/>
+                <button name="open_line" string="Dettagli" type="object" class="btn btn-success"/>
+            </xpath>
+            <xpath expr="//field[@name='tax_line_ids']" position="after">
+                <group>
+                    <field name="differenza_ordini" string="Differenza Ordini Acquisto" readonly="1" force_save="1" widget="monetary"/>
+                </group>
+            </xpath>
+            <xpath expr="//form/sheet/group/group/field[@name='am_rc']" position="after">
+                <field name="purchase_order_id" string="Ordine Acquisto"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--Form Righe Fattura-->
+    <record model="ir.ui.view" id="italy_purchase_invoice_line_form">
+        <field name="name">italy.purchase.invoice.supplier.form</field>
+        <field name="model">account.invoice.line</field>
+        <field name="inherit_id" ref="account.view_invoice_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/group/group/field[@name='rc']" position="after">
+                <field name="purchase_line_id" string="Riga Ordine Acquisto"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="italy_purchase_account_invoice_search" model="ir.ui.view">
+        <field name="name">italy_purchase_view_account_invoice_search</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <field name="comment" string="Note"/>
+                <filter name="differenza_ordini_acquisto" string="Differenza Ordini" domain="[('differenza_ordini', '!=',0)]" />
+            </search>
+        </field>
+    </record>
+</odoo>

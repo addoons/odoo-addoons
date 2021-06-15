@@ -82,9 +82,15 @@ class ComunicazioneLiquidazione(models.Model):
     declarant_different = fields.Boolean(
         string='Declarant different from taxpayer', default=True)
     declarant_fiscalcode = fields.Char(string='Declarant Fiscalcode')
+    natura_giuridica = fields.Char()
+    declarant_firstname = fields.Char()
+    declarant_lastname = fields.Char()
+    declarant_city = fields.Char()
+    declarant_date = fields.Date()
     declarant_fiscalcode_company = fields.Char(string='Fiscalcode company')
     codice_carica_id = fields.Many2one('codice.carica', string='Role code')
     declarant_sign = fields.Boolean(string='Declarant sign', default=True)
+    codice_ateco_id = fields.Many2one('ateco.category')
 
     delegate_fiscalcode = fields.Char(string='Delegate Fiscalcode')
     delegate_commitment = fields.Selection(
@@ -151,6 +157,759 @@ class ComunicazioneLiquidazione(models.Model):
             writer_annot.update({
                 NameObject("/T"): createStringObject(writer_annot.get('/T') + sfx)
             })
+
+    def get_export_iva_annuale_pdf(self):
+        """
+        Funzione che compila il modulo standard della comunicazione periodica
+        IVA dell'AdE, il modulo è presente nella cartella data/moduli_pdf
+        """
+        pdf_module_path = get_module_resource('l10n_it_account', 'data', 'moduli_pdf', 'iva_2021_modello_editabile.pdf')
+        input_stream = open(pdf_module_path, "rb")
+
+        pdf_reader = PyPDF2.PdfFileReader(input_stream, strict=False)
+
+        if "/AcroForm" in pdf_reader.trailer["/Root"]:
+            pdf_reader.trailer["/Root"]["/AcroForm"].update(
+                {NameObject("/NeedAppearances"): BooleanObject(True)})
+
+        pdf_writer = PyPDF2.PdfFileWriter()
+
+        self.set_need_appearances_writer(pdf_writer)
+        if "/AcroForm" in pdf_writer._root_object:
+            # Acro form is form field, set needs appearances to fix printing issues
+            pdf_writer._root_object["/AcroForm"].update(
+                {NameObject("/NeedAppearances"): BooleanObject(True)})
+
+        data_dict_pag1 = {
+            'CODICE FISCALE1': self.taxpayer_vat,
+            'partita_iva_2': self.taxpayer_vat,
+            'denominazione_ragione_sociale': self.company_id.name,
+            'codice_fiscale_sottoscrittore': self.declarant_fiscalcode,
+            'codice_carica': self.codice_carica_id.code,
+            'natura_giuridica': self.natura_giuridica,
+            'firma1': 'X',
+            'cognome': self.declarant_lastname,
+            'nome': self.declarant_firstname,
+            'data_nascita_day': self.declarant_date.day,
+            'data_nascita_month': self.declarant_date.month,
+            'data_nascita_year': self.declarant_date.year,
+            'comune_nascita': self.declarant_city,
+            'codice_fiscale_incaricato': self.delegate_fiscalcode,
+            'firma2': 'X',
+            'data_impegno': self.date_commitment,
+        }
+
+        data_dict_pag2 = {
+            'CODICE FISCALE2': self.taxpayer_vat,
+            'codice_ateco': self.codice_ateco_id.code.replace(".",""),
+        }
+
+        lipe_annuale = self.quadri_vp_ids[0].liquidazioni_ids[0]
+
+        def get_imponibile_imposta_from_tag(tag):
+            """
+            Restituisce la somma imponibile e imposta delle aliquote
+            con il tag passato
+            """
+            imponibile = 0
+            imposta = 0
+            #Verifica TAG righe di Debito
+            for tax in lipe_annuale.debit_vat_account_line_ids:
+                tax_ids = [tax.tax_id]
+                is_gruppo = False
+                if tax.tax_id.amount_type == 'group':
+                    is_gruppo = True
+                    #Imposta di gruppo
+                    for child_tax in tax.tax_id.children_tax_ids:
+                        tax_ids.append(child_tax)
+
+                for tax in tax_ids:
+                    for quadro in tax.dichiarazione_annuale_quadro:
+                        if quadro.name == tag:
+                            tax_datas = tax._compute_totals_tax({
+                                'from_date': lipe_annuale.date_range_ids[0].date_start,
+                                'to_date': lipe_annuale.date_range_ids[0].date_end,
+                                'registry_type': 'customer'
+                            })
+                            imponibile += tax_datas[1]
+                            imposta += tax_datas[2]
+
+                            # Se la tassa è un gruppo prendo l'imposta dal figlio e l'imponibile dal padre
+                            if is_gruppo:
+                                tax_datas = tax_ids[0]._compute_totals_tax({
+                                    'from_date': lipe_annuale.date_range_ids[0].date_start,
+                                    'to_date': lipe_annuale.date_range_ids[0].date_end,
+                                    'registry_type': 'customer'
+                                })
+                                imponibile += tax_datas[1]
+
+            #Verifica TAG righe di Credito
+            for tax in lipe_annuale.credit_vat_account_line_ids:
+                tax_ids = [tax.tax_id]
+                is_gruppo = False
+                if tax.tax_id.amount_type == 'group':
+                    # Imposta di gruppo
+                    is_gruppo = True
+                    for child_tax in tax.tax_id.children_tax_ids:
+                        tax_ids.append(child_tax)
+
+                for tax in tax_ids:
+                    for quadro in tax.dichiarazione_annuale_quadro:
+                        if quadro.name == tag:
+                            tax_datas = tax._compute_totals_tax({
+                                'from_date': lipe_annuale.date_range_ids[0].date_start,
+                                'to_date': lipe_annuale.date_range_ids[0].date_end,
+                                'registry_type': 'supplier'
+                            })
+                            imponibile += tax_datas[1]
+                            imposta += tax_datas[2]
+
+                            #Se la tassa è un gruppo prendo l'imposta dal figlio e l'imponibile dal padre
+                            if is_gruppo:
+                                tax_datas = tax_ids[0]._compute_totals_tax({
+                                    'from_date': lipe_annuale.date_range_ids[0].date_start,
+                                    'to_date': lipe_annuale.date_range_ids[0].date_end,
+                                    'registry_type': 'supplier'
+                                })
+                                imponibile_imposta_principale = tax_datas[1]
+                                imposta_totale = 0
+                                for children in tax_ids[0].children_tax_ids:
+                                    imposta_totale += children.amount
+
+                                peso_imposta = tax.amount / imposta_totale
+                                imponibile += imponibile_imposta_principale * peso_imposta
+
+
+            return {'imponibile': round(imponibile, 2), 'imposta': round(imposta,2) }
+
+
+        def get_sum_imponibile_imposta_from_tags(tags):
+            """
+            Restituisce la somma imponibile e la somma imposta
+            di tutte le aliquote che hanno i tag passati
+            """
+            imponibile = 0
+            imposta = 0
+            for tag in tags:
+                datas = get_imponibile_imposta_from_tag(tag)
+                imponibile += datas['imponibile']
+                imposta += datas['imposta']
+            return {'imponibile': round(imponibile, 2) , 'imposta': round(imposta, 2) }
+
+
+        #TOTALI
+        VE24_IMPONIBILE = get_sum_imponibile_imposta_from_tags(['VE1','VE2','VE3','VE4','VE5','VE6','VE7','VE8','VE9','VE10','VE11','VE12','VE20','VE21','VE22','VE23'])['imponibile']
+        VE24_IMPOSTA = get_sum_imponibile_imposta_from_tags(['VE1', 'VE2', 'VE3', 'VE4', 'VE5', 'VE6', 'VE7', 'VE8', 'VE9', 'VE10', 'VE11', 'VE12', 'VE20', 'VE21','VE22', 'VE23'])['imposta']
+        VE30_VE38_IMPONIBILE = get_sum_imponibile_imposta_from_tags(['VE30','VE31','VE32','VE33','VE34','VE35','VE36','VE37','VE38'])['imponibile']
+        VE39_IMPONIBILE = get_imponibile_imposta_from_tag('VE39')['imponibile']
+        VE40_IMPONIBILE = get_imponibile_imposta_from_tag('VE40')['imponibile']
+        VE50_IMPONIBILE = VE24_IMPONIBILE + VE30_VE38_IMPONIBILE - VE39_IMPONIBILE - VE40_IMPONIBILE
+
+        data_dict_pag3 = {
+            'CODICE FISCALE3': self.taxpayer_vat,
+        }
+
+        data_dict_pag4 = {
+            'CODICE FISCALE4': self.taxpayer_vat,
+        }
+
+        data_dict_pag5 = {
+            'CODICE FISCALE5': self.taxpayer_vat,
+            'VE20': str(get_imponibile_imposta_from_tag('VE20')['imponibile']).replace('.', ','),
+            'VE20_IMP': str(get_imponibile_imposta_from_tag('VE20')['imposta']).replace('.', ','),
+            'VE21': str(get_imponibile_imposta_from_tag('VE21')['imponibile']).replace('.', ','),
+            'VE21_IMP': str(get_imponibile_imposta_from_tag('VE21')['imposta']).replace('.', ','),
+            'VE22': str(get_imponibile_imposta_from_tag('VE22')['imponibile']).replace('.', ','),
+            'VE22_IMP': str(get_imponibile_imposta_from_tag('VE22')['imposta']).replace('.', ','),
+            'VE23': str(get_imponibile_imposta_from_tag('VE23')['imponibile']).replace('.', ','),
+            'VE23_IMP': str(get_imponibile_imposta_from_tag('VE23')['imposta']).replace('.', ','),
+            'VE24': str(VE24_IMPONIBILE).replace('.', ','),
+            'VE24_IMP': str(VE24_IMPOSTA).replace('.', ','),
+            'VE26': str(VE24_IMPOSTA).replace('.', ','),
+            'VE30/1': str(get_imponibile_imposta_from_tag('VE30/1')['imponibile']).replace('.', ','),
+            'VE30/2': str(get_imponibile_imposta_from_tag('VE30/2')['imponibile']).replace('.', ','),
+            'VE30/3': str(get_imponibile_imposta_from_tag('VE30/3')['imponibile']).replace('.', ','),
+            'VE30/4': str(get_imponibile_imposta_from_tag('VE30/4')['imponibile']).replace('.', ','),
+            'VE30/5': str(get_imponibile_imposta_from_tag('VE30/5')['imponibile']).replace('.', ','),
+            'VE31': str(get_imponibile_imposta_from_tag('VE31')['imponibile']).replace('.', ','),
+            'VE32': str(get_imponibile_imposta_from_tag('VE32')['imponibile']).replace('.', ','),
+            'VE33': str(get_imponibile_imposta_from_tag('VE33')['imponibile']).replace('.', ','),
+            'VE34': str(get_imponibile_imposta_from_tag('VE34')['imponibile']).replace('.', ','),
+            'VE40': str(get_imponibile_imposta_from_tag('VE40')['imponibile']).replace('.', ','),
+            'VE50': str(VE50_IMPONIBILE).replace('.', ','),
+        }
+
+        # TOTALI
+        VE23_IMPONIBILE = get_sum_imponibile_imposta_from_tags(['VF1', 'VF2', 'VF3', 'VF4', 'VF5', 'VF6', 'VF7', 'VF8', 'VF9', 'VF10', 'VF11', 'VF12', 'VF13', 'VF14','VF15', 'VF16/1', 'VF16/2','VF17/1', 'VF18', 'VF19', 'VF20', 'VF21/1', 'VF22'])['imponibile']
+        VE23_IMPOSTA = get_sum_imponibile_imposta_from_tags( ['VF1', 'VF2', 'VF3', 'VF4', 'VF5', 'VF6', 'VF7', 'VF8', 'VF9', 'VF10', 'VF11', 'VF12', 'VF13', 'VF14'])['imposta']
+        VF25_IMPOSTA = VE23_IMPOSTA
+
+        data_dict_pag6 = {
+            'CODICE FISCALE6': self.taxpayer_vat,
+            'VF1': str(get_imponibile_imposta_from_tag('VF1')['imponibile']).replace('.', ','),
+            'VF1_IMP': str(get_imponibile_imposta_from_tag('VF1')['imposta']).replace('.', ','),
+            'VF2': str(get_imponibile_imposta_from_tag('VF2')['imponibile']).replace('.', ','),
+            'VF2_IMP': str(get_imponibile_imposta_from_tag('VF2')['imposta']).replace('.', ','),
+            'VF3': str(get_imponibile_imposta_from_tag('VF3')['imponibile']).replace('.', ','),
+            'VF3_IMP': str(get_imponibile_imposta_from_tag('VF3')['imposta']).replace('.', ','),
+            'VF4': str(get_imponibile_imposta_from_tag('VF4')['imponibile']).replace('.', ','),
+            'VF4_IMP': str(get_imponibile_imposta_from_tag('VF4')['imposta']).replace('.', ','),
+            'VF5': str(get_imponibile_imposta_from_tag('VF5')['imponibile']).replace('.', ','),
+            'VF5_IMP': str(get_imponibile_imposta_from_tag('VF5')['imposta']).replace('.', ','),
+            'VF6': str(get_imponibile_imposta_from_tag('VF6')['imponibile']).replace('.', ','),
+            'VF6_IMP': str(get_imponibile_imposta_from_tag('VF6')['imposta']).replace('.', ','),
+            'VF7': str(get_imponibile_imposta_from_tag('VF7')['imponibile']).replace('.', ','),
+            'VF7_IMP': str(get_imponibile_imposta_from_tag('VF7')['imposta']).replace('.', ','),
+            'VF8': str(get_imponibile_imposta_from_tag('VF8')['imponibile']).replace('.', ','),
+            'VF8_IMP': str(get_imponibile_imposta_from_tag('VF8')['imposta']).replace('.', ','),
+            'VF9': str(get_imponibile_imposta_from_tag('VF9')['imponibile']).replace('.', ','),
+            'VF9_IMP': str(get_imponibile_imposta_from_tag('VF9')['imposta']).replace('.', ','),
+            'VF10': str(get_imponibile_imposta_from_tag('VF10')['imponibile']).replace('.', ','),
+            'VF10_IMP': str(get_imponibile_imposta_from_tag('VF10')['imposta']).replace('.', ','),
+            'VF11': str(get_imponibile_imposta_from_tag('VF11')['imponibile']).replace('.', ','),
+            'VF11_IMP': str(get_imponibile_imposta_from_tag('VF11')['imposta']).replace('.', ','),
+            'VF12': str(get_imponibile_imposta_from_tag('VF12')['imponibile']).replace('.', ','),
+            'VF12_IMP': str(get_imponibile_imposta_from_tag('VF12')['imposta']).replace('.', ','),
+            'VF13': str(get_imponibile_imposta_from_tag('VF13')['imponibile']).replace('.', ','),
+            'VF13_IMP': str(get_imponibile_imposta_from_tag('VF13')['imposta']).replace('.', ','),
+            'VF14': str(get_imponibile_imposta_from_tag('VF14')['imponibile']).replace('.', ','),
+            'VF14_IMP': str(get_imponibile_imposta_from_tag('VF14')['imposta']).replace('.', ','),
+            'VF15': str(get_imponibile_imposta_from_tag('VF15')['imponibile']).replace('.', ','),
+            'VF16/1': str(get_imponibile_imposta_from_tag('VF16/1')['imponibile']).replace('.', ','),
+            'VF16/2': str(get_imponibile_imposta_from_tag('VF16/2')['imponibile']).replace('.', ','),
+            'VF17/1': str(get_imponibile_imposta_from_tag('VF17/1')['imponibile']).replace('.', ','),
+            'VF17/2': str(get_imponibile_imposta_from_tag('VF17/2')['imponibile']).replace('.', ','),
+            'VF18': str(get_imponibile_imposta_from_tag('VF18')['imponibile']).replace('.', ','),
+            'VF19': str(get_imponibile_imposta_from_tag('VF19')['imponibile']).replace('.', ','),
+            'VF20': str(get_imponibile_imposta_from_tag('VF20')['imponibile']).replace('.', ','),
+            'VF21/1': str(get_imponibile_imposta_from_tag('VF21/1')['imponibile']).replace('.', ','),
+            'VF21/2': str(get_imponibile_imposta_from_tag('VF21/2')['imponibile']).replace('.', ','),
+            'VF22': str(get_imponibile_imposta_from_tag('VF22')['imponibile']).replace('.', ','),
+            'VF23': str(VE23_IMPONIBILE).replace('.', ','),
+            'VF23_IMP': str(VE23_IMPOSTA).replace('.', ','),
+            'VF25': str(VF25_IMPOSTA).replace('.', ','),
+            'VF26/1': str(get_imponibile_imposta_from_tag('VF26/1')['imponibile']).replace('.', ','),
+            'VF26/2': str(get_imponibile_imposta_from_tag('VF26/1')['imposta']).replace('.', ','),
+            'VF26/3': str(get_imponibile_imposta_from_tag('VF26/3')['imponibile']).replace('.', ','),
+            'VF26/4': str(get_imponibile_imposta_from_tag('VF26/3')['imposta']).replace('.', ','),
+            'VF26/5': str(get_imponibile_imposta_from_tag('VF26/5')['imponibile']).replace('.', ','),
+            'VF26/6': str(get_imponibile_imposta_from_tag('VF26/5')['imposta']).replace('.', ','),
+        }
+
+
+        data_dict_pag7 = {
+            'CODICE FISCALE7': self.taxpayer_vat,
+            'VF71': str(VF25_IMPOSTA).replace('.', ','),
+        }
+
+        #TOTALI
+        VE19_IMPOSTA = get_sum_imponibile_imposta_from_tags( ['VJ1', 'VJ2', 'VJ3', 'VJ4', 'VJ5', 'VJ6', 'VJ7', 'VJ8', 'VJ9', 'VJ10', 'VJ11', 'VJ12', 'VJ13', 'VJ14','VJ15', 'VJ16', 'VJ17', 'VJ18'])['imposta']
+        VJ19_IMPOSTA = get_sum_imponibile_imposta_from_tags( ['VJ1', 'VJ2', 'VJ3', 'VJ4', 'VJ5', 'VJ6', 'VJ7', 'VJ8', 'VJ9', 'VJ10', 'VJ11', 'VJ12', 'VJ13', 'VJ14','VJ15', 'VJ16', 'VJ17', 'VJ18'])['imposta']
+
+
+        data_dict_pag8 = {
+            'CODICE FISCALE8': self.taxpayer_vat,
+            'VJ1': str(get_imponibile_imposta_from_tag('VJ1')['imponibile']).replace('.', ','),
+            'VJ1_IMP': str(get_imponibile_imposta_from_tag('VJ1')['imposta']).replace('.', ','),
+            'VJ2': str(get_imponibile_imposta_from_tag('VJ2')['imponibile']).replace('.', ','),
+            'VJ2_IMP': str(get_imponibile_imposta_from_tag('VJ2')['imposta']).replace('.', ','),
+            'VJ3': str(get_imponibile_imposta_from_tag('VJ3')['imponibile']).replace('.', ','),
+            'VJ3_IMP': str(get_imponibile_imposta_from_tag('VJ3')['imposta']).replace('.', ','),
+            'VJ4': str(get_imponibile_imposta_from_tag('VJ4')['imponibile']).replace('.', ','),
+            'VJ4_IMP': str(get_imponibile_imposta_from_tag('VJ4')['imposta']).replace('.', ','),
+            'VJ5': str(get_imponibile_imposta_from_tag('VJ5')['imponibile']).replace('.', ','),
+            'VJ5_IMP': str(get_imponibile_imposta_from_tag('VJ5')['imposta']).replace('.', ','),
+            'VJ6': str(get_imponibile_imposta_from_tag('VJ6')['imponibile']).replace('.', ','),
+            'VJ6_IMP': str(get_imponibile_imposta_from_tag('VJ6')['imposta']).replace('.', ','),
+            'VJ7': str(get_imponibile_imposta_from_tag('VJ7')['imponibile']).replace('.', ','),
+            'VJ7_IMP': str(get_imponibile_imposta_from_tag('VJ7')['imposta']).replace('.', ','),
+            'VJ8': str(get_imponibile_imposta_from_tag('VJ8')['imponibile']).replace('.', ','),
+            'VJ8_IMP': str(get_imponibile_imposta_from_tag('VJ8')['imposta']).replace('.', ','),
+            'VJ9': str(get_imponibile_imposta_from_tag('VJ9')['imponibile']).replace('.', ','),
+            'VJ9_IMP': str(get_imponibile_imposta_from_tag('VJ9')['imposta']).replace('.', ','),
+            'VJ10': str(get_imponibile_imposta_from_tag('VJ10')['imponibile']).replace('.', ','),
+            'VJ10_IMP': str(get_imponibile_imposta_from_tag('VJ10')['imposta']).replace('.', ','),
+            'VJ11': str(get_imponibile_imposta_from_tag('VJ11')['imponibile']).replace('.', ','),
+            'VJ11_IMP': str(get_imponibile_imposta_from_tag('VJ11')['imposta']).replace('.', ','),
+            'VJ12': str(get_imponibile_imposta_from_tag('VJ12')['imponibile']).replace('.', ','),
+            'VJ12_IMP': str(get_imponibile_imposta_from_tag('VJ12')['imposta']).replace('.', ','),
+            'VJ13': str(get_imponibile_imposta_from_tag('VJ13')['imponibile']).replace('.', ','),
+            'VJ13_IMP': str(get_imponibile_imposta_from_tag('VJ13')['imposta']).replace('.', ','),
+            'VJ14': str(get_imponibile_imposta_from_tag('VJ14')['imponibile']).replace('.', ','),
+            'VJ14_IMP': str(get_imponibile_imposta_from_tag('VJ14')['imposta']).replace('.', ','),
+            'VJ15': str(get_imponibile_imposta_from_tag('VJ15')['imponibile']).replace('.', ','),
+            'VJ15_IMP': str(get_imponibile_imposta_from_tag('VJ15')['imposta']).replace('.', ','),
+            'VJ16': str(get_imponibile_imposta_from_tag('VJ16')['imponibile']).replace('.', ','),
+            'VJ16_IMP': str(get_imponibile_imposta_from_tag('VJ16')['imposta']).replace('.', ','),
+            'VJ17': str(get_imponibile_imposta_from_tag('VJ17')['imponibile']).replace('.', ','),
+            'VJ17_IMP': str(get_imponibile_imposta_from_tag('VJ17')['imposta']).replace('.', ','),
+            'VJ18': str(get_imponibile_imposta_from_tag('VJ18')['imponibile']).replace('.', ','),
+            'VJ18_IMP': str(get_imponibile_imposta_from_tag('VJ18')['imposta']).replace('.', ','),
+            'VJ19': str(VJ19_IMPOSTA).replace('.', ','),
+        }
+
+        from_date = str(self.year) + '-01-01'
+        to_date = str(self.year) + '-12-31'
+        liquidazioni_anno = self.env['account.vat.period.end.statement'].sudo().search([('date', '>=', from_date), ('date', '<=', to_date), ('state', '!=', 'draft')])
+
+        data_dict_pag9 = {
+            'CODICE FISCALE9': self.taxpayer_vat,
+            'VH1C':0,
+            'VH1D': 0,
+            'VH2C': 0,
+            'VH2D': 0,
+            'VH3C': 0,
+            'VH3D': 0,
+            'VH4C': 0,
+            'VH4D': 0,
+            'VH5C': 0,
+            'VH5D': 0,
+            'VH6C': 0,
+            'VH6D': 0,
+            'VH7C':0,
+            'VH7D': 0,
+            'VH8C': 0,
+            'VH8D': 0,
+            'VH9C': 0,
+            'VH9D': 0,
+            'VH10C': 0,
+            'VH10D': 0,
+            'VH11C': 0,
+            'VH11D': 0,
+            'VH12C': 0,
+            'VH12D': 0,
+            'VH13C': 0,
+            'VH13D': 0,
+            'VH14C': 0,
+            'VH14D': 0,
+            'VH15C': 0,
+            'VH15D': 0,
+            'VH16C': 0,
+            'VH16D': 0,
+            'VH17': 0,
+            'VH17_M': 1,
+        }
+
+        VL8 = 0
+
+        for liquidazione in liquidazioni_anno:
+            #debit = self.env['report.l10n_it_account.vat_statement'].sudo()._get_account_vat_amounts('debit', liquidazione.debit_vat_account_line_ids)
+            #credit = self.env['report.l10n_it_account.vat_statement'].sudo()._get_account_vat_amounts('credit',liquidazione.credit_vat_account_line_ids)
+            #debit_amount = 0
+            #credit_amount = 0
+            #for account in debit:
+             #   debit_amount = debit[account]['amount']
+            #for account in credit:
+             #   credit_amount = credit[account]['amount']
+
+            if liquidazione.date.month == 1:
+                #Gennaio
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH1C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH1D'] = abs(somma)
+
+                #VL8, VERIFICA SE CI SONO CREDITI ANNO PRECEDENTE
+                VL8 = liquidazione.previous_credit_vat_amount
+
+            if liquidazione.date.month == 2:
+                #Febbraio
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH2C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH2D'] = abs(somma)
+            if liquidazione.date.month == 3:
+                #Marzo
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH3C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH3D'] = abs(somma)
+            if liquidazione.date.month == 4:
+                #Aprile
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH5C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH5D'] = abs(somma)
+            if liquidazione.date.month == 5:
+                #Maggio
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH6C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH6D'] = abs(somma)
+            if liquidazione.date.month == 6:
+                #Giugno
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH7C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH7D'] = abs(somma)
+            if liquidazione.date.month == 7:
+                #Luglio
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH9C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH9D'] = abs(somma)
+            if liquidazione.date.month == 8:
+                #Agosto
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH10C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH10D'] = abs(somma)
+            if liquidazione.date.month == 9:
+                #Settembre
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH11C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH11D'] = abs(somma)
+            if liquidazione.date.month == 10:
+                #Ottobre
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH13C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH13D'] = abs(somma)
+            if liquidazione.date.month == 11:
+                #Novembre
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH14C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH14D'] = abs(somma)
+            if liquidazione.date.month == 12:
+                #Dicembre
+                somma = liquidazione.authority_vat_amount
+                if somma < 0:
+                    data_dict_pag9['VH15C'] = abs(somma)
+                else:
+                    data_dict_pag9['VH15D'] = abs(somma)
+
+                #VERIFICA ACCONTI PER TAG VH17
+                for line in liquidazione.generic_vat_account_line_ids:
+                    data_dict_pag9['VH17'] = str(abs(line.amount)).replace(".",  ",")
+
+        #Trimestri, questo blocco solo per i trimestrali
+        #aggiugere un flag in LIPE IVA
+        #data_dict_pag9['VH4C'] = data_dict_pag9['VH1C'] + data_dict_pag9['VH2C'] + data_dict_pag9['VH3C']
+        #data_dict_pag9['VH4D'] = data_dict_pag9['VH1D'] + data_dict_pag9['VH2D'] + data_dict_pag9['VH3D']
+        #data_dict_pag9['VH8C'] = data_dict_pag9['VH5C'] + data_dict_pag9['VH6C'] + data_dict_pag9['VH7C']
+        #data_dict_pag9['VH8D'] = data_dict_pag9['VH5D'] + data_dict_pag9['VH6D'] + data_dict_pag9['VH7D']
+        #data_dict_pag9['VH12C'] = data_dict_pag9['VH9C'] + data_dict_pag9['VH10C'] + data_dict_pag9['VH11C']
+        #data_dict_pag9['VH12D'] = data_dict_pag9['VH9D'] + data_dict_pag9['VH10D'] + data_dict_pag9['VH11D']
+        #data_dict_pag9['VH16C'] = data_dict_pag9['VH13C'] + data_dict_pag9['VH14C'] + data_dict_pag9['VH15C']
+        #data_dict_pag9['VH16D'] = data_dict_pag9['VH13D'] + data_dict_pag9['VH14D'] + data_dict_pag9['VH15D']
+
+
+        VL3 = (VE19_IMPOSTA + VE24_IMPOSTA) - VF25_IMPOSTA
+        VL4 = abs(VF25_IMPOSTA - (VE19_IMPOSTA + VE24_IMPOSTA))
+        if VL3 > 0:
+            VL4 = 0
+
+        data_dict_pag10 = {
+            'CODICE FISCALE10': self.taxpayer_vat,
+        }
+
+        data_dict_pag11 = {
+            'CODICE FISCALE11': self.taxpayer_vat,
+            'VL1': str(VE19_IMPOSTA + VE24_IMPOSTA).replace('.', ','),
+            'VL2': str(VF25_IMPOSTA).replace('.', ','),
+            'VL3': str(VL3).replace('.', ','),
+            'VL4': str(VL4).replace('.', ','),
+            'VL8': str(VL8).replace('.', ','),
+            'VL30/2': str(VL3).replace('.', ','),
+        }
+
+        quadro_vp_id = self.quadri_vp_ids[0]
+
+        data_dict_pag12 = {
+            # 'CODICE FISCALE12': self.taxpayer_vat,
+            # 'CODICE_FISCALE_LIPE': self.taxpayer_fiscalcode,
+            # 'MODULO_N': 1,
+            # 'MESE_LIPE': str(quadro_vp_id.month).zfill(2) if quadro_vp_id.period_type == 'month' else '',
+            # 'TRIMESTRE': str(quadro_vp_id.quarter).zfill(2) if quadro_vp_id.period_type == 'quarter' else '',
+            # 'SUBFORNITURE': quadro_vp_id.subcontracting,
+            # 'EVENTI_ECCEZIONALI': quadro_vp_id.exceptional_events,
+            # 'OPERAZIONI_STRAORDINARIE': '',
+            # 'ACCONTO_DOVUTO': str(quadro_vp_id.metodo_acconto_dovuto),
+            # 'VP2': str(quadro_vp_id.imponibile_operazioni_attive).replace('.', ' '),
+            # 'VP3': str(quadro_vp_id.imponibile_operazioni_passive).replace('.', ' '),
+            # 'VP4': str(quadro_vp_id.iva_esigibile).replace('.', ' '),
+            # 'VP5': str(quadro_vp_id.iva_detratta).replace('.', ' '),
+            # 'VP6/1': str(quadro_vp_id.iva_dovuta_debito).replace('.', ' '),
+            # 'VP6/2': str(quadro_vp_id.iva_dovuta_credito).replace('.', ' '),
+            # 'VP7': str(quadro_vp_id.debito_periodo_precedente).replace('.', ' '),
+            # 'VP8': str(quadro_vp_id.credito_periodo_precedente).replace('.', ' '),
+            # 'VP9': str(quadro_vp_id.credito_anno_precedente).replace('.', ' '),
+            # 'VP10': str(quadro_vp_id.versamento_auto_UE).replace('.', ' '),
+            # 'VP11': str(quadro_vp_id.crediti_imposta).replace('.', ' '),
+            # 'VP12': str(quadro_vp_id.interessi_dovuti).replace('.', ' '),
+            # 'VP13': str(quadro_vp_id.accounto_dovuto).replace('.', ' '),
+            # 'VP14/1': str(quadro_vp_id.iva_da_versare).replace('.', ' '),
+            # 'VP14/2': str(quadro_vp_id.iva_a_credito).replace('.', ' '),
+        }
+
+        VT1_1 = 0
+        VT1_2 = 0
+        VT1_3 = 0
+        VT1_4 = 0
+        VT1_5 = 0
+        VT1_6 = 0
+
+
+
+        for tax in lipe_annuale.debit_vat_account_line_ids:
+            #somma imponibile vendite e imposta vendite
+            tax_datas = tax.tax_id._compute_totals_tax({
+                'from_date': lipe_annuale.date_range_ids[0].date_start,
+                'to_date': lipe_annuale.date_range_ids[0].date_end,
+                'registry_type': 'customer'
+            })
+            VT1_1 += tax_datas[1]
+            VT1_2 += tax_datas[2]
+
+        for tax in lipe_annuale.debit_vat_account_line_ids:
+            if tax.tax_id.iva_corr:
+                #Imposta vs. soggetti privati
+                tax_datas = tax.tax_id._compute_totals_tax({
+                    'from_date': lipe_annuale.date_range_ids[0].date_start,
+                    'to_date': lipe_annuale.date_range_ids[0].date_end,
+                    'registry_type': 'customer'
+                })
+                VT1_3 += tax_datas[1]
+                VT1_4 += tax_datas[2]
+            if tax.tax_id.iva_fatt:
+                #Imposta vs. soggetti privati
+                tax_datas = tax.tax_id._compute_totals_tax({
+                    'from_date': lipe_annuale.date_range_ids[0].date_start,
+                    'to_date': lipe_annuale.date_range_ids[0].date_end,
+                    'registry_type': 'customer'
+                })
+                VT1_5 += tax_datas[1]
+                VT1_6 += tax_datas[2]
+
+
+        region_private_operation = {
+            'Abruzzo': {'imponibile': 0, 'imposta': 0},
+            'Basilicata': {'imponibile': 0, 'imposta': 0},
+            'Trentino Alto Adige': {'imponibile': 0, 'imposta': 0},
+            'Calabria': {'imponibile': 0, 'imposta': 0},
+            'Campania': {'imponibile': 0, 'imposta': 0},
+            'Emilia Romagna': {'imponibile': 0, 'imposta': 0},
+            'Friuli Venezia Giulia': {'imponibile': 0, 'imposta': 0},
+            'Lazio': {'imponibile': 0, 'imposta': 0},
+            'Liguria': {'imponibile': 0, 'imposta': 0},
+            'Lombardia': {'imponibile': 0, 'imposta': 0},
+            'Marche': {'imponibile': 0, 'imposta': 0},
+            'Molise': {'imponibile': 0, 'imposta': 0},
+            'Piemonte': {'imponibile': 0, 'imposta': 0},
+            'Puglia': {'imponibile': 0, 'imposta': 0},
+            'Sardegna': {'imponibile': 0, 'imposta': 0},
+            'Sicilia': {'imponibile': 0, 'imposta': 0},
+            'Toscana': {'imponibile': 0, 'imposta': 0},
+            'Umbria': {'imponibile': 0, 'imposta': 0},
+            "Valle d'Aosta": {'imponibile': 0, 'imposta': 0},
+            'Veneto': {'imponibile': 0, 'imposta': 0},
+        }
+
+
+
+        for tax in lipe_annuale.debit_vat_account_line_ids:
+            if tax.tax_id.iva_corr:
+                # Imposta vs. soggetti privati
+                # 1.Operazioni Imponibili
+                account_move_line = self.env['account.move.line'].sudo().search(['&','&',('date', '>=', lipe_annuale.date_range_ids[0].date_start),
+                                                                                 ('date', '<=', lipe_annuale.date_range_ids[0].date_end),
+                                                                                 ('tax_ids', 'in', [tax.tax_id.id] )])
+                for line in account_move_line:
+                    imponibile = line.debit - line.credit
+                    if not line.partner_id or not line.partner_id.region_id:
+                        #Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
+                        region_private_operation['Lombardia']['imponibile'] += imponibile
+
+
+                    if line.partner_id.region_id:
+                        region_private_operation[line.partner_id.region_id.name]['imponibile'] += imponibile
+
+
+                # # 1.Operazioni Imposta
+                account_move_line = self.env['account.move.line'].sudo().search(['&', '&', ('date', '>=', lipe_annuale.date_range_ids[0].date_start),
+                                                                                 ('date', '<=', lipe_annuale.date_range_ids[0].date_end),
+                                                                                 ('tax_line_id', '=', tax.tax_id.id)])
+                for line in account_move_line:
+                    imposta = line.debit - line.credit
+                    if not line.partner_id or not line.partner_id.region_id:
+                        #Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
+                        region_private_operation['Lombardia']['imposta'] += imposta
+
+                    if line.partner_id.region_id:
+                        region_private_operation[line.partner_id.region_id.name]['imposta'] += imposta
+
+
+        data_dict_pag13 = {
+            'CODICE FISCALE13': self.taxpayer_vat,
+            'VT1/2':  round(VT1_2,2),
+            'VT1/1':  round(VT1_1,2),
+            'VT1/5':  round(VT1_5,2),
+            'VT1/6':  round(VT1_6,2),
+            'VT1/3':  round(VT1_3,2),
+            'VT1/4':  round(VT1_4,2),
+            'VT2/1': round(abs(region_private_operation['Abruzzo']['imponibile']), 2),
+            'VT2/2': round(abs(region_private_operation['Abruzzo']['imposta']), 2),
+            'VT3/1': round(abs(region_private_operation['Basilicata']['imponibile']), 2),
+            'VT3/2': round(abs(region_private_operation['Basilicata']['imposta']), 2),
+            'VT4/1': round(abs(region_private_operation['Trentino Alto Adige']['imponibile']), 2),
+            'VT4/2': round(abs(region_private_operation['Trentino Alto Adige']['imposta']), 2),
+            'VT5/1': round(abs(region_private_operation['Calabria']['imponibile']), 2),
+            'VT5/2': round(abs(region_private_operation['Calabria']['imposta']), 2),
+            'VT6/1': round(abs(region_private_operation['Campania']['imponibile']), 2),
+            'VT6/2': round(abs(region_private_operation['Campania']['imposta']), 2),
+            'VT7/1': round(abs(region_private_operation['Emilia Romagna']['imponibile']), 2),
+            'VT7/2': round(abs(region_private_operation['Emilia Romagna']['imposta']), 2),
+            'VT8/1': round(abs(region_private_operation['Friuli Venezia Giulia']['imponibile']), 2),
+            'VT8/2': round(abs(region_private_operation['Friuli Venezia Giulia']['imposta']), 2),
+            'VT9/1': round(abs(region_private_operation['Lazio']['imponibile']), 2),
+            'VT9/2': round(abs(region_private_operation['Lazio']['imposta']), 2),
+            'VT10/1': round(abs(region_private_operation['Liguria']['imponibile']), 2),
+            'VT10/2': round(abs(region_private_operation['Liguria']['imposta']), 2),
+            'VT11/1': round(abs(region_private_operation['Lombardia']['imponibile']), 2),
+            'VT11/2': round(abs(region_private_operation['Lombardia']['imposta']), 2),
+            'VT12/1': round(abs(region_private_operation['Marche']['imponibile']), 2),
+            'VT12/2': round(abs(region_private_operation['Marche']['imposta']), 2),
+            'VT13/1': round(abs(region_private_operation['Molise']['imponibile']), 2),
+            'VT13/2': round(abs(region_private_operation['Molise']['imposta']), 2),
+            'VT14/1': round(abs(region_private_operation['Piemonte']['imponibile']), 2),
+            'VT14/2': round(abs(region_private_operation['Piemonte']['imposta']), 2),
+            'VT15/1': round(abs(region_private_operation['Puglia']['imponibile']), 2),
+            'VT15/2': round(abs(region_private_operation['Puglia']['imposta']), 2),
+            'VT16/1': round(abs(region_private_operation['Sardegna']['imponibile']), 2),
+            'VT16/2': round(abs(region_private_operation['Sardegna']['imposta']), 2),
+            'VT17/1': round(abs(region_private_operation['Sicilia']['imponibile']), 2),
+            'VT17/2': round(abs(region_private_operation['Sicilia']['imposta']), 2),
+            'VT18/1': round(abs(region_private_operation['Toscana']['imponibile']), 2),
+            'VT18/2': round(abs(region_private_operation['Toscana']['imposta']), 2),
+            'VT20/1': round(abs(region_private_operation['Umbria']['imponibile']), 2),
+            'VT20/2': round(abs(region_private_operation['Umbria']['imposta']), 2),
+            'VT21/1': round(abs(region_private_operation["Valle d'Aosta"]['imponibile']), 2),
+            'VT21/2': round(abs(region_private_operation["Valle d'Aosta"]['imposta']), 2),
+            'VT22/1': round(abs(region_private_operation['Veneto']['imponibile']), 2),
+            'VT22/2': round(abs(region_private_operation['Veneto']['imposta']), 2)
+        }
+
+
+        data_dict_pag14 = {
+            'CODICE FISCALE14': self.taxpayer_vat,
+            'VX1': str('').replace('.', ','),
+            'VX2/1': str('').replace('.', ','),
+            'VX2/2': str('').replace('.', ','),
+            'VX3': str('').replace('.', ','),
+        }
+
+        data_dict_pag15 = {
+            'CODICE FISCALE15': self.taxpayer_vat,
+        }
+        data_dict_pag16 = {
+            'CODICE FISCALE16': self.taxpayer_vat,
+        }
+        data_dict_pag17 = {
+            'CODICE FISCALE17': self.taxpayer_vat,
+        }
+        data_dict_pag18 = {
+            'CODICE FISCALE18': self.taxpayer_vat,
+        }
+        data_dict_pag19 = {
+            'CODICE FISCALE19': self.taxpayer_vat,
+        }
+        data_dict_pag20 = {
+            'CODICE FISCALE20': self.taxpayer_vat,
+        }
+        data_dict_pag21 = {
+            'CODICE FISCALE21': self.taxpayer_vat,
+        }
+        data_dict_pag22 = {
+            'CODICE FISCALE22': self.taxpayer_vat,
+        }
+
+
+
+
+
+
+        pdf_writer.addPage(pdf_reader.getPage(0))
+        pdf_writer.addPage(pdf_reader.getPage(1))
+        pdf_writer.addPage(pdf_reader.getPage(2))
+        pdf_writer.addPage(pdf_reader.getPage(3))
+        pdf_writer.addPage(pdf_reader.getPage(4))
+        pdf_writer.addPage(pdf_reader.getPage(5))
+        pdf_writer.addPage(pdf_reader.getPage(6))
+        pdf_writer.addPage(pdf_reader.getPage(7))
+        pdf_writer.addPage(pdf_reader.getPage(8))
+        pdf_writer.addPage(pdf_reader.getPage(9))
+        pdf_writer.addPage(pdf_reader.getPage(10))
+        pdf_writer.addPage(pdf_reader.getPage(11))
+        pdf_writer.addPage(pdf_reader.getPage(12))
+        pdf_writer.addPage(pdf_reader.getPage(13))
+        pdf_writer.addPage(pdf_reader.getPage(14))
+        pdf_writer.addPage(pdf_reader.getPage(15))
+        pdf_writer.addPage(pdf_reader.getPage(16))
+        pdf_writer.addPage(pdf_reader.getPage(17))
+        pdf_writer.addPage(pdf_reader.getPage(18))
+        pdf_writer.addPage(pdf_reader.getPage(19))
+        pdf_writer.addPage(pdf_reader.getPage(20))
+        pdf_writer.addPage(pdf_reader.getPage(21))
+        page = pdf_writer.getPage(1)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag1)
+        page = pdf_writer.getPage(2)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag2)
+        page = pdf_writer.getPage(3)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag3)
+        page = pdf_writer.getPage(4)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag4)
+        page = pdf_writer.getPage(5)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag5)
+        page = pdf_writer.getPage(6)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag6)
+        page = pdf_writer.getPage(7)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag7)
+        page = pdf_writer.getPage(8)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag8)
+        page = pdf_writer.getPage(9)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag9)
+        page = pdf_writer.getPage(10)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag10)
+        page = pdf_writer.getPage(11)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag11)
+        page = pdf_writer.getPage(12)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag12)
+        page = pdf_writer.getPage(13)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag13)
+        page = pdf_writer.getPage(14)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag14)
+        page = pdf_writer.getPage(15)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag15)
+        page = pdf_writer.getPage(16)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag16)
+        page = pdf_writer.getPage(17)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag17)
+        page = pdf_writer.getPage(18)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag18)
+        page = pdf_writer.getPage(19)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag19)
+        page = pdf_writer.getPage(20)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag20)
+        page = pdf_writer.getPage(21)
+        pdf_writer.updatePageFormFieldValues(page, data_dict_pag21)
+
+
+        output_stream = BytesIO()
+        pdf_writer.write(output_stream)
+        return output_stream.getvalue()
 
 
     def generate_separate_lipe_file(self, count, quadro_vp_id):

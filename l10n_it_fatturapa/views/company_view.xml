@@ -90,6 +90,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="fatturapa_codice_tipo" string="Campo XML Codice Tipo" class="col-lg-3 o_light_label"/>
+                                    <field name="fatturapa_codice_tipo"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </xpath>
             <xpath expr="//div[@id='fatturapa_settings']" position="after">

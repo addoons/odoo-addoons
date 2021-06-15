@@ -56,6 +56,7 @@ class CambioConti(models.TransientModel):
     inverti = fields.Boolean()
     analytic_account_id = fields.Many2one('account.analytic.account')
     conti_doppi_crediti = fields.Boolean()
+    merge_account_line = fields.Boolean()
 
 
 
@@ -274,13 +275,35 @@ class CambioConti(models.TransientModel):
                 line_id = registrazione.id
                 registrazione = registrazione.move_id
 
-            if self.ins_imposta_ids or self.creato_imposte_ids or self.ins_creato_imposta_ids or self.conti_doppi_crediti or self.analytic_account_id or self.add_analytic:
+            if self.ins_imposta_ids or self.creato_imposte_ids or self.ins_creato_imposta_ids or self.conti_doppi_crediti or self.analytic_account_id or self.add_analytic or self.merge_account_line:
                 #Viene annullata solamente se non bisogna cambiare dei conti, altrimenti sarebbe molto lento
                 if registrazione.state == 'posted':
                     # La registrazione è generata, la reimposta in bozza
                     registrazione.button_cancel()
 
             logging.info("CAMBIO")
+
+            if self.merge_account_line and not registrazione.merge_account_line_done and registrazione.journal_id.group_invoice_lines:
+                new_lines = [(5, )]
+                merged_lines = self.merge_account_move_lines(registrazione)
+                registrazione.line_ids.remove_move_reconcile()
+                for merged in merged_lines:
+                    vals = {
+                        'account_id': merged.account_id.id,
+                        'partner_id': merged.partner_id.id,
+                        'name': merged.name,
+                        'analytic_account_id': merged.analytic_account_id.id,
+                        'amount_currency': merged.amount_currency,
+                        'currency_id': merged.currency_id.id,
+                        'debit': merged.debit,
+                        'credit': merged.credit,
+                        'date_maturity': merged.date_maturity,
+                        'tax_ids': [(4, tax.id) for tax in merged.tax_ids],
+                        'tax_line_id': merged.tax_line_id.id,
+                    }
+                    new_lines.append((0,0, vals))
+                registrazione.write({'line_ids': new_lines, 'merge_account_line_done': True})
+                logging.info("merge righe fatto")
 
             for line in registrazione.line_ids:
 
@@ -334,6 +357,8 @@ class CambioConti(models.TransientModel):
                             line.account_id = crediti_v_clienti.id
 
 
+
+
                     if self.analytic_account_id:
                         if line.account_id in self.account_ids:
                             #Per tutte le account.move.line che hanno conto finanziario soggetto e conto analitico mancante
@@ -369,7 +394,42 @@ class CambioConti(models.TransientModel):
                                                 if analytic_account:
                                                     line.analytic_account_id = analytic_account[0][0]
 
-            if self.ins_imposta_ids or self.creato_imposte_ids or self.ins_creato_imposta_ids or self.conti_doppi_crediti or self.analytic_account_id or self.add_analytic:
+            if self.ins_imposta_ids or self.creato_imposte_ids or self.ins_creato_imposta_ids or self.conti_doppi_crediti or self.analytic_account_id or self.add_analytic or self.merge_account_line:
                 if registrazione.state == 'draft':
                     #La registrazione è in bozza, la reimposta in generata
                     registrazione.action_post()
+
+
+
+    def move_line_characteristic_hashcode(self, move_line):
+        return "%s-%s-%s-%s-%s" % (
+            move_line.account_id,
+            move_line.tax_ids,
+            move_line.tax_line_id,
+            move_line.analytic_account_id,
+            move_line.date_maturity,
+        )
+
+
+    def merge_account_move_lines(self, move_id):
+        if move_id.journal_id.group_invoice_lines:
+            line2 = {}
+            for line in move_id.line_ids:
+                tmp = self.move_line_characteristic_hashcode(line)
+                if tmp in line2:
+                    am = line2[tmp].debit - line2[tmp].credit + (line.debit - line.credit)
+                    line2[tmp].debit = (am > 0) and am or 0.0
+                    line2[tmp].credit = (am < 0) and -am or 0.0
+                    # line2[tmp]['amount_currency'] += l['amount_currency']
+                    # line2[tmp]['analytic_line_ids'] += l['analytic_line_ids']
+                    qty = line.quantity if line.quantity else 0
+                    if qty:
+                        line2[tmp].quantity = line2[tmp].quantity + qty
+                else:
+                    line2[tmp] = line
+            line = []
+            for key, val in line2.items():
+                line.append(val)
+            return line
+        else:
+            return

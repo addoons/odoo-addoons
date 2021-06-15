@@ -38,6 +38,8 @@
                 <field name="costi_account" string="Conto di Costo" />
                 <field name="ricavi_account" string="Conto di Ricavo" />
             </xpath>
+
+
         </field>
     </record>
 
@@ -93,6 +95,11 @@
                     <field name="rea_member_type" string="Soci"/>
                     <field name="rea_liquidation_state" string="Stato Liquidazione"/>
                 </group>
+                <group string="Localizza Partner">
+                    <button name="geo_localize" position="after">
+                        <button name="compute_region" type="object" class="btn btn-default" string="Calcola Regione"/>
+                    </button>
+                </group>
             </group>
         </field>
     </record>
@@ -144,8 +151,13 @@
             <page name="accounting" position="attributes">
                 <attribute name="string">Accounting</attribute>
             </page>
+            <field name="country_id" position="before">
+                <field name="region_id" string="Regione" placeholder="Regione" readonly="False"/>
+            </field>
         </field>
     </record>
+
+
 
 
 

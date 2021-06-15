@@ -1,0 +1,7 @@
+<odoo>
+    <template id="addoons_reports_layout" inherit_id="web.report_assets_common">
+        <xpath expr="." position="inside">
+            <link href="/addoons_reports/static/src/css/default_style.css" rel="stylesheet"/>
+        </xpath>
+    </template>
+</odoo>

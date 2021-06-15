@@ -26,7 +26,7 @@
             <field name="view_id" ref="account.view_account_list"/>
             <field name="context">{'search_default_macroaggregate_id': 1,
                 'search_default_parent_id': 1,'search_default_sottoconto_terzo_livello_group': 1}</field>
-            <field name="domain" eval="['&amp;',('deprecated','=', False),('hierarchy_type_id', 'not in', [ref('account_type_macroaggregate'),ref('account_type_aggregate'),ref('account_type_sottoconto_3')])]"/>
+            <field name="domain" eval="['&amp;',('deprecated','=', False),('hierarchy_type_id', 'not in', [ref('account_type_macroaggregate'),ref('account_type_aggregate'),ref('account_type_sottoconto_3'),ref('account_type_sottoconto_4'),ref('account_type_sottoconto_5'),ref('account_type_sottoconto_6')])]"/>
         </record>
 
         <menuitem action="l10n_it_account.action_account_form"
@@ -49,12 +49,16 @@
                     <filter name="aggregati" string="Aggregati" domain="[('hierarchy_type_id', '=', %(l10n_it_account.account_type_aggregate)d)]"/>
                     <filter string="Terzo Livello" name="sottoconto_terzo_livello" />
                     <filter string="Quarto Livello" name="sottoconto_quarto_livello" />
+                    <filter string="Quinto Livello" name="sottoconto_quinto_livello" />
+                    <filter string="Sesto Livello" name="sottoconto_sesto_livello" />
                 </search>
                 <group position="inside">
                     <filter string="Macroaggregato" name="macroaggregate_id" domain="[]" context="{'group_by':'macroaggregate_id'}"/>
                     <filter string="Aggregato" name="parent_id" domain="[]" context="{'group_by':'parent_id'}"/>
                     <filter string="Terzo Livello" name="sottoconto_terzo_livello_group" domain="[]" context="{'group_by':'sottoconto_terzo_livello'}"/>
                     <filter string="Quarto Livello" name="sottoconto_quarto_livello_group" domain="[]" context="{'group_by':'sottoconto_quarto_livello'}"/>
+                    <filter string="Quinto Livello" name="sottoconto_quinto_livello_group" domain="[]" context="{'group_by':'sottoconto_quinto_livello'}"/>
+                    <filter string="Sesto Livello" name="sottoconto_sesto_livello_group" domain="[]" context="{'group_by':'sottoconto_sesto_livello'}"/>
                 </group>
             </field>
         </record>
@@ -115,6 +119,16 @@
                                            string="Sottoconto Quarto Livello"
                                            options="{'no_quick_create':True,'no_create_edit':True}"
                                            domain="['&amp;',('area', '=', area),('hierarchy_type_id', '=', %(l10n_it_account.account_type_sottoconto_4)d)]"
+                                           attrs="{'invisible': [('hierarchy_type_id', 'in', [%(l10n_it_account.account_type_aggregate)d,%(l10n_it_account.account_type_macroaggregate)d])]}"/>
+                                    <field name="sottoconto_quinto_livello"
+                                           string="Sottoconto Quinto Livello"
+                                           options="{'no_quick_create':True,'no_create_edit':True}"
+                                           domain="['&amp;',('area', '=', area),('hierarchy_type_id', '=', %(l10n_it_account.account_type_sottoconto_5)d)]"
+                                           attrs="{'invisible': [('hierarchy_type_id', 'in', [%(l10n_it_account.account_type_aggregate)d,%(l10n_it_account.account_type_macroaggregate)d])]}"/>
+                                    <field name="sottoconto_sesto_livello"
+                                           string="Sottoconto Sesto Livello"
+                                           options="{'no_quick_create':True,'no_create_edit':True}"
+                                           domain="['&amp;',('area', '=', area),('hierarchy_type_id', '=', %(l10n_it_account.account_type_sottoconto_6)d)]"
                                            attrs="{'invisible': [('hierarchy_type_id', 'in', [%(l10n_it_account.account_type_aggregate)d,%(l10n_it_account.account_type_macroaggregate)d])]}"/>
                                 </group>
                             </group>

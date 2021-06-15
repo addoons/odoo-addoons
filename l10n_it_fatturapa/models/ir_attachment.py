@@ -117,6 +117,8 @@ class Attachment(models.Model):
         xml_string = self.strip_xml_content(xml_string)
         return xml_string
 
+
+
     def get_xml_string(self):
         try:
             data = base64.b64decode(self.datas)
@@ -180,7 +182,6 @@ class FatturaPAAttachmentIn(models.Model):
     _name = "fatturapa.attachment.in"
     _description = "E-bill import file"
     _inherits = {'ir.attachment': 'ir_attachment_id'}
-    _inherit = ['mail.thread']
     _order = 'id desc'
 
     ir_attachment_id = fields.Many2one(
@@ -213,6 +214,14 @@ class FatturaPAAttachmentIn(models.Model):
 
     aruba_filename = fields.Char()
 
+    xml_error = fields.Boolean()
+    ir_attachment_id_error = fields.Many2one('ir.attachment')
+    import_error_message = fields.Text()
+    e_invoice_invoice_date = fields.Date()
+
+    company_id = fields.Many2one('res.company', string='Azienda', change_default=True,
+        default=lambda self: self.env['res.company']._company_default_get('account.invoice'))
+
     def import_aruba_invoice(self):
         """
         Import Aruba Supplier Invoice
@@ -221,12 +230,13 @@ class FatturaPAAttachmentIn(models.Model):
         ws_ids = self.env['sdi.channel'].get_default_ws()
         for ws in ws_ids:
             ws.web_auth()
-            cron_id = self.env.ref('l10n_it_fatturapa.addoons_fe_import')
-            if cron_id:
-                from_date = cron_id.nextcall - datetime.timedelta(days=3)
+            nextcall = self.env.ref('l10n_it_fatturapa.addoons_fe_import').nextcall
+
+            if nextcall:
+                from_date = nextcall - datetime.timedelta(days=31)
                 from_date = from_date.strftime("%Y-%m-%d")
 
-                to_date = cron_id.nextcall
+                to_date = nextcall
                 to_date = to_date.strftime("%Y-%m-%d")
 
                 page_number = 1
@@ -236,7 +246,7 @@ class FatturaPAAttachmentIn(models.Model):
                 data = {
                     'username': ws.web_server_login,
                     'countryReceiver': 'IT',
-                    'vatcodeReceiver': self.env.user.company_id.vat.replace('IT', ''),
+                    'vatcodeReceiver': ws.company_id.vat.replace('IT', ''),
                     'size': 100,
                     'page': page_number,
                     'startDate': from_date,
@@ -268,21 +278,50 @@ class FatturaPAAttachmentIn(models.Model):
                                     sleep(6)
                                     if r:
                                         # CREA LA FATTURA
+                                        vals = {}
                                         if r['file']:
                                             try:
-                                                logging.info(filename)
-                                                if filename == 'IT02098391200_40WEx.xml.p7m':
-                                                    print("Ok")
-                                                self.create({
+                                                receive_date = re.sub(r'([-+]\d{2}):(\d{2})(?:(\d{2}))?$',r'\1\2\3', r['creationDate'])
+                                                receive_date = datetime.datetime.strptime(receive_date, '%Y-%m-%dT%H:%M:%S.%f%z')
+                                                invoice_date = re.sub(r'([-+]\d{2}):(\d{2})(?:(\d{2}))?$', r'\1\2\3',r['invoices'][0]['invoiceDate'])
+                                                invoice_date = datetime.datetime.strptime(invoice_date,'%Y-%m-%dT%H:%M:%S.%f%z')
+                                                #Fattura Importata Correttamente
+                                                vals = {
                                                     'name': r['sender']['description'] if 'description' in r['sender'] else filename,
+                                                    'company_id': ws.company_id.id if ws.company_id else 1,
                                                     'aruba_filename': filename,
                                                     'datas': r['file'],
-                                                })
-                                                #logging.info("FATTURA IMPORTATA")
+                                                    'e_invoice_received_date': receive_date.strftime('%Y-%m-%d %H:%M:%S'),
+                                                    'e_invoice_invoice_date': invoice_date.strftime('%Y-%m-%d %H:%M:%S'),
+                                                }
+                                                self.create(vals)
+                                                self.env.cr.commit()
                                             except Exception as e:
-                                                logging.info("Scartata")
+                                                self.env.cr.rollback()
+                                                attachment_error = self.env['ir.attachment'].sudo().create({
+                                                    'datas': r['file'],
+                                                    'mimetype': 'application/xml',
+                                                    'name': 'fattura.xml',
+                                                    'datas_fname': 'fattura.xml'
+                                                })
+                                                xml_string = attachment_error.get_xml_string()
+                                                attachment_error.unlink()
+                                                attachment_error = self.env['ir.attachment'].sudo().create({
+                                                    'datas': base64.encodestring(xml_string),
+                                                    'name': 'fattura.xml',
+                                                    'datas_fname': 'fattura.xml'
+                                                })
+                                                vals['ir_attachment_id_error'] = attachment_error.id
+                                                vals['xml_error'] = True
+                                                vals['datas'] = False
+                                                vals['e_invoice_received_date'] = receive_date.strftime('%Y-%m-%d %H:%M:%S')
+                                                vals['import_error_message'] = e
+                                                vals['mimetype'] = 'application/xml'
+                                                self.create(vals)
+
                                         else:
-                                            logging.info("Scartata")
+                                            vals['xml_error'] = True
+                                            self.create(vals)
 
     @api.onchange('datas_fname')
     def onchagne_datas_fname(self):
@@ -295,18 +334,21 @@ class FatturaPAAttachmentIn(models.Model):
     @api.depends('ir_attachment_id.datas')
     def _compute_xml_data(self):
         for att in self:
-            fatt = self.env['wizard.import.fatturapa'].get_invoice_obj(att)
-            cedentePrestatore = fatt.FatturaElettronicaHeader.CedentePrestatore
-            partner_id = self.env['wizard.import.fatturapa'].getCedPrest(
-                cedentePrestatore)
-            att.xml_supplier_id = partner_id
-            att.invoices_number = len(fatt.FatturaElettronicaBody)
-            att.invoices_total = 0
-            for invoice_body in fatt.FatturaElettronicaBody:
-                att.invoices_total += float(
-                    invoice_body.DatiGenerali.DatiGeneraliDocumento.
-                    ImportoTotaleDocumento or 0
-                )
+            if att.datas:
+                #Calcola XML della fattura solo se è valorizzato il campo datas
+                #Per le fatture che non entrano correttamente datas=False
+                fatt = self.env['wizard.import.fatturapa'].get_invoice_obj(att)
+                cedentePrestatore = fatt.FatturaElettronicaHeader.CedentePrestatore
+                partner_id = self.env['wizard.import.fatturapa'].getCedPrest(
+                    cedentePrestatore)
+                att.xml_supplier_id = partner_id
+                att.invoices_number = len(fatt.FatturaElettronicaBody)
+                att.invoices_total = 0
+                for invoice_body in fatt.FatturaElettronicaBody:
+                    att.invoices_total += float(
+                        invoice_body.DatiGenerali.DatiGeneraliDocumento.
+                        ImportoTotaleDocumento or 0
+                    )
 
     @api.multi
     @api.depends('in_invoice_ids')
@@ -524,6 +566,7 @@ class FatturaPAAttachmentOut(models.Model):
                         self.aruba_sent = True
                         for invoice in self.out_invoice_ids:
                             invoice.fatturapa_state = 'sent'
+                            self.env.cr.commit()
                 else:
                     raise UserWarning(r)
             except Exception as e:

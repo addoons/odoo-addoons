@@ -225,6 +225,7 @@ class FatturapaRelatedDocumentType(models.Model):
     code = fields.Char('Order Agreement Code', size=100)
     cig = fields.Char('CIG Code', size=15)
     cup = fields.Char('CUP Code', size=15)
+    partner_id = fields.Many2one('res.partner')
 
     @api.model
     def create(self, vals):
@@ -557,7 +558,50 @@ class AccountInvoice(models.Model):
 
     payment_due_ids = fields.Many2many('payment.due.item')
 
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        """
+        Al cambiamento del partner, aggiunge i dati dell'appalto/investimento SE non sono già presenti.
+        In caso di partner che non usa gare d'appalto/investimenti pubblici, vengono rimossi tutti i record legati
+        a partner che li usano
+        """
+        if self.partner_id:
+            if self.partner_id.is_pa:
+                doc_found = False
+                doc_ids = self.related_documents.ids
+                # cerca se i dati dell'appalto sono presenti nei documenti collegati
+                for doc in self.related_documents:
+                    if doc.type == self.partner_id.procurement_type \
+                            and doc.name == self.partner_id.procurement_name:
+                        doc_found = True
+                        break
+                # se non sono stati inseriti crea un nuovo record e popola la tabella dei doc collegati
+                if not doc_found:
+                    new_doc = self.env['fatturapa.related_document_type'].create({
+                        'type': self.partner_id.procurement_type,
+                        'name': self.partner_id.procurement_name,
+                        'code': self.partner_id.procurement_code,
+                        'date': self.partner_id.procurement_date,
+                        'cig': self.partner_id.procurement_cig,
+                        'cup': self.partner_id.procurement_cup,
+                        'partner_id': self.partner_id.id
+                    })
+                    doc_ids.append(new_doc.id)
+                    self.related_documents = [(6, 0, doc_ids)]
+            # ad ogni cambiamento del partner sono eliminati i documenti
+            # collegati che hanno partner DIVERSO da quello selezionato
+            doc_to_remove = []
+            for doc in self.related_documents:
+                if doc.partner_id and doc.partner_id.id != self.partner_id.id:
+                    doc_to_remove.append((2, doc.id))
+            if len(doc_to_remove) > 0:
+                self.related_documents = doc_to_remove
 
+    @api.model
+    def create(self, vals_list):
+        res = super(AccountInvoice, self).create(vals_list)
+        res.onchange_partner_id()
+        return res
 
     @api.onchange('payment_term_id')
     def compute_payment_due_ids(self):
@@ -702,9 +746,12 @@ class AccountInvoice(models.Model):
         for bill in bills_to_check:
             error_messages = list()
 
-            error_message = bill.e_inv_check_amount_untaxed()
-            if error_message:
-                error_messages.append(error_message)
+            # error_message = bill.e_inv_check_amount_untaxed()
+            # if error_message:
+            #     error_messages.append(error_message)
+            #Viene disattivato il controllo sul subtotale (imponibile)
+            #Questo perchè esistono fatture XML che possiedono arrotondamenti
+            #I quali non è possibile ricostrituire l'XML in fattura.
 
             error_message = bill.e_inv_check_amount_tax()
             if error_message:

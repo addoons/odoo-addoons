@@ -184,6 +184,12 @@ class DdTFromPickings(models.TransientModel):
                 carrier_id = picking.sale_id.ddt_carrier_id
                 values['carrier_id'] = (
                     carrier_id.id)
+            else:
+                # VETTORE SU TIPO DDT
+                if not picking.ddt_type:
+                    values['ddt_type_id'] = False
+                if picking.ddt_type and picking.ddt_type.carrier_id:
+                    values['carrier_id'] = picking.ddt_type.carrier_id.id
 
         if transportation_reason_id:
             values['to_be_invoiced'] = transportation_reason_id.to_be_invoiced
@@ -222,6 +228,16 @@ class DdTFromPickings(models.TransientModel):
 class StockPicking(models.Model):
     _inherit = "stock.picking"
 
+    # ddt_type = fields.Many2one(
+    #     'stock.ddt.type',
+    #     related='picking_type_id.default_location_src_id.type_ddt_id')
     ddt_type = fields.Many2one(
-        'stock.ddt.type',
-        related='picking_type_id.default_location_src_id.type_ddt_id')
+        'stock.ddt.type', compute="_get_ddt_type")
+
+    @api.depends('picking_type_id')
+    def _get_ddt_type(self):
+        for record in self:
+            ddt_type_id = self.env['stock.ddt.type'].search(
+                [('warehouse_id', '=', record.picking_type_id.warehouse_id.id)], limit=1)
+            if ddt_type_id:
+                record.ddt_type = ddt_type_id.id

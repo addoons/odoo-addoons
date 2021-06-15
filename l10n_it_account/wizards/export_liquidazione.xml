@@ -52,4 +52,54 @@
         <field name="binding_model_id" ref="l10n_it_account.model_comunicazione_liquidazione" />
     </record>
 
+
+    <record id="wizard_liquidazione_annuale_file" model="ir.ui.view">
+        <field name="name">Elabora Dichiarazione Annuale</field>
+        <field name="model">comunicazione.liquidazione.annuale.file</field>
+        <field name="arch" type="xml">
+            <form string="Export File">
+                <div>
+                    <p>
+                    Clicca su <strong>Esporta</strong> per generare la dichiarazione IVA Annuale.
+                    </p>
+                </div>
+                <footer>
+                    <button name="export"
+                            string="Esporta"
+                            type="object"
+                            class="oe_highlight"  />
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="wizard_liquidazione_annuale_file_exit" model="ir.ui.view">
+        <field name="name">Export file - Done</field>
+        <field name="model">comunicazione.liquidazione.annuale.file</field>
+        <field name="arch" type="xml">
+            <form string="Esporta">
+                <group>
+                    <field name="file_pdf_iva_annuale_export" readonly="1" filename="name_pdf"/>
+                    <field name="pdf_list" readonly="1"/>
+                    <field name="name_pdf" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Chiudi" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_liquidazione_annuale_export_file" model="ir.actions.act_window">
+        <field name="name">Dichiarazione IVA Annuale</field>
+        <field name="res_model">comunicazione.liquidazione.annuale.file</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_liquidazione_annuale_file"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="l10n_it_account.model_comunicazione_liquidazione" />
+    </record>
+
 </odoo>

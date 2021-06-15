@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i');
+
+.page span, .page h1, .page strong, .page h2{
+    font-family: font-family: 'Roboto', sans-serif !important;
+}
+
+.sale-table th{
+    background-color: #f0f0f0 !important;
+    padding: 10px !important;
+    border: none !important;
+    border-bottom: none !important;
+    font-size: 14px;
+    text-align:left;
+}
+
+.sale-table td{
+    padding: 10px !important;
+    font-size: 14px;
+    border:none;
+}
+
+table {
+    page-break-inside:auto;
+}
+
+tr {
+    page-break-inside:avoid;
+    page-break-after:auto;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tfoot {
+    display: table-row-group;
+}

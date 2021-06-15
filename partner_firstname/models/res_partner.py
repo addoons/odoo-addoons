@@ -93,7 +93,8 @@ class ResPartner(models.Model):
         """Compute the 'name' field according to splitted data.
         You can override this method to change the order of lastname and
         firstname the computed name"""
-        order = self._get_names_order()
+        # order = self._get_names_order()
+        order = 'first_last'
         if order == 'last_first_comma':
             return ", ".join((p for p in (lastname, firstname) if p))
         elif order == 'first_last':
@@ -106,8 +107,29 @@ class ResPartner(models.Model):
     def _compute_name(self):
         """Write the 'name' field according to splitted data."""
         for record in self:
+            logging.info("Partner Firstname")
+            first = ""
+            last = ""
+            if record.firstname:
+                if record.firstname == 'false':
+                    first = ""
+                else:
+                    first = record.firstname
+            if record.lastname:
+                if record.lastname == 'false':
+                    last = ""
+                else:
+                    last = record.lastname
+            name = record._get_computed_name(
+                last, first,
+            )
+
+            if not self._context.get('create', []) and type(record.id).__name__ != 'NewId':
+                self.env.cr.execute('UPDATE res_partner SET name = %s WHERE id = %s', (name, record.id))
+            else:
+                record.name = name
             record.name = record._get_computed_name(
-                record.lastname, record.firstname,
+                last, first,
             )
 
     @api.multi
@@ -118,12 +140,19 @@ class ResPartner(models.Model):
         submodules can extend that method and get whitespace cleaning for free.
         """
         for record in self:
+            logging.info("Inverse Partner Firstname")
             # Remove unneeded whitespace
             clean = record._get_whitespace_cleaned_name(record.name)
 
             # Clean name avoiding infinite recursion
             if record.name != clean:
-                record.name = clean
+                # record.name = clean
+                logging.info("Clean PartnerFistname")
+                if not self._context.get('create', []) and type(record.id).__name__ != 'NewId':
+                    self.env.cr.execute('UPDATE res_partner SET name = %s WHERE id = %s', (clean, record.id))
+                else:
+                    record.name = clean
+
 
             # Save name in the real fields
             else:
@@ -170,7 +199,8 @@ class ResPartner(models.Model):
             parts = [name or False, False]
         # Guess name splitting
         else:
-            order = self._get_names_order()
+            # order = self._get_names_order()
+            order = 'first_last'
             # Remove redundant spaces
             name = self._get_whitespace_cleaned_name(
                 name, comma=(order == 'last_first_comma'))
@@ -190,8 +220,12 @@ class ResPartner(models.Model):
         """Try to revert the effect of :meth:`._compute_name`."""
         for record in self:
             parts = record._get_inverse_name(record.name, record.is_company)
-            record.lastname = parts['lastname']
-            record.firstname = parts['firstname']
+            if not self._context.get('create', []) and type(record.id).__name__ != 'NewId':
+                self.env.cr.execute('UPDATE res_partner SET lastname = %s, firstname = %s WHERE id = %s', (parts['lastname'], parts['firstname'], record.id))
+            else:
+                record.lastname = parts['lastname']
+                record.firstname = parts['firstname']
+            logging.info('inverse name partner firstname')
 
     @api.multi
     @api.constrains("firstname", "lastname")

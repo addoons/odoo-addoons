@@ -231,7 +231,14 @@ class AccountConfigSettings(models.TransientModel):
         related='company_id.arrotondamenti_tax_id',
         readonly=False
     )
+    fatturapa_codice_tipo = fields.Char(default=lambda self: self.env['ir.config_parameter'].get_param('fatturapa_codice_tipo'), required=True,
+                                        help="Imposta il valore del campo XML CodiceTipo all'interno di ogni riga di fattura. "
+                                             "Essendo un campo obbligatorio, di default è impostato 'ODOO'")
 
+    @api.multi
+    def write(self, vals):
+        self.env['ir.config_parameter'].sudo().set_param('fatturapa_codice_tipo',self.fatturapa_codice_tipo)
+        super(AccountConfigSettings, self).write(vals)
 
 
     @api.onchange('company_id')

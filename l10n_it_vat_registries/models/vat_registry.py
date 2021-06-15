@@ -178,6 +178,7 @@ class ReportRegistroIva(models.AbstractModel):
                                         tax_exigible += line.credit_cash_basis
             tax_item = {
                 'tax_code_name': tax._get_tax_name(),
+                'description': tax.description if tax.description else tax._get_tax_name(),
                 'base': amounts_by_tax_id[tax_id]['base'],
                 'tax': amounts_by_tax_id[tax_id]['tax'],
                 'index': index,

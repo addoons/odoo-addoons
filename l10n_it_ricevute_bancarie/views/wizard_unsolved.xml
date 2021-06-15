@@ -31,16 +31,14 @@
         </field>
     </record>
 
-    <record id="riba_unsolved_action" model="ir.actions.act_window">
-        <field name="name">Past Due C/Os</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">riba.unsolved</field>
-        <field name="src_model">riba.distinta.line</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
-        <field name="view_id" ref="riba_unsolved"/>
 
-    </record>
+
+
+    <act_window id="riba_unsolved_action"
+            multi="True"
+            key2="client_action_multi" name="Registra Insoluto RiBa"
+            res_model="riba.unsolved" src_model="riba.distinta.line"
+            view_mode="form" target="new" view_id="riba_unsolved" view_type="form"
+            />
         
 </odoo>

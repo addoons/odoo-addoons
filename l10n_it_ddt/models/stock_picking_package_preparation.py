@@ -73,6 +73,8 @@ class StockDdtType(models.Model):
     company_id = fields.Many2one(
         comodel_name='res.company', string='Company',
         default=lambda self: self.env.user.company_id.id)
+    warehouse_id = fields.Many2one('stock.warehouse', string="Magazzino")
+    carrier_id = fields.Many2one('res.partner', string="Vettore", domain=[('is_carrier', '=', True)])
 
 
 class StockPickingPackagePreparation(models.Model):
@@ -80,6 +82,21 @@ class StockPickingPackagePreparation(models.Model):
     _inherit = 'stock.picking.package.preparation'
     _rec_name = 'display_name'
     _order = 'date desc'
+
+    def apri_ddt(self):
+        return {
+            'name': 'DDT',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'stock.picking.package.preparation',
+            'target': 'current',
+            'res_id': self.id,
+            'view_id': self.env.ref('stock_picking_package_preparation.stock_picking_package_preparation_form').id,
+        }
+
+    def stampa_ddt(self):
+        return self.env.ref('l10n_it_ddt.action_report_ddt').sudo().report_action(self)
 
     @api.onchange('transportation_reason_id')
     def _onchange_to_be_invoiced(self):

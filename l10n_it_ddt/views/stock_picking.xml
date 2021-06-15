@@ -16,6 +16,33 @@
         </field>
     </record>
 
+    <record id="view_change_pickings_warehouse" model="ir.ui.view">
+        <field name="name">Change Warehouse</field>
+        <field name="model">picking.change.warehouse</field>
+        <field name="arch" type="xml">
+            <form string="Cambia Magazzino">
+                <field name="warehouse_id" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+                <footer>
+                    <button name="change_warehouse" string="Cambia" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_change_warehouse" model="ir.actions.act_window">
+        <field name="name">Cambia Logistica</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">picking.change.warehouse</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_change_pickings_warehouse"/>
+        <field name="target">new</field>
+    </record>
+
+
 
     <!-- FormView Stock Picking -->
     <record id="view_picking_form" model="ir.ui.view">
@@ -25,8 +52,30 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_confirm']" position="after">
                 <field name="picking_type" invisible="1"/>
-                <button name="%(l10n_it_ddt.action_ddt_from_pickings)d" type="action" class="btn btn-primary" string="CREA DDT" attrs="{'invisible': [('picking_type','!=','outgoing')]}"/>
+                <button name="%(l10n_it_ddt.action_ddt_from_pickings)d" type="action" class="btn btn-primary" string="CREA DDT" attrs="{'invisible': ['|',('ddt_ids', '!=', []),('picking_type','=','incoming')]}"/>
+                <button name="%(l10n_it_ddt.action_pickings_to_ddt)d" type="action" class="btn btn-primary" string="AGGIUNGI A DDT" attrs="{'invisible': ['|',('ddt_ids', '!=', []),('picking_type','=','incoming')]}"/>
+                <button name="%(action_change_warehouse)d" type="action" class="btn btn-primary" string="CAMBIA LOGISTICA" attrs="{'invisible': [('picking_type','=','incoming')]}"/>
             </xpath>
+            <notebook position="inside">
+                <page name="ddt_list" string="DDT">
+                    <group>
+                        <field name="ddt_ids" nolabel="1">
+                            <tree>
+                                <field name="name" string="Riferimento Pacco"/>
+                                <field name="ddt_number" string="Numero DDT"/>
+                                <field name="partner_id" string="Partner"/>
+                                <field name="date" string="Data Documento"/>
+                                <field name="date_done" string="Data Spedizione"/>
+                                <field name="state" string="Stato"/>
+                                <field name="to_be_invoiced" string="Da Fatturare"/>
+                                <field name="invoice_id" string="Fattura"/>
+                                <button string="Apri" name="apri_ddt" type="object" class="oe_highlight"/>
+                                <button string="Stampa" name="stampa_ddt" type="object" class="oe_highlight"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </notebook>
         </field>
     </record>
 

@@ -128,6 +128,7 @@ class AccountTax(models.Model):
             ('company_id', '=', company_id),
         ]
 
+
     def compute_balance(self, tax_or_base='tax', move_type=None):
         self.ensure_one()
         domain = self.get_move_lines_domain(
@@ -136,25 +137,26 @@ class AccountTax(models.Model):
         # vat has to be paid so:
         # VAT on sales (credit) - VAT on purchases (debit).
 
-        balance = self.env['account.move.line'].\
-            read_group(domain, ['balance'], [])[0]['balance']
+        balance = self.env['account.move.line'].read_group(domain, ['balance'], [])[0]['balance']
         return balance and -balance or 0
 
     def get_balance_domain(self, state_list, type_list):
+        context = self.env.context
         domain = [
             ('move_id.state', 'in', state_list),
             ('tax_line_id', '=', self.id),
-            ('tax_exigible', '=', True)
+            ('tax_exigible', '=', context['tax_exigible'] if 'tax_exigible' in context else True)
         ]
         if type_list:
             domain.append(('move_id.move_type', 'in', type_list))
         return domain
 
     def get_base_balance_domain(self, state_list, type_list):
+        context = self.env.context
         domain = [
             ('move_id.state', 'in', state_list),
             ('tax_ids', 'in', self.id),
-            ('tax_exigible', '=', True)
+            ('tax_exigible', '=', context['tax_exigible'] if 'tax_exigible' in context else True)
         ]
         if type_list:
             domain.append(('move_id.move_type', 'in', type_list))

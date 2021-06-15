@@ -58,3 +58,5 @@ access_account_journal,account_journal_user,model_account_journal,base.group_use
 access_account_payment_method,account_payment_method_user,account.model_account_payment_method,base.group_user,1,0,1,0
 access_account_payment,account_payment_user,account.model_account_payment,base.group_user,1,0,1,0
 access_bollette_doganali,account_bollette_doganali,l10n_it_account.model_bollette_doganali,base.group_user,1,1,1,1
+access_iva_annuale,account_iva_annuale,l10n_it_account.model_annuale_iva_quadro,base.group_user,1,1,1,1
+access_alpha_region,account_alpha_region,l10n_it_account.model_alpha_region,base.group_user,1,1,1,1

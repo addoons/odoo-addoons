@@ -110,7 +110,7 @@ class WizardSchedeContabili(models.TransientModel):
                 'partner': l.partner_id.name,
                 'ref': l.ref,
                 'name': l.name,
-                'invoice_number': l.invoice_id.number,
+                'invoice_number': l.invoice_id.reference or l.move_id.ref,
             })
 
         # CALCOLO DEL SALDO (BALANCE)

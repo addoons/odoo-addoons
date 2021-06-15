@@ -16,7 +16,7 @@
                     <field name="is_pa"/><label for="is_pa" string="Pubblica Amministrazione"/><br/>
                 </div>
                 <div class="oe_edit_only">
-                    <field name="electronic_invoice_subjected"/><label for="electronic_invoice_subjected" string="Fatturazione Elettronica"/><br/><br/>
+                    <field name="electronic_invoice_subjected"/><label for="electronic_invoice_subjected" string="Fatturazione Elettronica"/><br/>
                 </div>
             </field>
             <notebook position="inside">
@@ -28,6 +28,14 @@
                             <field name="pec_destinatario" string="PEC Destinatario" attrs="{'invisible': ['|',('is_pa', '=', True), ('codice_destinatario', '!=', '0000000')]}"/>
                             <field name="eori_code" string="Codice EORI"/>
                         </group>
+                    </group>
+                    <group attrs="{'invisible': [('is_pa','=', False)]}">
+                        <field name="procurement_type" string="Tipo" attrs="{'required':[('is_pa', '=', True)]}"/>
+                        <field name="procurement_name" string="Nome" attrs="{'required':[('is_pa', '=', True)]}"/>
+                        <field name="procurement_date" string="Data"/>
+                        <field name="procurement_code" string="Codice"/>
+                        <field name="procurement_cig" string="CIG"/>
+                        <field name="procurement_cup" string="CUP"/>
                     </group>
                 </page>
             </notebook>

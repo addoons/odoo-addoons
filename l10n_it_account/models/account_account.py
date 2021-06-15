@@ -22,6 +22,8 @@ class AccountAccountInherit(models.Model):
 
     sottoconto_terzo_livello = fields.Many2one('account.account', string='Sottoconto Terzo Livello')
     sottoconto_quarto_livello = fields.Many2one('account.account', string='Sottoconto Quarto Livello')
+    sottoconto_quinto_livello = fields.Many2one('account.account', string='Sottoconto Quinto Livello')
+    sottoconto_sesto_livello = fields.Many2one('account.account', string='Sottoconto Sesto Livello')
 
     def get_terzo_liv_balance(self):
         accounts = self.env['account.account'].search([('sottoconto_terzo_livello.id', '=', self.id)])
@@ -131,9 +133,81 @@ class AccountAccountInherit(models.Model):
     def print_prefix(self, code):
         return code[:3]
 
+    def _get_not_assigned_account(self, hierarchy_level, current_account, accounts_list):
+        """
+        Restituisce i conti normali dopo il terzo livello
+        """
+        domain = [('hierarchy_type_id', '=', False)]
+        if hierarchy_level == 'aggregate':
+            domain.append(('parent_id.id', '=', current_account.id))
+            domain.append(('sottoconto_terzo_livello', '=', False))
+        if hierarchy_level == 'third_level':
+            domain.append(('sottoconto_terzo_livello.id', '=', current_account.id))
+            domain.append(('sottoconto_quarto_livello', '=', False))
+        if hierarchy_level == 'fourth_level':
+            domain.append(('sottoconto_quarto_livello.id', '=', current_account.id))
+            domain.append(('sottoconto_quinto_livello', '=', False))
+        if hierarchy_level == 'fifth_level':
+            domain.append(('sottoconto_quinto_livello.id', '=', current_account.id))
+            domain.append(('sottoconto_sesto_livello', '=', False))
+        if hierarchy_level == 'sixth_level':
+            domain.append(('sottoconto_sesto_livello.id', '=', current_account.id))
+        not_assigned_account_list = self.env['account.account'].search(domain)
+        for not_assigned_account in not_assigned_account_list:
+            accounts_list.append(not_assigned_account)
+
     def get_all_accounts(self):
-        accounts = self.search([])
-        return sorted(accounts, key=lambda x: x.parent_id.id)
+        macro = self.env.ref('l10n_it_account.account_type_macroaggregate').id
+        aggregate = self.env.ref('l10n_it_account.account_type_aggregate').id
+        third_level = self.env.ref('l10n_it_account.account_type_sottoconto_3').id
+        fourth_level = self.env.ref('l10n_it_account.account_type_sottoconto_4').id
+        fifth_level = self.env.ref('l10n_it_account.account_type_sottoconto_5').id
+        sixthlevel = self.env.ref('l10n_it_account.account_type_sottoconto_6').id
+        accounts_macro = self.search([('hierarchy_type_id.id', '=', macro)], order='code asc')
+        accounts_aggregate = self.search([('hierarchy_type_id.id', '=', aggregate)], order='code asc')
+        accounts_third_level = self.search([('hierarchy_type_id.id', '=', third_level)], order='code asc')
+        accounts_fourth_level = self.search([('hierarchy_type_id.id', '=', fourth_level)], order='code asc')
+        accounts_fifth_level = self.search([('hierarchy_type_id.id', '=', fifth_level)], order='code asc')
+        accounts_sixthlevel = self.search([('hierarchy_type_id.id', '=', sixthlevel)])
+        accounts_list = []
+
+        # aggiunge il macro alla lista
+        for macro_account in accounts_macro:
+            accounts_list.append(macro_account)
+            # per ogni aggregato: se è figlio del macro -> aggiunto
+            for aggregate_account in accounts_aggregate:
+                if aggregate_account.macroaggregate_id.id == macro_account.id:
+                    accounts_list.append(aggregate_account)
+                    # terzo liv: se ha come parent l'aggregato -> aggiunto.
+                    # Aggiunti i conti senza gerarchia
+                    self._get_not_assigned_account('aggregate', aggregate_account, accounts_list)
+                    for third_level_account in accounts_third_level:
+                        if third_level_account.parent_id.id == aggregate_account.id:
+                            accounts_list.append(third_level_account)
+                            # quarto liv: se ha come parent il conto di terzo livello -> aggiunto.
+                            # Aggiunti i conti senza gerarchia
+                            self._get_not_assigned_account('third_level', third_level_account, accounts_list)
+                            for fourth_level_account in accounts_fourth_level:
+                                if fourth_level_account.sottoconto_terzo_livello.id == third_level_account.id:
+                                    accounts_list.append(fourth_level_account)
+                                    # quinto liv: se ha come parent il conto di quarto livello -> aggiunto.
+                                    # Aggiunti i conti senza gerarchia
+                                    self._get_not_assigned_account('fourth_level', fourth_level_account, accounts_list)
+                                    for fifth_level_account in accounts_fifth_level:
+                                        if fifth_level_account.sottoconto_quarto_livello.id == fourth_level_account.id:
+                                            accounts_list.append(fifth_level_account)
+                                            # quinto liv: se ha come parent il conto di quarto livello -> aggiunto.
+                                            # Aggiunti i conti senza gerarchia
+                                            self._get_not_assigned_account('fifth_level', fifth_level_account,
+                                                                           accounts_list)
+                                            for sixth_level_account in accounts_sixthlevel:
+                                                if sixth_level_account.sottoconto_quinto_livello.id == fifth_level_account.id:
+                                                    accounts_list.append(sixth_level_account)
+                                                    # sesto liv: se ha come parent il conto di quinto livello -> aggiunto.
+                                                    # Aggiunti i conti senza gerarchia
+                                                    self._get_not_assigned_account('sixth_level', sixth_level_account,
+                                                                                   accounts_list)
+        return accounts_list
 
     def get_aggregate_balance(self):
         accounts = self.env['account.account'].search([('parent_id.id', '=', self.id)])

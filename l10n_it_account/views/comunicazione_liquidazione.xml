@@ -50,6 +50,12 @@
                                        attrs="{'invisible': [('declarant_different', '!=', True)]}">
                                     <field name="declarant_fiscalcode"
                                            attrs="{'required': [('declarant_different', '=', True)]}"/>
+                                    <field name="natura_giuridica" string="Natura Giuridica"/>
+                                    <field name="declarant_firstname" string="Nome"/>
+                                    <field name="declarant_lastname" string="Cognome"/>
+                                    <field name="declarant_city" string="Citta' Nascita"/>
+                                    <field name="declarant_date" string="Data Nascita"/>
+                                    <field name="codice_ateco_id" string="Codice Ateco"/>
                                     <field name="codice_carica_id"
                                            attrs="{'required': [('declarant_different', '=', True)]}"/>
                                     <field name="declarant_fiscalcode_company"/>

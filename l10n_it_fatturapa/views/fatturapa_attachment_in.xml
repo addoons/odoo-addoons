@@ -23,13 +23,16 @@
                             </div>
                             <field name="datas_fname" invisible="1"></field>
                             <field name="name" invisible="1"></field>
+                            <field name="company_id" string="Azienda"/>
                         </group>
                         <group>
                             <field name="xml_supplier_id"/>
                             <field name="invoices_number"/>
-                            <field name="registered"/>
+                            <field name="registered" readonly="0"/>
                             <field name="invoices_total"/>
                             <field name="exported_zip"/>
+                            <field name="import_error_message"/>
+                            <field name="ir_attachment_id_error" string="Scarica Fattura Errata"/>
                         </group>
                     </group>
                     <notebook>
@@ -56,10 +59,6 @@
                         </page>
                     </notebook>
                 </div>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"></field>
-                    <field name="message_ids" widget="mail_thread"></field>
-                </div>
             </form>
         </field>
     </record>
@@ -69,14 +68,16 @@
         <field name="name">fatturapa.attachment.in.tree</field>
         <field name="model">fatturapa.attachment.in</field>
         <field name="arch" type="xml">
-            <tree string="Xml Attachment">
-                <field name="name"/>
-                <field name="create_date"/>
-                <field name="xml_supplier_id"/>
-                <field name="invoices_number"/>
-                <field name="registered"/>
-                <field name="in_invoice_ids"/>
-                <field name="exported_zip"/>
+            <tree string="Xml Attachment" decoration-danger="xml_error==True" >
+                <field name="name" string="Nome"/>
+                <field name="e_invoice_received_date" string="Data Ricezione"/>
+                <field name="e_invoice_invoice_date" string="Data Fattura"/>
+                <field name="xml_supplier_id" string="Fornitore"/>
+                <field name="registered" string="Registrata"/>
+                <field name="in_invoice_ids" string="Fatture" widget="many2many_tags"/>
+                <field name="exported_zip" string="ZIP"/>
+                <field name="xml_error" string="Errore XML"/>
+                <field name="company_id" string="Azienda"/>
             </tree>
         </field>
     </record>

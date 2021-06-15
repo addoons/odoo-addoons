@@ -29,6 +29,10 @@ class WizardImportChartAccountXls(models.TransientModel):
             sheet.cell_value(0, 0)
             macroaggregato = self.env.ref('l10n_it_account.account_type_macroaggregate').id
             aggregato = self.env.ref('l10n_it_account.account_type_aggregate').id
+            third_level = self.env.ref('l10n_it_account.account_type_sottoconto_3').id
+            fourth_level = self.env.ref('l10n_it_account.account_type_sottoconto_4').id
+            fifth_level = self.env.ref('l10n_it_account.account_type_sottoconto_5').id
+            sixthlevel = self.env.ref('l10n_it_account.account_type_sottoconto_6').id
             ricavi = self.env.ref('account.data_account_type_revenue').id
             attivita_correnti = self.env.ref('account.data_account_type_current_assets').id
             conti_ordine = self.env.ref('l10n_it_account.account_type_ordine')
@@ -102,6 +106,50 @@ class WizardImportChartAccountXls(models.TransientModel):
                                     ('hierarchy_type_id', '=', aggregato),('code', '=', str(cell.value))])
                                 if aggregato_obj:
                                     account['parent_id'] = aggregato_obj.id
+                        if column == 6:
+                            # Legame al terzo livello
+                            if cell.value:
+                                if isinstance(cell.value, float):
+                                    cell.value = int(cell.value)
+                                third_level_obj = self.env['account.account'].search([
+                                    ('hierarchy_type_id', '=', third_level),('code', '=', str(cell.value))])
+                                if third_level_obj:
+                                    account['sottoconto_terzo_livello'] = third_level_obj.id
+                        if column == 7:
+                            # Legame al quarto livello
+                            if cell.value:
+                                if isinstance(cell.value, float):
+                                    cell.value = int(cell.value)
+                                fourth_level_obj = self.env['account.account'].search([
+                                    ('hierarchy_type_id', '=', fourth_level),('code', '=', str(cell.value))])
+                                if fourth_level_obj:
+                                    account['sottoconto_quarto_livello'] = fourth_level_obj.id
+                        if column == 8:
+                            # Legame al quinto livello
+                            if cell.value:
+                                if isinstance(cell.value, float):
+                                    cell.value = int(cell.value)
+                                fifth_level_obj = self.env['account.account'].search([
+                                    ('hierarchy_type_id', '=', fifth_level),('code', '=', str(cell.value))])
+                                if fifth_level_obj:
+                                    account['sottoconto_quinto_livello'] = fifth_level_obj.id
+                        if column == 9:
+                            # Legame al sesto livello
+                            if cell.value:
+                                if isinstance(cell.value, float):
+                                    cell.value = int(cell.value)
+                                sixth_level_obj = self.env['account.account'].search([
+                                    ('hierarchy_type_id', '=', sixthlevel),('code', '=', str(cell.value))])
+                                if sixth_level_obj:
+                                    account['sottoconto_sesto_livello'] = sixth_level_obj.id
+                        if column == 10:
+                            if cell.value >= 0:
+                                if isinstance(cell.value, float):
+                                    cell.value = int(cell.value)
+                                if cell.value == 0:
+                                    account['hierarchy_type_id'] = True
+                                else:
+                                    account['hierarchy_type_id'] = False
                 if account != {}:
                     if 'macroaggregate_id' not in account.keys() and 'parent_id' not in account.keys():
                         # il conto è un macroaggregato
@@ -109,6 +157,16 @@ class WizardImportChartAccountXls(models.TransientModel):
                     if 'macroaggregate_id' in account.keys() and 'parent_id' not in account.keys():
                         # il conto è un aggregato
                         account['hierarchy_type_id'] = aggregato
+                    if 'macroaggregate_id' in account.keys() and 'parent_id' in account.keys() and 'hierarchy_type_id' in account.keys() and account['hierarchy_type_id']:
+                        # terzo livello
+                        if not 'sottoconto_terzo_livello' in account.keys():
+                            account['hierarchy_type_id'] = third_level
+                        elif not 'sottoconto_quarto_livello' in account.keys():
+                            account['hierarchy_type_id'] = fourth_level
+                        elif not 'sottoconto_quinto_livello' in account.keys():
+                            account['hierarchy_type_id'] = fifth_level
+                        elif not 'sottoconto_sesto_livello' in account.keys():
+                            account['hierarchy_type_id'] = sixthlevel
                     try:
                         if len(account['name']) > 0:
                             existing_account = self.env['account.account'].search([('code', '=', account['code']),

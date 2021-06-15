@@ -5,5 +5,9 @@
             <field name="key">sdi.pec.first.address</field>
             <field name="value">sdi01@pec.fatturapa.it</field>
         </record>
+        <record id="fatturapa_codice_tipo" model="ir.config_parameter">
+            <field name="key">fatturapa_codice_tipo</field>
+            <field name="value">ODOO</field>
+        </record>
     </data>
 </odoo>

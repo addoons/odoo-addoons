@@ -43,6 +43,7 @@
                         </field>
                         <field name="analytic_account_id" string="Conto Analitico Massivo" />
                         <field name="add_analytic" string="Aggiungi Conti Analitici Mancanti"/>
+                        <field name="merge_account_line" string="Merge Righe Contabili"/>
                         <field name="conti_doppi_crediti" string="Conti Doppi Crediti"/>
                         <field name="account_ids" string="Conti" attrs="{'invisible': [('add_analytic','=', False)]}"/>
                     </group>

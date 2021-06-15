@@ -23,6 +23,9 @@ class AccountTax(models.Model):
                                                                                                          "selecting the period in VAT statement")
     vsc_exclude_operation = fields.Boolean(string='Exclude from active / passive operations')
     vsc_exclude_vat = fields.Boolean(string='Exclude from VAT payable / deducted')
+    dichiarazione_annuale_quadro = fields.Many2many('annuale_iva.quadro')
+    iva_corr = fields.Boolean()
+    iva_fatt = fields.Boolean()
 
     def _get_tax_amount(self):
         self.ensure_one()
@@ -98,7 +101,7 @@ class AccountTax(models.Model):
                 amount_tax_no_exig = -amount_tax_no_exig
                 amount_tax = -amount_tax
             return (
-                tax_name, abs(amount_untaxed), amount_tax, amount_tax_exig, amount_tax_no_exig
+                tax_name, amount_untaxed, amount_tax, amount_tax_exig, amount_tax_no_exig
             )
         else:
             base_balance = tax.base_balance
@@ -137,3 +140,9 @@ class AccountTax(models.Model):
             return (
                 tax_name, base_balance, tax_balance, deductible, undeductible
             )
+
+
+class AnnualeIvaQuadro(models.Model):
+    _name = 'annuale_iva.quadro'
+
+    name = fields.Char()

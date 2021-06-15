@@ -27,3 +27,4 @@ from . import wizard_account_partner
 from . import wizard_struttura_piano_conti
 from . import wizard_tipologia_conto
 from . import wizard_fill_invoice_sequence
+from . import wizard_set_product_tax

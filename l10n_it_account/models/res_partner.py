@@ -1,8 +1,134 @@
 # -*- coding: utf-8 -*-
 # Part of addOons srl. See LICENSE file for full copyright and licensing details.
 # Copyright 2019 addOons srl (<http://www.addoons.it>)
-
+import logging
 from odoo import models, fields, api,_
+
+
+region_dict = {
+    'AG':'Sicilia',
+    'AL':'Piemonte',
+    'AN':'Marche',
+    'AO': "Valle d'Aosta",
+    'AR':'Toscana',
+    'AP':'Marche',
+    'AT':'Piemonte',
+    'AV':'Campania',
+    'BA':'Puglia',
+    'BT':'Puglia',
+    'BL':'Veneto',
+    'BN':'Campania',
+    'BG':'Lombardia',
+    'BI':'Piemonte',
+    'BO':'Emilia Romagna',
+    'BZ':'Trentino Alto Adige',
+    'BS':'Lombardia',
+    'BR':'Puglia',
+    'CA':'Sardegna',
+    'CL':'Sicilia',
+    'CB':'Molise',
+    'CI':'Sardegna',
+    'CE':'Campania',
+    'CT':'Sicilia',
+    'CZ':'Calabria',
+    'CH':'Abruzzo',
+    'CO':'Lombardia',
+    'CS':'Calabria',
+    'CR':'Lombardia',
+    'KR':'Calabria',
+    'CN':'Piemonte',
+    'EN':'Sicilia',
+    'FM':'Marche',
+    'FE':'Emilia Romagna',
+    'FI':'Toscana',
+    'FG':'Puglia',
+    'FC':'Emilia Romagna',
+    'FR':'Lazio',
+    'GE':'Liguria',
+    'GO':'Friuli Venezia Giulia',
+    'GR':'Toscana',
+    'IM':'Liguria',
+    'IS':'Molise',
+    'SP':'Liguria',
+    'AQ':'Abruzzo',
+    'LT':'Lazio',
+    'LE':'Puglia',
+    'LC':'Lombardia',
+    'LI':'Toscana',
+    'LO':'Lombardia',
+    'LU':'Toscana',
+    'MC':'Marche',
+    'MN':'Lombardia',
+    'MS':'Toscana',
+    'MT':'Basilicata',
+    'VS':'Sardegna',
+    'ME':'Sicilia',
+    'MI':'Lombardia',
+    'MO':'Emilia Romagna',
+    'MB':'Lombardia',
+    'NA':'Campania',
+    'NO':'Piemonte',
+    'NU':'Sardegna',
+    'OG':'Sardegna',
+    'OT':'Sardegna',
+    'OR':'Sardegna',
+    'PD':'Veneto',
+    'PA':'Sicilia',
+    'PR':'Emilia Romagna',
+    'PV':'Lombardia',
+    'PG':'Umbria',
+    'PU':'Marche',
+    'PE':'Abruzzo',
+    'PC':'Emilia Romagna',
+    'PI':'Toscana',
+    'PT':'Toscana',
+    'PN':'Friuli Venezia Giulia',
+    'PZ':'Basilicata',
+    'PO':'Toscana',
+    'RG':'Sicilia',
+    'RA':'Emilia Romagna',
+    'RC':'Calabria',
+    'RE':'Emilia Romagna',
+    'RI':'Lazio',
+    'RN':'Emilia Romagna',
+    'RM':'Lazio',
+    'RO':'Veneto',
+    'SA':'Campania',
+    'SS':'Sardegna',
+    'SV':'Liguria',
+    'SI':'Toscana',
+    'SR':'Sicilia',
+    'SO':'Lombardia',
+    'SU':'',
+    'TA':'Puglia',
+    'TE':'Abruzzo',
+    'TR':'Umbria',
+    'TO':'Piemonte',
+    'TP':'Sicilia',
+    'TN':'Trentino Alto Adige',
+    'TV':'Veneto',
+    'TS':'Friuli Venezia Giulia',
+    'UD':'Friuli Venezia Giulia',
+    'VA':'Lombardia',
+    'VE':'Veneto',
+    'VB':'Piemonte',
+    'VC':'Piemonte',
+    'VR':'Veneto',
+    'VV':'Calabria',
+    'VI':'Veneto',
+    'VT':'Lazio',
+}
+
+
+class AlphaRegion(models.Model):
+    _name = 'alpha.region'
+
+    name = fields.Char()
+
+class ResCountryState(models.Model):
+    _inherit = 'res.country.state'
+
+    region_id = fields.Many2one('alpha.region')
 
 
 class ResPartner(models.Model):
@@ -62,6 +188,31 @@ class ResPartner(models.Model):
         [('LS', 'In liquidation'),
          ('LN', 'Not in liquidation')], 'Liquidation State')
 
+    region_id = fields.Many2one('alpha.region')
+
+
+    def compute_region(self):
+        partner_ids = self.env['res.partner'].search([])
+        for partner in partner_ids:
+            partner.get_region()
+
+
+    @api.depends('state_id')
+    def get_region(self):
+        for partner in self:
+            if partner.state_id.country_id.code == 'IT':
+                if partner.state_id.code in region_dict:
+                    region_name = region_dict.get(partner.state_id.code)
+                    region_id = self.env['alpha.region'].sudo().search([('name', '=', region_name)])
+                    partner.region_id = region_id.id
+                    logging.info("Regione Calcolata")
+                    self.env.cr.commit()
+                else:
+                    logging.info('Provincia non trovata')
+
+
+
+
 
 
     @api.onchange('use_corrispettivi')
@@ -71,7 +222,7 @@ class ResPartner(models.Model):
             # fiscal position only if there is none
             if not self.property_account_position_id:
                 company = self.company_id or \
-                    self.default_get(['company_id'])['company_id']
+                          self.default_get(['company_id'])['company_id']
                 self.property_account_position_id = \
                     self.env['account.fiscal.position'] \
                         .get_corr_fiscal_pos(company)

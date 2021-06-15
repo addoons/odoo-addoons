@@ -27,6 +27,15 @@
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="payability" />
             </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Dichiarazione Iva Annuale">
+                    <group>
+                        <field name="dichiarazione_annuale_quadro" widget="many2many_tags"/>
+                        <field name="iva_corr" string="Imposta Privati"/>
+                        <field name="iva_fatt" string="Imposta Aziende"/>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 

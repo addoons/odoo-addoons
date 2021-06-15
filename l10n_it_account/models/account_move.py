@@ -12,6 +12,7 @@ class AccountMove(models.Model):
 
     account_move_template = fields.Many2one('account.move.template')
     correggi_importo_registrazione = fields.Float(store=True)
+    merge_account_line_done = fields.Boolean()
 
     @api.multi
     def assert_balanced(self):

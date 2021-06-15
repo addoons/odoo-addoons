@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contabilità Italiana - Acquisti</title>
+</head>
+<body>
+<div class="oe_span12">
+    <p class="text-justify">
+        Aggiunge le personalizzazioni legate alla contabilità italiana che riguardano la parte degli Acquisti.
+    </p>
+</div>
+<div class="oe_span12">
+    <h4 class="oe_mt32 oe_mb8 text-center">
+        <b>Collegamento Fatture Passive e Ordini di Acquisto</b>
+    </h4>
+    <p class="text-justify">
+        Tramite il flusso standard è possibile vedere tutte le fatture agganciate ad un ordine di acquisto grazie allo smartbutton presente sull’ordine di acquisto.
+        NOTA BENE: sono mostrate solamente le fatture che presentano le righe di fattura collegate alle relative righe dell’ordine di acquisto grazie al campo “purchase_line_id”.
+        È possibile assegnare tale ordine a tutte le righe tramite il flag “seleziona tutte le righe”, oppure selezionare manualmente le righe da collegare,
+        nel caso in cui una fattura fornitore sia riferita a diversi ordini di acquisto.
+        Inoltre è stato aggiunto il campo Differenza Ordini Acquisto per verificare se il totale fatturato combacia col totale acquistato:
+            • se = 0: la fattura combacia. Tutti i prodotti acquistati sono presenti in fattura.
+            • Se > 0: la fattura presenta un ammontare in più rispetto all’ordine.
+            • Se < 0: la fattura non copre completamente l’ordine di acquisto. Non tutte le quantità o i prodotti acquistati sono presenti in fattura.
+        In generale se è presente un valore diverso da 0 bisogna verificare il motivo della discrepanza.
+    </p>
+</div>
+</body>
+</html>
