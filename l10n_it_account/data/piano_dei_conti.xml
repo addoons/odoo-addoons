@@ -28,497 +28,497 @@
         <!-- STATO PATRIMONIALE -->
 
 
-<!--        &lt;!&ndash;MACROAGGREGATI STATO PATRIMONIALE ATTIVO&ndash;&gt;-->
-<!--        <record model="account.account" id="macro_sp_attivo_a">-->
-<!--            <field name="name">CREDITI VERSO SOCI PER VERSAMENTI DOVUTI</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_sp_attivo_b">-->
-<!--            <field name="name">IMMOBILIZZAZIONI</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_sp_attivo_c">-->
-<!--            <field name="name">ATTIVO CIRCOLANTE</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_sp_attivo_d">-->
-<!--            <field name="name">RATEI E RISCONTI</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
+        <!--MACROAGGREGATI STATO PATRIMONIALE ATTIVO-->
+        <record model="account.account" id="macro_sp_attivo_a">
+            <field name="name">CREDITI VERSO SOCI PER VERSAMENTI DOVUTI</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="macro_sp_attivo_b">
+            <field name="name">IMMOBILIZZAZIONI</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="macro_sp_attivo_c">
+            <field name="name">ATTIVO CIRCOLANTE</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="macro_sp_attivo_d">
+            <field name="name">RATEI E RISCONTI</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
 
 
 
-<!--        &lt;!&ndash;MACROAGGREGATI STATO PATRIMONIALE PASSIVO&ndash;&gt;-->
-<!--        <record model="account.account" id="macro_sp_passivo_a">-->
-<!--            <field name="name">PATRIMONIO NETTO</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_sp_passivo_b">-->
-<!--            <field name="name">FONDI PER RISCHI E ONERI</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_sp_passivo_c">-->
-<!--            <field name="name">TRATTAMENTO DI FINE RAPPORTO DI LAVORO SUBORDINATO</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_sp_passivo_d">-->
-<!--            <field name="name">DEBITI</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_sp_passivo_e">-->
-<!--            <field name="name">RATEI E RISCONTI</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
+        <!--MACROAGGREGATI STATO PATRIMONIALE PASSIVO-->
+        <record model="account.account" id="macro_sp_passivo_a">
+            <field name="name">PATRIMONIO NETTO</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="macro_sp_passivo_b">
+            <field name="name">FONDI PER RISCHI E ONERI</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="macro_sp_passivo_c">
+            <field name="name">TRATTAMENTO DI FINE RAPPORTO DI LAVORO SUBORDINATO</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="macro_sp_passivo_d">
+            <field name="name">DEBITI</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="macro_sp_passivo_e">
+            <field name="name">RATEI E RISCONTI</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
 
 
-<!--        &lt;!&ndash;AGGREGATI STATO PATRIMONIALE ATTIVO&ndash;&gt;-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_1">-->
-<!--            <field name="name">Crediti per versamenti ancora dovuti</field>-->
-<!--            <field name="code">020</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_2">-->
-<!--            <field name="name">Immobilizzazioni immateriali</field>-->
-<!--            <field name="code">050</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_b"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_3">-->
-<!--            <field name="name">Immobilizzazioni materiali</field>-->
-<!--            <field name="code">060</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_b"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_4">-->
-<!--            <field name="name">Immobilizzazioni finanziarie</field>-->
-<!--            <field name="code">070</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_b"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_5">-->
-<!--            <field name="name">Rimanenze</field>-->
-<!--            <field name="code">090</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_6">-->
-<!--            <field name="name">Crediti</field>-->
-<!--            <field name="code">100</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_7">-->
-<!--            <field name="name">Attività finanziarie che non costituiscono immobilizzazioni</field>-->
-<!--            <field name="code">110</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_8">-->
-<!--            <field name="name">Disponibilità liquide</field>-->
-<!--            <field name="code">120</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_attivo_9">-->
-<!--            <field name="name">RATEI E RISCONTI ATTIVI</field>-->
-<!--            <field name="code">125</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_assets"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_d"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
+        <!--AGGREGATI STATO PATRIMONIALE ATTIVO-->
+        <record model="account.account" id="aggregato_sp_attivo_1">
+            <field name="name">Crediti per versamenti ancora dovuti</field>
+            <field name="code">020</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_2">
+            <field name="name">Immobilizzazioni immateriali</field>
+            <field name="code">050</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_b"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_3">
+            <field name="name">Immobilizzazioni materiali</field>
+            <field name="code">060</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_b"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_4">
+            <field name="name">Immobilizzazioni finanziarie</field>
+            <field name="code">070</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_b"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_5">
+            <field name="name">Rimanenze</field>
+            <field name="code">090</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_6">
+            <field name="name">Crediti</field>
+            <field name="code">100</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_7">
+            <field name="name">Attività finanziarie che non costituiscono immobilizzazioni</field>
+            <field name="code">110</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_8">
+            <field name="name">Disponibilità liquide</field>
+            <field name="code">120</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_c"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_attivo_9">
+            <field name="name">RATEI E RISCONTI ATTIVI</field>
+            <field name="code">125</field>
+            <field name="user_type_id" ref="account.data_account_type_current_assets"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_attivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
 
 
-<!--        &lt;!&ndash;AGGREGATI STATO PATRIMONIALE PASSIVO&ndash;&gt;-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_1">-->
-<!--            <field name="name">Capitale</field>-->
-<!--            <field name="code">130</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_2">-->
-<!--            <field name="name">Riserva da soprapprezzo delle azioni</field>-->
-<!--            <field name="code">140</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_3">-->
-<!--            <field name="name">Riserve di rivalutazione</field>-->
-<!--            <field name="code">150</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_4">-->
-<!--            <field name="name">Riserva legale</field>-->
-<!--            <field name="code">160</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_5">-->
-<!--            <field name="name">Riserve statutarie</field>-->
-<!--            <field name="code">170</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_6">-->
-<!--            <field name="name">Altre riserve</field>-->
-<!--            <field name="code">180</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_7">-->
-<!--            <field name="name">Riserva per operazioni di copertura di flussi finanziari attesi</field>-->
-<!--            <field name="code">190</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_8">-->
-<!--            <field name="name">Utili (perdite) portati a nuovo</field>-->
-<!--            <field name="code">200</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_9">-->
-<!--            <field name="name">UTILE (PERDITA) DELL'ESERVIZIO</field>-->
-<!--            <field name="code">210</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_10">-->
-<!--            <field name="name">Riserva negativa per azioni proprie in portafogli</field>-->
-<!--            <field name="code">220</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_11">-->
-<!--            <field name="name">Debiti verso banche</field>-->
-<!--            <field name="code">230</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_12">-->
-<!--            <field name="name">Debiti verso altri finanziatori</field>-->
-<!--            <field name="code">240</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_13">-->
-<!--            <field name="name">Debiti verso fornitori</field>-->
-<!--            <field name="code">250</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_14">-->
-<!--            <field name="name">Debiti Tributari</field>-->
-<!--            <field name="code">260</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_15">-->
-<!--            <field name="name">Debiti vs istituti di previd.e sicurezz.</field>-->
-<!--            <field name="code">270</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_16">-->
-<!--            <field name="name">Altri debiti</field>-->
-<!--            <field name="code">280</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_sp_passivo_17">-->
-<!--            <field name="name">RATEI E RISCONTI PASSIVI</field>-->
-<!--            <field name="code">300</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_e"/>-->
-<!--            <field name="area">stato_patrimoniale</field>-->
-<!--        </record>-->
+        <!--AGGREGATI STATO PATRIMONIALE PASSIVO-->
+        <record model="account.account" id="aggregato_sp_passivo_1">
+            <field name="name">Capitale</field>
+            <field name="code">130</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_2">
+            <field name="name">Riserva da soprapprezzo delle azioni</field>
+            <field name="code">140</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_3">
+            <field name="name">Riserve di rivalutazione</field>
+            <field name="code">150</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_4">
+            <field name="name">Riserva legale</field>
+            <field name="code">160</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_5">
+            <field name="name">Riserve statutarie</field>
+            <field name="code">170</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_6">
+            <field name="name">Altre riserve</field>
+            <field name="code">180</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_7">
+            <field name="name">Riserva per operazioni di copertura di flussi finanziari attesi</field>
+            <field name="code">190</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_8">
+            <field name="name">Utili (perdite) portati a nuovo</field>
+            <field name="code">200</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_9">
+            <field name="name">UTILE (PERDITA) DELL'ESERVIZIO</field>
+            <field name="code">210</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_10">
+            <field name="name">Riserva negativa per azioni proprie in portafogli</field>
+            <field name="code">220</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_a"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_11">
+            <field name="name">Debiti verso banche</field>
+            <field name="code">230</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_12">
+            <field name="name">Debiti verso altri finanziatori</field>
+            <field name="code">240</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_13">
+            <field name="name">Debiti verso fornitori</field>
+            <field name="code">250</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_14">
+            <field name="name">Debiti Tributari</field>
+            <field name="code">260</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_15">
+            <field name="name">Debiti vs istituti di previd.e sicurezz.</field>
+            <field name="code">270</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_16">
+            <field name="name">Altri debiti</field>
+            <field name="code">280</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_d"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
+        <record model="account.account" id="aggregato_sp_passivo_17">
+            <field name="name">RATEI E RISCONTI PASSIVI</field>
+            <field name="code">300</field>
+            <field name="user_type_id" ref="account.data_account_type_current_liabilities"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_sp_passivo_e"/>
+            <field name="area">stato_patrimoniale</field>
+        </record>
 
 
-<!--        &lt;!&ndash; CONTO ECONOMICO &ndash;&gt;-->
+        <!-- CONTO ECONOMICO -->
 
 
-<!--        &lt;!&ndash;MACROAGGREGATI CONTO ECONOMICO COSTI&ndash;&gt;-->
-<!--        <record model="account.account" id="macro_ce_costi_b">-->
-<!--            <field name="name">COSTI DELLA PRODUZIONE</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_ce_costi_c">-->
-<!--            <field name="name">PROVENTI ED ONERI FINANZIARI</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_ce_costi_d">-->
-<!--            <field name="name">RETTIFICHE DI VALORE DI ATTIVITA' E PASSIVITA' FINANZIARIE</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_ce_costi_e">-->
-<!--            <field name="name">IMPOSTE DELL'ESERCIZIO CORRENTI DIFFERITE/ANTICIPATE</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
+        <!--MACROAGGREGATI CONTO ECONOMICO COSTI-->
+        <record model="account.account" id="macro_ce_costi_b">
+            <field name="name">COSTI DELLA PRODUZIONE</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="macro_ce_costi_c">
+            <field name="name">PROVENTI ED ONERI FINANZIARI</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="macro_ce_costi_d">
+            <field name="name">RETTIFICHE DI VALORE DI ATTIVITA' E PASSIVITA' FINANZIARIE</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="macro_ce_costi_e">
+            <field name="name">IMPOSTE DELL'ESERCIZIO CORRENTI DIFFERITE/ANTICIPATE</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">conto_economico</field>
+        </record>
 
-<!--        &lt;!&ndash;MACROAGGREGATI CONTO ECONOMICO RICAVI&ndash;&gt;-->
-<!--        <record model="account.account" id="macro_ce_ricavi_a">-->
-<!--            <field name="name">VALORE DELLA PRODUZIONE</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="macro_ce_ricavi_b">-->
-<!--            <field name="name">IMPOSTE DELL'ESERCIZIO CORRENTI/DIFFERITE/ANTICIPATE</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
+        <!--MACROAGGREGATI CONTO ECONOMICO RICAVI-->
+        <record model="account.account" id="macro_ce_ricavi_a">
+            <field name="name">VALORE DELLA PRODUZIONE</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="macro_ce_ricavi_b">
+            <field name="name">IMPOSTE DELL'ESERCIZIO CORRENTI/DIFFERITE/ANTICIPATE</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_macroaggregate"/>
+            <field name="area">conto_economico</field>
+        </record>
 
 
 
-<!--        &lt;!&ndash;AGGREGATI CONTO ECONOMICO COSTI&ndash;&gt;-->
-<!--        <record model="account.account" id="aggregato_ce_costi_1">-->
-<!--            <field name="name">Costi per materie prime, sussidiarie, di consumo e di merci</field>-->
-<!--            <field name="code">400</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_2">-->
-<!--            <field name="name">Costi per servizi</field>-->
-<!--            <field name="code">410</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_3">-->
-<!--            <field name="name">Costi per godimento di beni di terzi</field>-->
-<!--            <field name="code">420</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_4">-->
-<!--            <field name="name">Costi per il personale</field>-->
-<!--            <field name="code">430</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_5">-->
-<!--            <field name="name">Ammortamenti e svalutazioni</field>-->
-<!--            <field name="code">440</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_6">-->
-<!--            <field name="name">Variazioni delle rimanenze di materie prime, sussidiarie, di consumo e merci</field>-->
-<!--            <field name="code">450</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_7">-->
-<!--            <field name="name">Accantonamenti per rischi</field>-->
-<!--            <field name="code">460</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_8">-->
-<!--            <field name="name">Altri accantonamenti</field>-->
-<!--            <field name="code">470</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_9">-->
-<!--            <field name="name">Oneri diversi di gestione</field>-->
-<!--            <field name="code">480</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_10">-->
-<!--            <field name="name">Interessi e altri oneri finanziari</field>-->
-<!--            <field name="code">490</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_c"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_11">-->
-<!--            <field name="name">Perdite su cambi</field>-->
-<!--            <field name="code">500</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_c"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_costi_12">-->
-<!--            <field name="name">Svalutazioni</field>-->
-<!--            <field name="code">510</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_expenses"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_d"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
+        <!--AGGREGATI CONTO ECONOMICO COSTI-->
+        <record model="account.account" id="aggregato_ce_costi_1">
+            <field name="name">Costi per materie prime, sussidiarie, di consumo e di merci</field>
+            <field name="code">400</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_2">
+            <field name="name">Costi per servizi</field>
+            <field name="code">410</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_3">
+            <field name="name">Costi per godimento di beni di terzi</field>
+            <field name="code">420</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_4">
+            <field name="name">Costi per il personale</field>
+            <field name="code">430</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_5">
+            <field name="name">Ammortamenti e svalutazioni</field>
+            <field name="code">440</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_6">
+            <field name="name">Variazioni delle rimanenze di materie prime, sussidiarie, di consumo e merci</field>
+            <field name="code">450</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_7">
+            <field name="name">Accantonamenti per rischi</field>
+            <field name="code">460</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_8">
+            <field name="name">Altri accantonamenti</field>
+            <field name="code">470</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_9">
+            <field name="name">Oneri diversi di gestione</field>
+            <field name="code">480</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_10">
+            <field name="name">Interessi e altri oneri finanziari</field>
+            <field name="code">490</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_c"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_11">
+            <field name="name">Perdite su cambi</field>
+            <field name="code">500</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_c"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_costi_12">
+            <field name="name">Svalutazioni</field>
+            <field name="code">510</field>
+            <field name="user_type_id" ref="account.data_account_type_expenses"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_costi_d"/>
+            <field name="area">conto_economico</field>
+        </record>
 
-<!--        &lt;!&ndash;AGGREGATI CONTO ECONOMICO RICAVI&ndash;&gt;-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_1">-->
-<!--            <field name="name">Ricavi delle vendite e delle prestazioni</field>-->
-<!--            <field name="code">520</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_2">-->
-<!--            <field name="name">Variazioni delle rimanenze di prodotti in corso di lavorazione, semilavorati e finiti</field>-->
-<!--            <field name="code">530</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_2">-->
-<!--            <field name="name">Variazioni di lavori in corso su ordinazione</field>-->
-<!--            <field name="code">540</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_3">-->
-<!--            <field name="name">Incrementi di immobilizzazioni per lavori interni</field>-->
-<!--            <field name="code">550</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_4">-->
-<!--            <field name="name">Altri ricavi e proventi</field>-->
-<!--            <field name="code">560</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_5">-->
-<!--            <field name="name">Proventi da partecipazione</field>-->
-<!--            <field name="code">570</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_6">-->
-<!--            <field name="name">Altri proventi finanziari</field>-->
-<!--            <field name="code">580</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_7">-->
-<!--            <field name="name">Utili su cambi</field>-->
-<!--            <field name="code">590</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
-<!--        <record model="account.account" id="aggregato_ce_ricavi_8">-->
-<!--            <field name="name">Rivalutazioni</field>-->
-<!--            <field name="code">600</field>-->
-<!--            <field name="user_type_id" ref="account.data_account_type_revenue"/>-->
-<!--            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>-->
-<!--            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_b"/>-->
-<!--            <field name="area">conto_economico</field>-->
-<!--        </record>-->
+        <!--AGGREGATI CONTO ECONOMICO RICAVI-->
+        <record model="account.account" id="aggregato_ce_ricavi_1">
+            <field name="name">Ricavi delle vendite e delle prestazioni</field>
+            <field name="code">520</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_2">
+            <field name="name">Variazioni delle rimanenze di prodotti in corso di lavorazione, semilavorati e finiti</field>
+            <field name="code">530</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_2">
+            <field name="name">Variazioni di lavori in corso su ordinazione</field>
+            <field name="code">540</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_3">
+            <field name="name">Incrementi di immobilizzazioni per lavori interni</field>
+            <field name="code">550</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_4">
+            <field name="name">Altri ricavi e proventi</field>
+            <field name="code">560</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_5">
+            <field name="name">Proventi da partecipazione</field>
+            <field name="code">570</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_6">
+            <field name="name">Altri proventi finanziari</field>
+            <field name="code">580</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_7">
+            <field name="name">Utili su cambi</field>
+            <field name="code">590</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_a"/>
+            <field name="area">conto_economico</field>
+        </record>
+        <record model="account.account" id="aggregato_ce_ricavi_8">
+            <field name="name">Rivalutazioni</field>
+            <field name="code">600</field>
+            <field name="user_type_id" ref="account.data_account_type_revenue"/>
+            <field name="hierarchy_type_id" ref="l10n_it_account.account_type_aggregate"/>
+            <field name="macroaggregate_id" ref="l10n_it_account.macro_ce_ricavi_b"/>
+            <field name="area">conto_economico</field>
+        </record>
 
 
     </data>

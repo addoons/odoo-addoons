@@ -25,6 +25,10 @@ class AccountAccountInherit(models.Model):
     sottoconto_quinto_livello = fields.Many2one('account.account', string='Sottoconto Quinto Livello')
     sottoconto_sesto_livello = fields.Many2one('account.account', string='Sottoconto Sesto Livello')
 
+    _sql_constraints = [
+        ('code_company_uniq', 'unique (code,company_id,create_date)', 'The code of the account must be unique per company !')
+    ]
+
     def get_terzo_liv_balance(self):
         accounts = self.env['account.account'].search([('sottoconto_terzo_livello.id', '=', self.id)])
         balance_aggregate = 0
