@@ -143,19 +143,19 @@
         </field>
     </record>
 
-<!--    <record id="view_partner_property_form" model="ir.ui.view">-->
-<!--        <field name="name">res.partner.inherit.view.form</field>-->
-<!--        <field name="model">res.partner</field>-->
-<!--        <field name="inherit_id" ref="account.view_partner_property_form"/>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <page name="accounting" position="attributes">-->
-<!--                <attribute name="string">Accounting</attribute>-->
-<!--            </page>-->
-<!--            <field name="country_id" position="before">-->
-<!--                <field name="region_id" string="Regione" placeholder="Regione" readonly="False"/>-->
-<!--            </field>-->
-<!--        </field>-->
-<!--    </record>-->
+    <record id="view_partner_property_form" model="ir.ui.view">
+        <field name="name">res.partner.inherit.view.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <page name="accounting" position="attributes">
+                <attribute name="string">Accounting</attribute>
+            </page>
+            <field name="country_id" position="before">
+                <field name="region_id" string="Regione" placeholder="Regione" readonly="False"/>
+            </field>
+        </field>
+    </record>
 
 
 
