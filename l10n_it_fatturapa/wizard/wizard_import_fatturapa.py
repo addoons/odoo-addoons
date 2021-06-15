@@ -695,19 +695,15 @@ class WizardImportFatturapa(models.TransientModel):
                             )
                         )
                     elif not payment_banks and bankid:
-                        #Controllo Che il pagamento non sia Ri.Ba o Sepa Direct Debit
-                        #Perchè l'iban corrisponde a quello della società cliente e non
-                        #deve essere creato nell'anagrafica del fornitore.
-                        if dline.ModalitaPagamento != 'MP12' and dline.ModalitaPagamento != 'MP20':
-                            payment_bank_id = PartnerBankModel.create(
-                                {
-                                    'acc_number': dline.IBAN.strip(),
-                                    'partner_id': partner_id,
-                                    'bank_id': bankid,
-                                    'bank_name': dline.IstitutoFinanziario,
-                                    'bank_bic': dline.BIC
-                                }
-                            ).id
+                        payment_bank_id = PartnerBankModel.create(
+                            {
+                                'acc_number': dline.IBAN.strip(),
+                                'partner_id': partner_id,
+                                'bank_id': bankid,
+                                'bank_name': dline.IstitutoFinanziario,
+                                'bank_bic': dline.BIC
+                            }
+                        ).id
                     if payment_banks:
                         payment_bank_id = payment_banks[0].id
 
