@@ -197,18 +197,18 @@ class ResPartner(models.Model):
             partner.get_region()
 
 
-    @api.depends('state_id')
-    def get_region(self):
-        for partner in self:
-            if partner.state_id.country_id.code == 'IT':
-                if partner.state_id.code in region_dict:
-                    region_name = region_dict.get(partner.state_id.code)
-                    region_id = self.env['alpha.region'].sudo().search([('name', '=', region_name)])
-                    partner.region_id = region_id.id
-                    logging.info("Regione Calcolata")
-                    self.env.cr.commit()
-                else:
-                    logging.info('Provincia non trovata')
+    # @api.depends('state_id')
+    # def get_region(self):
+    #     for partner in self:
+    #         if partner.state_id.country_id.code == 'IT':
+    #             if partner.state_id.code in region_dict:
+    #                 region_name = region_dict.get(partner.state_id.code)
+    #                 region_id = self.env['alpha.region'].sudo().search([('name', '=', region_name)])
+    #                 partner.region_id = region_id.id
+    #                 logging.info("Regione Calcolata")
+    #                 self.env.cr.commit()
+    #             else:
+    #                 logging.info('Provincia non trovata')
 
 
 
