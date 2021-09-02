@@ -31,7 +31,7 @@ class Project(models.Model):
 
     @api.multi
     def action_open_gantt(self):
-        action = self.env.ref('addoons_pacchetto_ore.project_gant_action_client').read()[0]
+        action = self.env.ref('addoons_gantt.project_gant_action_client').read()[0]
         action['params'] = {
             'project_ids': self.ids,
         }

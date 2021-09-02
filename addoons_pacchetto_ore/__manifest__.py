@@ -16,18 +16,18 @@
         'views/res_partner_view_inherit.xml',
         'views/sale_order.xml',
         'views/hr_attendance.xml',
-        'views/project_gant.xml',
+        # 'views/project_gant.xml',
         'security/ir.model.access.csv',
         'report/reports.xml',
         'report/report_sommario_ore.xml',
         'report/report_sommario_ore_interne.xml',
         'wizard/wizard_report_presenze.xml',
-        'views/project_assets.xml',
+        # 'views/project_assets.xml',
     ],
 
-    'qweb': [
-        'static/src/xml/project_gant_templates.xml'
-    ],
+    # 'qweb': [
+    #     'static/src/xml/project_gant_templates.xml'
+    # ],
     'installable': True,
 
 }

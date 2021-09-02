@@ -10,15 +10,15 @@
                     <page string="ore" groups="base.group_no_one">
                         <field name="ore_lines"  string="Pacchetto ore" />
                     </page>
-                    <page string="Gantt" >
-                        <group>
-                            <field name="open"  string="Open" />
-                        <field name="start_date"  string="Start Date" />
-                        <field name="end_date"  string="End Date" />
-                        <field name="parent"  string="Parent" />
-                        <field name="duration"  string="Duration" />
-                        </group>
-                    </page>
+<!--                    <page string="Gantt" >-->
+<!--                        <group>-->
+<!--                            <field name="open"  string="Open" />-->
+<!--                        <field name="start_date"  string="Start Date" />-->
+<!--                        <field name="end_date"  string="End Date" />-->
+<!--                        <field name="parent"  string="Parent" />-->
+<!--                        <field name="duration"  string="Duration" />-->
+<!--                        </group>-->
+<!--                    </page>-->
                 </xpath>
 
             </field>

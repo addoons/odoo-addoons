@@ -1,9 +1,10 @@
 import logging
 
-from odoo import models,api,fields, _
+from odoo import models, api, fields, _
 import datetime
 import pytz
 from odoo.exceptions import ValidationError
+
 
 class taskPacchettoOre(models.Model):
     _name = 'task.pacchetto.ore'
@@ -15,11 +16,9 @@ class taskPacchettoOre(models.Model):
         ('training', 'Formazione/consulenza')
     ])
 
+
 class taskOreInherit(models.Model):
-
     _inherit = 'project.task'
-
-
 
     ore_lines = fields.One2many('task.pacchetto.ore', 'task_id')
     ore_sviluppo_disponibili = fields.Float(related='partner_id.ore_sviluppo_disponibili')
@@ -27,11 +26,11 @@ class taskOreInherit(models.Model):
     avviso_ore_terminate = fields.Html(compute='compute_avviso_ore_terminate')
 
     # CAMPI VISTA GANTT
-    duration = fields.Float(default=3)
-    start_date = fields.Datetime(default=datetime.datetime.now())
-    end_date = fields.Datetime(default=datetime.datetime.now()+datetime.timedelta(days=3))
-    open = fields.Boolean(default=True)
-    parent = fields.Integer(compute='_compute_parent', store=True)
+    # duration = fields.Float(default=3)
+    # start_date = fields.Datetime(default=datetime.datetime.now())
+    # end_date = fields.Datetime(default=datetime.datetime.now()+datetime.timedelta(days=3))
+    # open = fields.Boolean(default=True)
+    # parent = fields.Integer(compute='_compute_parent', store=True)
 
     def _compute_parent(self):
         for record in self:
@@ -50,7 +49,6 @@ class taskOreInherit(models.Model):
 
             if rec.ore_formazione_consulenza_disponibili <= cliente.soglia_ore_formazione:
                 rec.avviso_ore_terminate += "<h1 style='color: red;'>ATTENZIONE! ORE FORMAZIONE IN ESAURIMENTO o ESAURITE</h1>"
-
 
     @api.onchange('ore_lines')
     def _onchange_ore_task(self):
@@ -95,7 +93,6 @@ class taskOreInherit(models.Model):
         if self.partner_id.ore_formazione_consulenza_disponibili - ore_task_formazione_modifiche < 0:
             raise ValidationError(_('Non ci sono più ore di formazione/consulenza disponibili per assegnare il task'))
 
-
     def write(self, vals):
         """
             Va ad assegnare la riga di lavoro di una task al primo pacchetto
@@ -113,7 +110,7 @@ class taskOreInherit(models.Model):
                 if not line.pacchetto_ore_id and line.type == type:
 
                     pacchetto_valido = self.env['pacchetti.ore'].search([('type', '=', line.type), ('ore_residue', '>', 0),
-                                         ('partner_id', '=', cliente.id)], order='create_date asc', limit=1)
+                                                                         ('partner_id', '=', cliente.id)], order='create_date asc', limit=1)
                     if pacchetto_valido:
 
                         if pacchetto_valido.ore_residue - line.unit_amount >= 0:
@@ -170,4 +167,3 @@ class taskOreInherit(models.Model):
             # assegno le ore interne al campo sul cliente (ore interne ids)
             if line.type == 'internal':
                 cliente.write({'ore_interne_ids': [(4, line.id)]})
-

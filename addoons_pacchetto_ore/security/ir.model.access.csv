@@ -1,4 +1,3 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 "access_pacchetti_ore","pacchetti.ore","model_pacchetti_ore",base.group_user,1,1,1,1
 "access_task_pacchetto_ore","task.pacchetto.ore","model_task_pacchetto_ore",base.group_user,1,1,1,1
-"access_gantt_link","gantt.link","model_gantt_link",base.group_user,1,1,1,1

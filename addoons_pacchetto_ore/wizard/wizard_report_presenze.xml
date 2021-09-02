@@ -44,7 +44,7 @@
         <menuitem
                 id = "addoons_pacchetto_ore_report_presenze"
                 name = "Report Presenze"
-                parent = "hr_attendance.menu_hr_attendance_manage_attendances"
+                parent="hr_attendance.menu_hr_attendance_root"
                 action = "wizard_report_presenze_action"
         />
 

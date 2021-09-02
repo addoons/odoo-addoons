@@ -29,8 +29,12 @@ class TracciatoXlsx(models.AbstractModel):
         for permesso in self.env['hr.leave.type'].search([], order='id asc'):
             dict_tipi_permesso[permesso.id] = permesso.name
 
-        # Recupero i dipendenti
-        dipendenti = self.env['hr.employee'].search([])
+        # Recupero i dipendenti in base se sono amministratore o meno
+        if self.env.user.has_group('sales_team.group_sale_manager'):
+            dipendenti = self.env['hr.employee'].search([])
+
+        else:
+            dipendenti = self.env['hr.employee'].search([('user_id', '=', self.env.user.id)])
 
         for dipendente in dipendenti:
 
@@ -123,7 +127,11 @@ class TracciatoXlsx(models.AbstractModel):
                 ore_straordinari_100 = 0
 
                 if ore_lavorate_100 > 0 or tot_ferie_100_row > 0:
-                    ore_straordinari_100 = ore_lavorate_100 + tot_ferie_100_row - ore_giornaliere_da_contratto
+                    if data_corrente.weekday() in [5, 6]:
+                        ore_straordinari_100 = ore_lavorate_100 + tot_ferie_100_row
+
+                    else:
+                        ore_straordinari_100 = ore_lavorate_100 + tot_ferie_100_row - ore_giornaliere_da_contratto
 
                 # Calcolo i totali
                 tot_ore_lavorate_100 += ore_lavorate_100
@@ -132,6 +140,7 @@ class TracciatoXlsx(models.AbstractModel):
                 # Scrivo la row del foglio excel
                 sheet.write(row, col, dipendente.name, cell_text)
                 sheet.write(row, col + 1, data_corrente.strftime("%d/%m/%Y"), cell_text)
+
                 if ore_lavorate_100 > 0:
                     sheet.write(row, col + 2, self.convert_float_to_HH_MM_format(ore_lavorate_100), cell_number_full)
                 else:
