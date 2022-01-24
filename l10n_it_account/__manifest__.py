@@ -19,6 +19,7 @@
         'base_vat',
         'addoons_reports',
         'account_cancel',
+        'report_xlsx'
     ],
     "data": [
         'data/rc_type.xml',
@@ -99,6 +100,7 @@
         'wizards/wizard_struttura_piano_conti.xml',
         'wizards/wizard_tipologia_conto.xml',
         'wizards/wizard_fill_invoice_sequence.xml',
+        'wizards/wizard_report_corrispettivi.xml',
         'reports/certificazione_rda_report.xml',
         'views/res_config_settings.xml',
     ],

@@ -87,12 +87,6 @@ class AccountInvoice(models.Model):
         for line in self.invoice_line_ids:
             line.selected = self.select_all_rows
 
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        if self.journal_id.type == 'sale':
-            self.am_account_id = self.partner_id.ricavi_account.id
-        else:
-            self.am_account_id = self.partner_id.costi_account.id
 
 
     @api.one
@@ -117,7 +111,10 @@ class AccountInvoice(models.Model):
                                                                      line.company_id, line.date or fields.Date.today())
         self.residual_company_signed = (abs(residual_company_signed) * sign )- self.amount_sp # Rimuovo dal residuo lo split payment
         self.residual_signed = (abs(residual) * sign) - self.amount_sp #Rimuovo dal residuo lo split payment
-        self.residual = abs(residual - self.amount_sp) #Rimuovo dal residuo lo split payment
+        self.residual = abs(abs(residual) - self.amount_sp) #Rimuovo dal residuo lo split payment
+        if self.type in ['in_refund', 'out_refund'] and self.amount_sp > 0:
+            self.residual_company_signed = self.residual
+            self.residual_signed = self.residual
         digits_rounding_precision = self.currency_id.rounding
         if float_is_zero(self.residual, precision_rounding=digits_rounding_precision):
             self.reconciled = True
@@ -513,6 +510,12 @@ class AccountInvoice(models.Model):
         # fiscal position's onchange is triggered
         # before than being changed by this method.
         self.onchange_rc_fiscal_position_id()
+
+        if self.journal_id.type == 'sale':
+            self.am_account_id = self.partner_id.ricavi_account.id
+        else:
+            self.am_account_id = self.partner_id.costi_account.id
+
         return res
 
     def rc_inv_line_vals(self, line):
@@ -1078,7 +1081,7 @@ class AccountInvoice(models.Model):
                         l.rc = self.am_rc
                 l.selected = False
             self.compute_taxes()
-            self._onchange_invoice_line_wt_ids()
+            #self._onchange_invoice_line_wt_ids()
 
 
     def get_tax_amount_added_for_rc(self):
@@ -1103,7 +1106,7 @@ class AccountInvoice(models.Model):
         super(AccountInvoice, self).action_invoice_open()
         # controllo su anno fiscale
         impostazione_attivata = self.env['ir.config_parameter'].sudo().get_param('l10n_it_account.account_controllo_protocollo')
-        if impostazione_attivata:
+        if impostazione_attivata and self:
             today = datetime.datetime.today()
             if self.date_invoice.year != today.year:
                 raise UserError("La data fattura appartiene ad un anno fiscale diverso da quello corrente")

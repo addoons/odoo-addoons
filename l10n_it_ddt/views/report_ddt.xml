@@ -13,8 +13,11 @@
             min-height: 4em;
             }
             .no-pad-marg{
-            padding:0px !important;
+            padding:5px !important;
             margin:0px !important;
+            }
+            .o_report_layout_boxed .page > table:not(.o_main_table) tr td:last-child{
+            background-color:transparent;
             }
         </style>
 
@@ -52,11 +55,11 @@
                 </td>
                 <td class="no-pad-marg" style="font-size: 14px;">
                     <p style="font-weight: bold;">Date</p>
-                    <div t-esc="ddt.date.date().strftime('%d/%m/%Y')"></div>
+<!--                    <div t-esc="ddt.date.date().strftime('%d/%m/%Y')"></div>-->
                 </td>
                 <td class="no-pad-marg" style="font-size: 14px;">
                     <p style="font-weight: bold;">Pick up time</p>
-                    <div t-esc="ddt.date.time()"></div>
+<!--                    <div t-esc="ddt.date.time()"></div>-->
                 </td>
                 <td class="no-pad-marg" style="font-size: 14px;">
                     <p style="font-weight: bold;">Parcels</p>
@@ -107,62 +110,84 @@
         <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})" />
             <div class="page">
-                <div class="row">
-                    <div class="col-6">
-                        <h2>Consignee</h2>
+                <style>
+                    #ddt_table td{
+                    padding: 3px !important;
+                    }
+                </style>
+                <div class="row" style="padding-left: 15px; padding-right: 15px;">
+                    <div class="col-6" style="border:solid 1px black;">
+                        <h2>Indirizzo Consegna</h2>
                         <div t-field="o.partner_shipping_id"
                              t-field-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}' />
-                        <div t-if="o.partner_shipping_id">VAT number: <span t-field="o.partner_shipping_id.vat"/></div>
+                        <div t-if="o.partner_shipping_id.street">
+                            <span t-field="o.partner_shipping_id.street"/>,<span t-field="o.partner_shipping_id.zip"/>,
+                            <span t-field="o.partner_shipping_id.city"/></div>
+                        <div t-if="o.partner_shipping_id">Piva: <span t-field="o.partner_shipping_id.vat"/></div>
                         <div t-if="o.partner_shipping_id.phone">Telefono: <span t-field="o.partner_shipping_id.phone"/></div>
                         <div t-if="o.partner_shipping_id.mobile">Cellulare: <span t-field="o.partner_shipping_id.mobile"/></div>
                     </div>
-                    <div class="col-6">
-                        <h2>Assignee</h2>
+                    <div class="col-6" style="border:solid 1px black;">
+                        <h2>Intestatario</h2>
                         <div t-field="o.partner_id"
                              t-field-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": true}' />
-                        <div t-if="o.partner_id">VAT number: <span t-field="o.partner_id.vat"/></div>
+                        <div t-if="o.partner_id.street">
+                            <span t-field="o.partner_id.street"/>,<span t-field="o.partner_id.zip"/>,
+                            <span t-field="o.partner_id.city"/></div>
+                        <div t-if="o.partner_id">Piva: <span t-field="o.partner_id.vat"/></div>
                         <div t-if="o.partner_id.phone">Telefono: <span t-field="o.partner_id.phone"/></div>
                         <div t-if="o.partner_id.mobile">Cellulare: <span t-field="o.partner_id.mobile"/></div>
                     </div>
                 </div>
                 <br/>
-                <h1>TD number: <span t-field="o.ddt_number"></span></h1>
-                <table class="table table-condensed">
-                    <t t-set="has_serial_number"
-                       t-value="o.line_ids.filtered('lot_ids')"
-                       groups="stock.group_production_lot"/>
-                    <thead>
-                        <tr>
-                            <th><strong>Description</strong></th>
-                            <th class="text-right"><strong>Quantity</strong></th>
-                            <th name="lot_serial" t-if="has_serial_number" class="text-right">
-                                <strong>Lots/Serial Numbers</strong>
-                            </th>
-                            <t t-if="o.show_price">
-                                <th class="text-right"><strong>Price</strong></th>
-                                <th class="text-right"><strong>Discount</strong></th>
-                            </t>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="o.line_ids" t-as="line">
-                            <td><span t-field="line.name"></span></td>
-                            <td class="text-right"><span t-field="line.product_uom_qty"></span></td>
-                            <t t-if="has_serial_number">
-                                <t t-set="lot_dict" t-value="line.quantity_by_lot()"/>
-                                <td class="text-right">
-                                    <t t-foreach="lot_dict" t-as="lot">
-                                        <div>· <t t-esc="lot.name"/> <t t-if="lot_dict[lot]">(<t t-esc="lot_dict[lot]"/>)</t></div>
-                                    </t>
+                <div style="border:solid 1px black; padding: 5px;">
+                    <h1>Documento di Trasporto: <span t-field="o.ddt_number"></span></h1>
+                    <h4>Del <span t-field="o.date" t-options="{'widget': 'date'}"/></h4>
+                </div>
+                <br/>
+                <div style="min-height: 350px; border:solid 1px black;">
+                    <table class="table table-condensed" id="ddt_table" style="border:none;">
+                        <t t-set="has_serial_number"
+                           t-value="o.line_ids.filtered('lot_ids')"
+                           groups="stock.group_production_lot"/>
+                        <thead>
+                            <tr>
+                                <th style="background-color: #e6e6e6;"><strong>Codice</strong></th>
+                                <th style="background-color: #e6e6e6;"><strong>Descrizione</strong></th>
+                                <th style="background-color: #e6e6e6;" class="text-right"><strong>Qt.</strong></th>
+                                <th style="background-color: #e6e6e6;" class="text-right"><strong>UDM</strong></th>
+                                <th style="background-color: #e6e6e6;" name="lot_serial" t-if="has_serial_number" class="text-right">
+                                    <strong>Lotto/Serial Number</strong>
+                                </th>
+                                <t t-if="o.show_price">
+                                    <th style="background-color: #e6e6e6;" class="text-right"><strong>Prezzo</strong></th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody style="border:none;">
+                            <tr t-foreach="o.line_ids" t-as="line">
+                                <td  style="border:none;"><span t-field="line.product_id.default_code"></span></td>
+                                <td  style="border:none;">
+                                    <span t-field="line.product_id.name" t-if="line.product_id"/>
+                                    <span t-field="line.name" t-if="not line.product_id"/>
                                 </td>
-                            </t>
-                            <t t-if="o.show_price">
-                                <td class="text-right" id="line_price_unit"><span t-field="line.price_unit"></span></td>
-                                <td class="text-right" id="line_discount"><span t-field="line.discount"></span></td>
-                            </t>
-                        </tr>
-                    </tbody>
-                </table>
+                                <td class="text-right"  style="border:none;"><span t-field="line.product_uom_qty" ></span></td>
+                                <td class="text-right"  style="border:none;"><span t-field="line.product_uom_id.name"></span></td>
+                                <t t-if="has_serial_number">
+                                    <t t-set="lot_dict" t-value="line.quantity_by_lot()"/>
+                                    <td class="text-right" style="border:none;">
+                                        <t t-foreach="lot_dict" t-as="lot">
+                                            <div>· <t t-esc="lot.name"/> <t t-if="lot_dict[lot]">(<t t-esc="lot_dict[lot]"/>)</t></div>
+                                        </t>
+                                    </td>
+                                </t>
+                                <t t-if="o.show_price">
+                                    <td class="text-right" style="border:none;" id="line_price_unit"><span t-field="line.price_unit"></span></td>
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <t t-call="l10n_it_ddt.delivery_data">
                     <t t-set="ddt" t-value="o"/>
                 </t>
@@ -173,7 +198,7 @@
     <template id="report_ddt_main">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="l10n_it_ddt.report_ddt" t-lang="o.partner_id.lang"/>
+                <t t-call="l10n_it_ddt.report_ddt"/>
             </t>
         </t>
     </template>

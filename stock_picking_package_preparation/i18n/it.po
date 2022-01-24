@@ -262,7 +262,7 @@ msgstr "Preparazione pacco"
 #: model:ir.ui.menu,name:stock_picking_package_preparation.menu_stock_picking_package_preparation
 #: model_terms:ir.ui.view,arch_db:stock_picking_package_preparation.stock_picking_package_preparation_tree
 msgid "Package Preparations"
-msgstr "Preparazioni pacco"
+msgstr "Elenco DDT"
 
 #. module: stock_picking_package_preparation
 #: model:ir.model.fields,field_description:stock_picking_package_preparation.field_stock_picking_package_preparation__name

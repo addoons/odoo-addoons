@@ -83,6 +83,7 @@
                                 <group>
                                     <field name="user_type_id" string="Tipo" domain="[('internal_group', '!=', False)]"/>
                                     <field name="hierarchy_type_id" string="Tipo Gerarchia" domain="[('internal_group', '=', False)]"/>
+                                    <field name="asset_type" string="Tipo Asset"/>
                                     <field name="internal_type"/>
                                     <field name="tax_ids" widget="many2many_tags" domain="[('company_id','=',company_id)]"/>
                                     <field name="tag_ids" widget="many2many_tags" domain="[('applicability', '!=', 'taxes')]" context="{'default_applicability': 'accounts'}" options="{'no_create_edit': True}"/>

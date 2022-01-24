@@ -15,6 +15,8 @@ class AccountAccountInherit(models.Model):
     child_ids = fields.One2many('account.account', 'parent_id')
     area = fields.Selection([('conto_economico', 'Conto Economico'), ('stato_patrimoniale', 'Stato Patrimoniale'),
                              ('conti_ordine', "Conti D'ordine")], default='conto_economico')
+    asset_type = fields.Selection([('beni_ammortizzabili', 'BENI AMMORTIZZABILI'), ('beni_strumentali', 'LOCAZIONI E ALTRI NOLEGGI DI BENI STRUMENTALI'),
+                                   ('beni_rivendita_produzione', 'BENI DESTINATI ALLA RIVENDITA O ALLA PRODUZIONE')])
     account_move_lines = fields.One2many('account.move.line', 'account_id', string='Move Lines', copy=False)
     credit = fields.Monetary(string='Credit', readonly=True, compute='_find_account_balance', store=True)
     debit = fields.Monetary(string='Debit', readonly=True, compute='_find_account_balance', store=True)
@@ -89,6 +91,18 @@ class AccountAccountInherit(models.Model):
                 name = account.name
             result.append((account.id, name))
         return result
+
+
+    @api.model
+    def name_search(self, name='', args=None, operator='ilike', limit=100):
+        if not args:
+            args = []
+        if name:
+            records = self.search(['&', ('name', operator, name), ('hierarchy_type_id', '=', False)] + args, limit=limit)
+        else:
+            records = self.search(args, limit=limit)
+        return records.name_get()
+
 
 
     # @api.model

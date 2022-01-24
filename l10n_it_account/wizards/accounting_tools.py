@@ -203,12 +203,8 @@ class WizardCaricaClienti(models.TransientModel):
 
             env1.cr.commit()
 
-
-
-
-
         if self.file2:
-            #IMPORT FATTURE
+            # IMPORT FATTURE
             env1 = self.getNewEnv()
 
             wb = xlrd.open_workbook(file_contents=b64decode(self.file2))
@@ -220,6 +216,12 @@ class WizardCaricaClienti(models.TransientModel):
             iva_s_vendite = env1['account.account'].search([('name', '=', 'IVA SU VENDITE')])
             journal_id = env1['account.journal'].search([('id', '=', 2)])
 
+            if self.env.user.company_id.id == 2:
+                # Suisse
+                crediti_v_clienti = env1['account.account'].search([('code', '=', '11000')], limit=1)
+                merci_c_vendite = env1['account.account'].search([('code', '=', '32000')])
+                iva_s_vendite = env1['account.account'].search([('code', '=', '22000')])
+                journal_id = env1['account.journal'].search([('id', '=', 300)])
 
             treviso = env1['account.journal'].search([('name', 'like', 'TREVISO')])
             roma = env1['account.journal'].search([('name', 'like', 'ROMA')])
@@ -243,17 +245,17 @@ class WizardCaricaClienti(models.TransientModel):
                         if column == 1:
                             numero = value
                         if column == 2:
-                            #Numero Registro
+                            # Numero Registro
                             numero_registro = value
                         if column == 3:
                             tipo_fattura = value
                         if column == 4:
-                            #Data Fattura
+                            # Data Fattura
                             data = value
                             data = data.replace('/', '-')
                             data = datetime.strptime(data, '%d-%m-%Y')
                         if column == 5:
-                            #Riferimento
+                            # Riferimento
                             if value and value != "":
                                 riferimento = value
                                 codice_negozio = value[:3]
@@ -265,27 +267,24 @@ class WizardCaricaClienti(models.TransientModel):
                                 account_analytic = env1['account.analytic.account'].search(
                                     [('name', 'like', 'AMM')], limit=1)
 
-
                         if column == 6:
-                            #Nome Cliente
+                            # Nome Cliente
                             nome_cliente = value
                         if column == 7:
-                            #Imponibile
+                            # Imponibile
                             imponibile = value
                         if column == 8:
-                            #percentuale iva
+                            # percentuale iva
                             perc_iva = value
                         if column == 9:
-                            #iva
+                            # iva
                             iva = value
                         if column == 10:
-                            #Crediti v/clienti
+                            # Crediti v/clienti
                             totale = value
                         if column == 11:
-                            #Codice Negozio
+                            # Codice Negozio
                             negozio = value
-
-
 
                     if import_row:
                         partner_id = env1['res.partner'].search([('name', '=', nome_cliente)], limit=1)
@@ -304,7 +303,7 @@ class WizardCaricaClienti(models.TransientModel):
                         if 'SENAGO' in negozio:
                             registro = senago.id
 
-                        iva_id = env1['account.tax'].search([('id', '=', int(perc_iva) )], limit=1)
+                        iva_id = env1['account.tax'].search([('id', '=', int(perc_iva))], limit=1)
                         if not iva_id:
                             iva_id = env1['account.tax'].search([('id', '=', 1)], limit=1)
 
@@ -321,9 +320,11 @@ class WizardCaricaClienti(models.TransientModel):
                         if tipo_fattura != 'Nota di Credito':
                             move_vals = {
                                 'date': data,
-                                'ref': str(numero_registro) + ' Fattura N° '+ str(numero) + ' - ' + str(riferimento) + ' - ' + str(negozio),
+                                'ref': str(numero_registro) + ' Fattura N° ' + str(numero) + ' - ' + str(
+                                    riferimento) + ' - ' + str(negozio),
                                 'journal_id': registro,
                                 'partner_id': partner_id.id,
+                                'company_id': self.env.user.company_id.id,
                                 'line_ids': [
                                     (0, 0, {
                                         'account_id': crediti_v_clienti.id,
@@ -348,10 +349,12 @@ class WizardCaricaClienti(models.TransientModel):
                         else:
                             move_vals = {
                                 'date': data,
-                                'ref': str(numero_registro) + 'Nota Credito N° ' + str(numero) + ' - ' + str(riferimento) + ' - ' + str(
+                                'ref': str(numero_registro) + 'Nota Credito N° ' + str(numero) + ' - ' + str(
+                                    riferimento) + ' - ' + str(
                                     negozio),
                                 'journal_id': registro,
                                 'partner_id': partner_id.id,
+                                'company_id': self.env.user.company_id.id,
                                 'line_ids': [
                                     (0, 0, {
                                         'account_id': crediti_v_clienti.id,

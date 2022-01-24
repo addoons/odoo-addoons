@@ -198,7 +198,6 @@ class DiscountRisePrice(models.Model):
 
 
 class FatturapaRelatedDocumentType(models.Model):
-    # _position = ['2.1.2', '2.2.3', '2.1.4', '2.1.5', '2.1.6']
     _name = 'fatturapa.related_document_type'
     _description = 'E-invoice Related Document Type'
 
@@ -208,7 +207,7 @@ class FatturapaRelatedDocumentType(models.Model):
             ('contract', 'Contract'),
             ('agreement', 'Agreement'),
             ('reception', 'Reception'),
-            ('invoice', 'Related Invoice')
+            ('invoice', 'Related Invoice'),
         ],
         'Document Type', required=True
     )
@@ -286,6 +285,15 @@ class FatturapaRelatedDdt(models.Model):
         return super(FatturapaRelatedDdt, self).create(vals)
 
 
+class AltriDatiGestionali(models.Model):
+    _name = 'altri.dati.gestionali'
+
+    name = fields.Char("Data Type")
+    text_ref = fields.Char("Text Reference")
+    num_ref = fields.Float("Number Reference")
+    date_ref = fields.Date("Date Reference")
+    invoice_line_id = fields.Many2one('account.invoice.line')
+
 class AccountInvoiceLine(models.Model):
     # _position = ['2.2.1']
     _inherit = "account.invoice.line"
@@ -307,6 +315,8 @@ class AccountInvoiceLine(models.Model):
     is_stamp_line = fields.Boolean(
         related='product_id.is_stamp',
         readonly=True)
+
+    altri_dati_gestionali_ids = fields.One2many('altri.dati.gestionali', 'invoice_line_id')
 
     @api.multi
     def _set_rc_flag(self, invoice):
@@ -556,7 +566,8 @@ class AccountInvoice(models.Model):
     e_invoice_force_validation = fields.Boolean(
         string='Force E-Invoice Validation')
 
-    payment_due_ids = fields.Many2many('payment.due.item')
+    payment_due_ids = fields.One2many('payment.due.item', 'invoice_id')
+
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -596,6 +607,29 @@ class AccountInvoice(models.Model):
                     doc_to_remove.append((2, doc.id))
             if len(doc_to_remove) > 0:
                 self.related_documents = doc_to_remove
+
+
+    @api.depends('move_id')
+    def onchange_move_id(self):
+        move_line = []
+        if self.move_id:
+            move_line = [(5, )]
+            for line in self.move_id.line_ids:
+                if line.account_id.internal_type == 'payable':
+                    move_line.append((0, 0, {
+                        'date': line.date_maturity,
+                        'amount': line.credit,
+                        'account_move_line_id': line.id
+                    }))
+        return move_line
+
+
+    @api.multi
+    def write(self, vals_list):
+        res = super(AccountInvoice, self).write(vals_list)
+        return res
+
+
 
     @api.model
     def create(self, vals_list):
@@ -676,8 +710,8 @@ class AccountInvoice(models.Model):
             if (invoice.e_invoice_validation_error and
                     not invoice.e_invoice_force_validation):
                 raise ValidationError(
-                    _("The invoice '%s' doesn't match the related e-invoice") %
-                    invoice.display_name)
+                    _("The invoice '%s' doesn't match the related e-invoice : %s") %
+                    (invoice.display_name, invoice.e_invoice_validation_message))
         return super(AccountInvoice, self).invoice_validate()
 
     def e_inv_check_amount_untaxed(self):

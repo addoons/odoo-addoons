@@ -16,6 +16,9 @@
                 <field name="law_reference" attrs="{'required': [('kind_id', '!=', False),('type_tax_use', '!=', 'purchase')],
                                                     'invisible': ['|',('kind_id', '=', False),('type_tax_use', '=', 'purchase')]}"/>
             </xpath>
+            <xpath expr="//field[@name='include_base_amount']" position="after">
+                <field name="show_in_receipt_report" string="Mostra nel Report dei Corrispettivi"/>
+            </xpath>
         </field>
     </record>
 

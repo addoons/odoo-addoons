@@ -29,6 +29,7 @@ class WizardImportSaldi(models.TransientModel):
             vals_keys = ['data', 'cliente', 'conto_dare', 'conto_avere', 'importo', 'causale']
 
             move_lines = []
+            first_sheet = True
             for sheet in wb.sheets():
                 not_first_row = False
                 row_counter = 0
@@ -59,24 +60,39 @@ class WizardImportSaldi(models.TransientModel):
                                     'company_type': 'person'
                                 })
                                 print('crea partner')
-                            dare = 0
-                            avere = 0
-                            conto = False
-                            if float(vals['importo']) > 0:
-                                dare = abs(float(vals['importo']))
-                                conto = self.conto_dare_id.id
+                            if first_sheet:
+                                move_lines.append((0,0, {
+                                    'partner_id': partner.id,
+                                    'account_id': self.conto_dare_id.id,
+                                    'date_maturity': datetime.datetime.today(),
+                                    'debit': abs(float(vals['importo'])),
+                                    'credit': 0
+                                }))
+                                move_lines.append((0, 0, {
+                                    'partner_id': partner.id,
+                                    'account_id': self.conto_avere_id.id,
+                                    'date_maturity': datetime.datetime.today(),
+                                    'debit': 0,
+                                    'credit': abs(float(vals['importo']))
+                                }))
                             else:
-                                avere = abs(float(vals['importo']))
-                                conto = self.conto_avere_id.id
-                            move_lines.append((0,0, {
-                                'partner_id': partner.id,
-                                'account_id': conto,
-                                'date_maturity': datetime.datetime.today(),
-                                'debit': dare,
-                                'credit': avere
-                            }))
+                                move_lines.append((0, 0, {
+                                    'partner_id': partner.id,
+                                    'account_id': self.conto_avere_id.id,
+                                    'date_maturity': datetime.datetime.today(),
+                                    'debit': abs(float(vals['importo'])),
+                                    'credit': 0
+                                }))
+                                move_lines.append((0, 0, {
+                                    'partner_id': partner.id,
+                                    'account_id': self.conto_dare_id.id,
+                                    'date_maturity': datetime.datetime.today(),
+                                    'debit': 0,
+                                    'credit': abs(float(vals['importo']))
+                                }))
 
                     not_first_row = True
+                first_sheet = False
             account_move = self.env['account.move'].create({
                 'date': self.move_date,
                 'ref': self.riferimento,

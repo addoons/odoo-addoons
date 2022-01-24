@@ -5,8 +5,8 @@
         <field name="inherit_id" ref="account.invoice_supplier_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']" position="after">
-                <field name="purchase_id" string="Ordine Acquisto"/>
-                <button name="open_line" string="Dettagli" type="object" class="btn btn-success"/>
+                <field name="purchase_order_association_id" string="Ordine Acquisto"/>
+<!--                <button name="open_line" string="Dettagli" type="object" class="btn btn-success"/>-->
             </xpath>
             <xpath expr="//field[@name='tax_line_ids']" position="after">
                 <group>
@@ -14,7 +14,8 @@
                 </group>
             </xpath>
             <xpath expr="//form/sheet/group/group/field[@name='am_rc']" position="after">
-                <field name="purchase_order_id" string="Ordine Acquisto"/>
+                <field name="purchase_order_id" string="Ordine Acquisto" domain="[('partner_id', '=', partner_id),('state', '=', 'purchase')]"/>
+                <button name="delete_purchase_order_association" string="Cancella Associazione" type="object" class="btn btn-danger"/>
             </xpath>
         </field>
     </record>

@@ -9,6 +9,7 @@
                 <field name="account_move_template" string="Template" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                 <field name="correggi_importo_registrazione" string="Correggi Importo" />
                 <button name="set_correggi_importo_registrazione" string="Correggi" class="btn btn-default btn-danger" groups="account.group_account_manager" type="object"/>
+                <field name="data_bolletta_doganale" string="Data Bolletta Doganale"/>
             </xpath>
             <xpath expr="//form/sheet/notebook/page/field/tree/field[@name='partner_id']" position="replace">
                 <field name="partner_id" domain="['|', ('parent_id', '=', False), ('is_company', '=', True)]" attrs="{'column_invisible': [('parent.account_move_template', '!=', False)]}"/>

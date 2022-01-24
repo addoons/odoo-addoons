@@ -8,4 +8,11 @@ class PaymentDueItem(models.Model):
     date = fields.Date()
     amount = fields.Float()
     fatturapa_payment_method_id = fields.Many2one('fatturapa.payment_method')
+    account_move_line_id = fields.Many2one('account.move.line')
+    invoice_id = fields.Many2one('account.invoice')
+
+
+
+
+
 

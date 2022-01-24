@@ -26,6 +26,7 @@ class AccountTax(models.Model):
     dichiarazione_annuale_quadro = fields.Many2many('annuale_iva.quadro')
     iva_corr = fields.Boolean()
     iva_fatt = fields.Boolean()
+    show_in_receipt_report = fields.Boolean(help="Mostra l'imposta nel report XLS dei corrispettivi")
 
     def _get_tax_amount(self):
         self.ensure_one()

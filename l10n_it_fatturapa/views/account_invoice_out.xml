@@ -160,6 +160,18 @@
                         </tree>
                     </field>
                 </group>
+                <group string="Altri Dati Gestionali">
+                    <div>
+                        <field name="altri_dati_gestionali_ids">
+                            <tree editable="top">
+                                <field name="name" string="Tipo Dato"/>
+                                <field name="text_ref" string="Rif. Testo"/>
+                                <field name="num_ref" string="Rif. Numero"/>
+                                <field name="date_ref" string="Rif. Data"/>
+                            </tree>
+                        </field>
+                    </div>
+                </group>
             </field>
         </field>
     </record>

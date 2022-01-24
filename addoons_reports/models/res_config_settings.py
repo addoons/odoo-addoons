@@ -18,7 +18,7 @@ class ResConfigSettings(models.TransientModel):
                 # Imposto il report personalizzato nel modulo Vendite
                 report_sale = self.env.ref('sale.action_report_saleorder')
                 report_addoons_sale = self.env.ref('addoons_reports_sale.report_layout_sale_orders')
-                report_sale.report_name = 'addoons_reports_sale.report_layout_sale'
+                report_sale.report_name = 'addoons_reports_sale.report_layout_sale_orders'
             except:
                 pass
 

@@ -12,23 +12,37 @@
 
             <xpath expr="//notebook" position="inside">
                 <page string="Scadenza Pagamenti">
-                    <field name="fatturapa_payments">
-                        <tree>
-                            <field name="payment_terms" string="Termini"/>
-                            <field name="payment_methods" string="Metodo"/>
+<!--                    <field name="fatturapa_payments">-->
+<!--                        <tree>-->
+<!--                            <field name="payment_terms" string="Termini"/>-->
+<!--                            <field name="payment_methods" string="Metodo"/>-->
+<!--                        </tree>-->
+<!--                        <form>-->
+<!--                            <field name="payment_terms" string="Termini"/>-->
+<!--                            <field name="payment_methods" string="Scadenze">-->
+<!--                                <tree>-->
+<!--                                    <field name="payment_due_date" string="Data Scadenza"/>-->
+<!--                                    <field name="payment_data_id" string="Metodo" />-->
+<!--                                    <field name="payment_bank" string="Banca"/>-->
+<!--                                    <field name="payment_bank_iban" string="IBAN"/>-->
+<!--                                    <field name="payment_amount" string="Importo" />-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </form>-->
+<!--                    </field>-->
+<!--                    <field name="account_move_line" domain="[('account_id', '=', 1)]">-->
+<!--                        <tree editable="top">-->
+<!--                            <field name="account_id" string="Conto"/>-->
+<!--                            <field name="debit" String="Debito"/>-->
+<!--                            <field name="credit" String="Credit"/>-->
+<!--                            <field name="date_maturity" string="Scadenza"/>-->
+<!--                        </tree>-->
+<!--                    </field>-->
+                    <field name="payment_due_ids">
+                        <tree editable="top">
+                            <field name="date" string="Data"/>
+                            <field name="amount" string="Importo"/>
                         </tree>
-                        <form>
-                            <field name="payment_terms" string="Termini"/>
-                            <field name="payment_methods" string="Scadenze">
-                                <tree>
-                                    <field name="payment_due_date" string="Data Scadenza"/>
-                                    <field name="payment_data_id" string="Metodo" />
-                                    <field name="payment_bank" string="Banca"/>
-                                    <field name="payment_bank_iban" string="IBAN"/>
-                                    <field name="payment_amount" string="Importo" />
-                                </tree>
-                            </field>
-                        </form>
                     </field>
                 </page>
                 <page string="Fattura Elettronica">

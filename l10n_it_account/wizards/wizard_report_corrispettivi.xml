@@ -1,0 +1,38 @@
+<odoo>
+    <record id="wizard_report_corrispettivi_form" model="ir.ui.view">
+        <field name="name">wizard.report.corrispettivi.form</field>
+        <field name="model">wizard.report.corrispettivi</field>
+        <field name="arch" type="xml">
+            <form string="Report Corrispettivi">
+                <sheet>
+                    <group>
+                        <field name="date_start" string="Data Inizio"/>
+                        <field name="date_end" string="Data Fine"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Genera Excel" name="generate_xls_report_corrispettivi" type="object" class="btn-primary"/>
+                    <button string="Annulla" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="action_wizard_report_corrispettivi"
+                name="Report Corrispettivi"
+                res_model="wizard.report.corrispettivi"
+                view_mode="form" target="new" view_type="form" view_id="wizard_report_corrispettivi_form"/>
+
+    <menuitem id="wizard_report_corrispettivi" name="Corrispettivi" sequence="100" parent="account.menu_finance_reports"/>
+    <menuitem id="wizard_report_corrispettivi_menu" name="Report Corrispettivi" sequence="100" parent="wizard_report_corrispettivi" action="action_wizard_report_corrispettivi"/>
+
+    <report
+                id="report_corrispettivi_imposte"
+                model="account.invoice"
+                string="Report Corrispettivi"
+                report_type="xlsx"
+                menu="False"
+                name="report_corrispettivi_imposte"
+                file="report_corrispettivi_imposte"
+        />
+</odoo>

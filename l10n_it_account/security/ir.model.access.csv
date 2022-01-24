@@ -60,3 +60,4 @@ access_account_payment,account_payment_user,account.model_account_payment,base.g
 access_bollette_doganali,account_bollette_doganali,l10n_it_account.model_bollette_doganali,base.group_user,1,1,1,1
 access_iva_annuale,account_iva_annuale,l10n_it_account.model_annuale_iva_quadro,base.group_user,1,1,1,1
 access_alpha_region,account_alpha_region,l10n_it_account.model_alpha_region,base.group_user,1,1,1,1
+access_wizard_report_corrispettivi,wizard_report_corrispettivi,l10n_it_account.model_wizard_report_corrispettivi,base.group_user,1,1,1,1

@@ -25,7 +25,7 @@ from ..bindings.binding import (
     CBIBranchAndFinancialInstitutionIdentification2, CBIFinancialInstitutionIdentification3,
     CBIClearingSystemMemberIdentification1, PaymentIdentification1, CBIAmountType1, CBIPartyIdentification3,
     CBIParty1Choice, CBIPaymentRequest_00_04_00, CBIOrganisationIdentification2, ActiveOrHistoricCurrencyAndAmount,
-    CBICashAccount2, RemittanceInformation5, CountryCode)
+    CBICashAccount2, RemittanceInformation5, CountryCode, CBIRegulatoryReporting1)
 
 
 class AccountBatchPayment(models.Model):
@@ -155,6 +155,7 @@ class AccountBatchPayment(models.Model):
                         Nm=self._sanitize_communication((payment.partner_bank_account_id.acc_holder_name or payment.partner_id.name)[:70]),
                         PstlAdr=CBIPostalAddress6(
                             Ctry=payment.partner_id.country_id.code,
+                            TwnNm=payment.partner_id.city
                         ),
                         CtryOfRes=payment.partner_id.country_id.code
                     ),
@@ -163,6 +164,10 @@ class AccountBatchPayment(models.Model):
                             IBAN=self._sanitize_communication(payment.partner_bank_account_id.acc_number.replace(' ', ''))
                         )
                     ),
+                    # RgltryRptg=CBIRegulatoryReporting1(
+                    #     DbtCdtRptgInd='DEBT',
+                    #     Dtls='INVOICE'
+                    # ),
                     RmtInf=RemittanceInformation5(
                         Ustrd=[self._sanitize_communication(str(payment.communication))]
                     )

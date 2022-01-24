@@ -206,11 +206,88 @@ class ComunicazioneLiquidazione(models.Model):
 
         lipe_annuale = self.quadri_vp_ids[0].liquidazioni_ids[0]
 
+        def get_imponibile_imposta_with_type(tag):
+            #Differenzia tra Beni e Servizi
+            tax_ids = self.env['account.tax'].search([('dichiarazione_annuale_quadro', '=', tag)])
+            imponibile_beni = 0
+            imposte_beni = 0
+            imponibile_servizi = 0
+            imposte_servizi = 0
+            for tax in tax_ids:
+                #Righe Imponibile
+                account_move_line_imponibile = self.env['account.move.line'].search(['&', '&', ('tax_ids', '=', tax.id), ('date', '>=', lipe_annuale.date_range_ids[0].date_start), ('date', '<=', lipe_annuale.date_range_ids[0].date_end)])
+                #Righe Imposta
+                account_move_line_imposta = self.env['account.move.line'].search(['&', '&', ('tax_line_id', '=', tax.id), ('date', '>=', lipe_annuale.date_range_ids[0].date_start), ('date', '<=', lipe_annuale.date_range_ids[0].date_end)])
+
+
+
+
+
+                debit_beni = 0
+                credit_beni = 0
+                debit_servizi = 0
+                credit_servizi = 0
+                for line in account_move_line_imponibile:
+
+                    if tag == 'VJ16':
+                        #Gestione ITA
+                            debit_servizi += line.debit
+                            credit_servizi += line.credit
+                    else:
+                        #Gestione INTA/EXTRA
+                        #Servizi
+                        if line.invoice_id.fiscal_document_type_id.code == 'TD01' or line.invoice_id.fiscal_document_type_id.code == 'TD09' or (tag == 'VJ3' and  line.invoice_id.fiscal_document_type_id.code == 'TD11'):
+                            debit_servizi += line.debit
+                            credit_servizi += line.credit
+                        #Beni
+                        if line.invoice_id.fiscal_document_type_id.code == 'TD10':
+                            debit_beni += line.debit
+                            credit_beni += line.credit
+
+
+
+                imponibile_beni += (debit_beni - credit_beni)
+                imponibile_servizi += (debit_servizi - credit_servizi)
+
+                debit_beni = 0
+                credit_beni = 0
+                debit_servizi = 0
+                credit_servizi = 0
+                for line in account_move_line_imposta:
+                    if tag == 'VJ16':
+                        # Gestione ITA
+                        debit_servizi += line.debit
+                        credit_servizi += line.credit
+                    else:
+                        # Gestione INTA/EXTRA
+                        # Servizi
+                        if line.invoice_id.fiscal_document_type_id.code == 'TD01' or line.invoice_id.fiscal_document_type_id.code == 'TD09' or (tag == 'VJ3' and  line.invoice_id.fiscal_document_type_id.code == 'TD11'):
+                            debit_servizi += line.debit
+                            credit_servizi += line.credit
+                        # Beni
+                        if line.invoice_id.fiscal_document_type_id.code == 'TD10':
+                            debit_beni += line.debit
+                            credit_beni += line.credit
+
+                imposte_beni += (debit_beni - credit_beni)
+                imposte_servizi += (debit_servizi - credit_servizi)
+
+
+            return {
+                'imponibile_beni': imponibile_beni,
+                'imposte_beni': imposte_beni,
+                'imponibile_servizi': imponibile_servizi,
+                'imposte_servizi': imposte_servizi
+            }
+
+
         def get_imponibile_imposta_from_tag(tag):
             """
             Restituisce la somma imponibile e imposta delle aliquote
             con il tag passato
             """
+            if tag == 'VF19':
+                print("OK")
             imponibile = 0
             imposta = 0
             #Verifica TAG righe di Debito
@@ -302,8 +379,7 @@ class ComunicazioneLiquidazione(models.Model):
         VE24_IMPOSTA = get_sum_imponibile_imposta_from_tags(['VE1', 'VE2', 'VE3', 'VE4', 'VE5', 'VE6', 'VE7', 'VE8', 'VE9', 'VE10', 'VE11', 'VE12', 'VE20', 'VE21','VE22', 'VE23'])['imposta']
         VE30_VE38_IMPONIBILE = get_sum_imponibile_imposta_from_tags(['VE30','VE31','VE32','VE33','VE34','VE35','VE36','VE37','VE38'])['imponibile']
         VE39_IMPONIBILE = get_imponibile_imposta_from_tag('VE39')['imponibile']
-        VE40_IMPONIBILE = get_imponibile_imposta_from_tag('VE40')['imponibile']
-        VE50_IMPONIBILE = VE24_IMPONIBILE + VE30_VE38_IMPONIBILE - VE39_IMPONIBILE - VE40_IMPONIBILE
+
 
         data_dict_pag3 = {
             'CODICE FISCALE3': self.taxpayer_vat,
@@ -312,6 +388,28 @@ class ComunicazioneLiquidazione(models.Model):
         data_dict_pag4 = {
             'CODICE FISCALE4': self.taxpayer_vat,
         }
+
+        VE40_IMPONIBILE = 0
+        # BLOCCO VE40
+        account_move_line = self.env['account.move.line'].search(['&', '&', ('account_id.asset_type', '=', 'beni_ammortizzabili'),
+                                                                  ('date', '>=',lipe_annuale.date_range_ids[0].date_start),
+                                                                  ('date', '<=', lipe_annuale.date_range_ids[0].date_end)])
+        VE40_CREDIT = 0
+        VE40_DEBIT = 0
+        for line in account_move_line:
+            calcola = False
+            for tax in line.tax_ids:
+                if tax.type_tax_use == 'sale':
+                    calcola = True
+            if calcola:
+                VE40_DEBIT += line.debit
+                VE40_CREDIT += line.credit
+
+        VE40_IMPONIBILE = VE40_CREDIT - VE40_DEBIT
+        VE50_IMPONIBILE = VE24_IMPONIBILE + VE30_VE38_IMPONIBILE - VE39_IMPONIBILE - VE40_IMPONIBILE
+
+
+
 
         data_dict_pag5 = {
             'CODICE FISCALE5': self.taxpayer_vat,
@@ -335,7 +433,7 @@ class ComunicazioneLiquidazione(models.Model):
             'VE32': str(get_imponibile_imposta_from_tag('VE32')['imponibile']).replace('.', ','),
             'VE33': str(get_imponibile_imposta_from_tag('VE33')['imponibile']).replace('.', ','),
             'VE34': str(get_imponibile_imposta_from_tag('VE34')['imponibile']).replace('.', ','),
-            'VE40': str(get_imponibile_imposta_from_tag('VE40')['imponibile']).replace('.', ','),
+            'VE40': str(VE40_IMPONIBILE).replace('.', ','),
             'VE50': str(VE50_IMPONIBILE).replace('.', ','),
         }
 
@@ -343,6 +441,34 @@ class ComunicazioneLiquidazione(models.Model):
         VE23_IMPONIBILE = get_sum_imponibile_imposta_from_tags(['VF1', 'VF2', 'VF3', 'VF4', 'VF5', 'VF6', 'VF7', 'VF8', 'VF9', 'VF10', 'VF11', 'VF12', 'VF13', 'VF14','VF15', 'VF16/1', 'VF16/2','VF17/1', 'VF18', 'VF19', 'VF20', 'VF21/1', 'VF22'])['imponibile']
         VE23_IMPOSTA = get_sum_imponibile_imposta_from_tags( ['VF1', 'VF2', 'VF3', 'VF4', 'VF5', 'VF6', 'VF7', 'VF8', 'VF9', 'VF10', 'VF11', 'VF12', 'VF13', 'VF14'])['imposta']
         VF25_IMPOSTA = VE23_IMPOSTA
+
+        #BLOCCO VF27
+        account_move_line = self.env['account.move.line'].search(['&', '&', '&', '&', ('move_id.ref', 'not ilike', 'BILANCIO'), ('move_id.ref', '!=', 'FATTURE DA RICEVERE'), ('account_id.asset_type', '!=', False),
+                                                                  ('date', '>=', lipe_annuale.date_range_ids[0].date_start),
+                                                                  ('date', '<=', lipe_annuale.date_range_ids[0].date_end)])
+        VF27_1_CREDIT = 0
+        VF27_1_DEBIT = 0
+        VF27_2_CREDIT = 0
+        VF27_2_DEBIT = 0
+        VF27_3_CREDIT = 0
+        VF27_3_DEBIT = 0
+        for line in account_move_line:
+            if line.account_id.asset_type == 'beni_ammortizzabili':
+                VF27_1_CREDIT += line.credit
+                VF27_1_DEBIT += line.debit
+            if line.account_id.asset_type == 'beni_strumentali':
+                VF27_2_CREDIT += line.credit
+                VF27_2_DEBIT += line.debit
+            if line.account_id.asset_type == 'beni_rivendita_produzione':
+                VF27_3_CREDIT += line.credit
+                VF27_3_DEBIT += line.debit
+
+
+        VF27_1_IMPONIBILE = VF27_1_DEBIT - VF27_1_CREDIT
+        VF27_2_IMPONIBILE = VF27_2_DEBIT - VF27_2_CREDIT
+        VF27_3_IMPONIBILE = VF27_3_DEBIT - VF27_3_CREDIT
+
+
 
         data_dict_pag6 = {
             'CODICE FISCALE6': self.taxpayer_vat,
@@ -394,6 +520,10 @@ class ComunicazioneLiquidazione(models.Model):
             'VF26/4': str(get_imponibile_imposta_from_tag('VF26/3')['imposta']).replace('.', ','),
             'VF26/5': str(get_imponibile_imposta_from_tag('VF26/5')['imponibile']).replace('.', ','),
             'VF26/6': str(get_imponibile_imposta_from_tag('VF26/5')['imposta']).replace('.', ','),
+            'VF27/1': str(VF27_1_IMPONIBILE).replace('.', ','),
+            'VF27/2': str(VF27_2_IMPONIBILE).replace('.', ','),
+            'VF27/3': str(VF27_3_IMPONIBILE).replace('.', ','),
+            'VF27/4': str(VE23_IMPONIBILE - VF27_1_IMPONIBILE - VF27_2_IMPONIBILE - VF27_3_IMPONIBILE).replace('.', ','),
         }
 
 
@@ -402,10 +532,29 @@ class ComunicazioneLiquidazione(models.Model):
             'VF71': str(VF25_IMPOSTA).replace('.', ','),
         }
 
-        #TOTALI
-        VE19_IMPOSTA = get_sum_imponibile_imposta_from_tags( ['VJ1', 'VJ2', 'VJ3', 'VJ4', 'VJ5', 'VJ6', 'VJ7', 'VJ8', 'VJ9', 'VJ10', 'VJ11', 'VJ12', 'VJ13', 'VJ14','VJ15', 'VJ16', 'VJ17', 'VJ18'])['imposta']
-        VJ19_IMPOSTA = get_sum_imponibile_imposta_from_tags( ['VJ1', 'VJ2', 'VJ3', 'VJ4', 'VJ5', 'VJ6', 'VJ7', 'VJ8', 'VJ9', 'VJ10', 'VJ11', 'VJ12', 'VJ13', 'VJ14','VJ15', 'VJ16', 'VJ17', 'VJ18'])['imposta']
+        # SOLAMENTE ALIQUOTA VJ3 COLLEGATA A FATTURE DI TIPO BENI
+        VJ3 = get_imponibile_imposta_with_type('VJ3')
+        VJ3_IMPONIBILE = VJ3['imponibile_servizi']
+        VJ3_IMPOSTA = VJ3['imposte_servizi']
 
+        #SOLAMENTE ALIQUOTA VJ9 COLLEGATA A FATTURE DI TIPO BENI
+        VJ9 = get_imponibile_imposta_with_type('VJ9')
+        VJ9_IMPONIBILE = VJ9['imponibile_beni']
+        VJ9_IMPOSTA = VJ9['imposte_beni']
+
+        #SOLAMENTE ALIQUOTA VJ9 COLLEGATA A FATTURE DI TIPO SERVIZI
+        VJ16 = get_imponibile_imposta_with_type('VJ16')
+        VJ16_IMPONIBILE = VJ16['imponibile_servizi']
+        VJ16_IMPOSTA = VJ16['imposte_servizi']
+
+        # TOTALI
+        # VE19_IMPOSTA = get_sum_imponibile_imposta_from_tags(
+        #     ['VJ1', 'VJ2', 'VJ4', 'VJ5', 'VJ6', 'VJ7', 'VJ8', 'VJ9', 'VJ10', 'VJ11', 'VJ12', 'VJ13', 'VJ14',
+        #      'VJ15', 'VJ16', 'VJ17', 'VJ18'])['imposta']
+        VJ19_IMPOSTA = get_sum_imponibile_imposta_from_tags(
+            ['VJ1', 'VJ2', 'VJ4', 'VJ5', 'VJ6', 'VJ7', 'VJ8', 'VJ10', 'VJ11', 'VJ12', 'VJ13', 'VJ14', 'VJ15',
+             'VJ17', 'VJ18'])['imposta']
+        VJ19_IMPOSTA += VJ3_IMPOSTA + VJ9_IMPOSTA + VJ16_IMPOSTA
 
         data_dict_pag8 = {
             'CODICE FISCALE8': self.taxpayer_vat,
@@ -413,8 +562,8 @@ class ComunicazioneLiquidazione(models.Model):
             'VJ1_IMP': str(get_imponibile_imposta_from_tag('VJ1')['imposta']).replace('.', ','),
             'VJ2': str(get_imponibile_imposta_from_tag('VJ2')['imponibile']).replace('.', ','),
             'VJ2_IMP': str(get_imponibile_imposta_from_tag('VJ2')['imposta']).replace('.', ','),
-            'VJ3': str(get_imponibile_imposta_from_tag('VJ3')['imponibile']).replace('.', ','),
-            'VJ3_IMP': str(get_imponibile_imposta_from_tag('VJ3')['imposta']).replace('.', ','),
+            'VJ3': str(VJ3_IMPONIBILE).replace('.', ','),
+            'VJ3_IMP': str(VJ3_IMPOSTA).replace('.', ','),
             'VJ4': str(get_imponibile_imposta_from_tag('VJ4')['imponibile']).replace('.', ','),
             'VJ4_IMP': str(get_imponibile_imposta_from_tag('VJ4')['imposta']).replace('.', ','),
             'VJ5': str(get_imponibile_imposta_from_tag('VJ5')['imponibile']).replace('.', ','),
@@ -425,8 +574,8 @@ class ComunicazioneLiquidazione(models.Model):
             'VJ7_IMP': str(get_imponibile_imposta_from_tag('VJ7')['imposta']).replace('.', ','),
             'VJ8': str(get_imponibile_imposta_from_tag('VJ8')['imponibile']).replace('.', ','),
             'VJ8_IMP': str(get_imponibile_imposta_from_tag('VJ8')['imposta']).replace('.', ','),
-            'VJ9': str(get_imponibile_imposta_from_tag('VJ9')['imponibile']).replace('.', ','),
-            'VJ9_IMP': str(get_imponibile_imposta_from_tag('VJ9')['imposta']).replace('.', ','),
+            'VJ9': str(VJ9_IMPONIBILE).replace('.', ','),
+            'VJ9_IMP': str(VJ9_IMPOSTA).replace('.', ','),
             'VJ10': str(get_imponibile_imposta_from_tag('VJ10')['imponibile']).replace('.', ','),
             'VJ10_IMP': str(get_imponibile_imposta_from_tag('VJ10')['imposta']).replace('.', ','),
             'VJ11': str(get_imponibile_imposta_from_tag('VJ11')['imponibile']).replace('.', ','),
@@ -439,8 +588,8 @@ class ComunicazioneLiquidazione(models.Model):
             'VJ14_IMP': str(get_imponibile_imposta_from_tag('VJ14')['imposta']).replace('.', ','),
             'VJ15': str(get_imponibile_imposta_from_tag('VJ15')['imponibile']).replace('.', ','),
             'VJ15_IMP': str(get_imponibile_imposta_from_tag('VJ15')['imposta']).replace('.', ','),
-            'VJ16': str(get_imponibile_imposta_from_tag('VJ16')['imponibile']).replace('.', ','),
-            'VJ16_IMP': str(get_imponibile_imposta_from_tag('VJ16')['imposta']).replace('.', ','),
+            'VJ16': str(VJ16_IMPONIBILE).replace('.', ','),
+            'VJ16_IMP': str(VJ16_IMPOSTA).replace('.', ','),
             'VJ17': str(get_imponibile_imposta_from_tag('VJ17')['imponibile']).replace('.', ','),
             'VJ17_IMP': str(get_imponibile_imposta_from_tag('VJ17')['imposta']).replace('.', ','),
             'VJ18': str(get_imponibile_imposta_from_tag('VJ18')['imponibile']).replace('.', ','),
@@ -607,8 +756,8 @@ class ComunicazioneLiquidazione(models.Model):
         #data_dict_pag9['VH16D'] = data_dict_pag9['VH13D'] + data_dict_pag9['VH14D'] + data_dict_pag9['VH15D']
 
 
-        VL3 = (VE19_IMPOSTA + VE24_IMPOSTA) - VF25_IMPOSTA
-        VL4 = abs(VF25_IMPOSTA - (VE19_IMPOSTA + VE24_IMPOSTA))
+        VL3 = (VJ19_IMPOSTA + VE24_IMPOSTA) - VF25_IMPOSTA
+        VL4 = abs(VF25_IMPOSTA - (VJ19_IMPOSTA + VE24_IMPOSTA))
         if VL3 > 0:
             VL4 = 0
 
@@ -618,7 +767,7 @@ class ComunicazioneLiquidazione(models.Model):
 
         data_dict_pag11 = {
             'CODICE FISCALE11': self.taxpayer_vat,
-            'VL1': str(VE19_IMPOSTA + VE24_IMPOSTA).replace('.', ','),
+            'VL1': str(VJ19_IMPOSTA + VE24_IMPOSTA).replace('.', ','),
             'VL2': str(VF25_IMPOSTA).replace('.', ','),
             'VL3': str(VL3).replace('.', ','),
             'VL4': str(VL4).replace('.', ','),
@@ -665,14 +814,15 @@ class ComunicazioneLiquidazione(models.Model):
 
 
         for tax in lipe_annuale.debit_vat_account_line_ids:
-            #somma imponibile vendite e imposta vendite
-            tax_datas = tax.tax_id._compute_totals_tax({
-                'from_date': lipe_annuale.date_range_ids[0].date_start,
-                'to_date': lipe_annuale.date_range_ids[0].date_end,
-                'registry_type': 'customer'
-            })
-            VT1_1 += tax_datas[1]
-            VT1_2 += tax_datas[2]
+            if tax.tax_id.iva_corr or tax.tax_id.iva_fatt:
+                #somma imponibile vendite e imposta vendite
+                tax_datas = tax.tax_id._compute_totals_tax({
+                    'from_date': lipe_annuale.date_range_ids[0].date_start,
+                    'to_date': lipe_annuale.date_range_ids[0].date_end,
+                    'registry_type': 'customer'
+                })
+                VT1_1 += tax_datas[1]
+                VT1_2 += tax_datas[2]
 
         for tax in lipe_annuale.debit_vat_account_line_ids:
             if tax.tax_id.iva_corr:
@@ -694,11 +844,49 @@ class ComunicazioneLiquidazione(models.Model):
                 VT1_5 += tax_datas[1]
                 VT1_6 += tax_datas[2]
 
+            #Calcolo l'iva di Fatture che hanno però intestatario privato.
+            #Rimuovo tale importo dale VT1_5 e VT1_6 e lo sommo al 3 e 4.
+            # Righe Imponibile
+            if tax.tax_id.iva_fatt:
+                account_move_line_imponibile = self.env['account.move.line'].search(
+                    ['&', '&', ('tax_ids', '=', tax.tax_id.id), ('date', '>=', lipe_annuale.date_range_ids[0].date_start),
+                     ('date', '<=', lipe_annuale.date_range_ids[0].date_end)])
+                # Righe Imposta
+                account_move_line_imposta = self.env['account.move.line'].search(
+                    ['&', '&', ('tax_line_id', '=', tax.tax_id.id), ('date', '>=', lipe_annuale.date_range_ids[0].date_start),
+                     ('date', '<=', lipe_annuale.date_range_ids[0].date_end)])
+
+                tot_imponibile_privati_debiti = 0
+                tot_imponibile_privati_crediti = 0
+                tot_imposta_privati_debiti = 0
+                tot_imposta_privati_crediti = 0
+                for line in account_move_line_imposta:
+                    if not line.invoice_id.partner_id.vat:
+                        print("TROVATO")
+                        #Se la fattura e' ad un privato
+                        tot_imposta_privati_debiti += line.debit
+                        tot_imposta_privati_crediti += line.credit
+
+                for line in account_move_line_imponibile:
+                    if not line.invoice_id.partner_id.vat:
+                        print("TROVATO2")
+                        #Se la fattura e' ad un privato
+                        tot_imponibile_privati_debiti += line.debit
+                        tot_imponibile_privati_crediti += line.credit
+
+                #Rimuovo dai soggetti IVA
+                VT1_5 -= round(tot_imponibile_privati_crediti - tot_imponibile_privati_debiti, 2)
+                VT1_6 -= round(tot_imposta_privati_crediti - tot_imposta_privati_debiti, 2)
+                #Sposto sotto soggetti Privati
+                VT1_3 += round(tot_imponibile_privati_crediti - tot_imponibile_privati_debiti, 2)
+                VT1_4 += round(tot_imposta_privati_crediti - tot_imposta_privati_debiti, 2)
+
 
         region_private_operation = {
             'Abruzzo': {'imponibile': 0, 'imposta': 0},
             'Basilicata': {'imponibile': 0, 'imposta': 0},
-            'Trentino Alto Adige': {'imponibile': 0, 'imposta': 0},
+            'Trento': {'imponibile': 0, 'imposta': 0},
+            'Bolzano': {'imponibile': 0, 'imposta': 0},
             'Calabria': {'imponibile': 0, 'imposta': 0},
             'Campania': {'imponibile': 0, 'imposta': 0},
             'Emilia Romagna': {'imponibile': 0, 'imposta': 0},
@@ -721,21 +909,28 @@ class ComunicazioneLiquidazione(models.Model):
 
 
         for tax in lipe_annuale.debit_vat_account_line_ids:
-            if tax.tax_id.iva_corr:
+            if tax.tax_id.iva_corr or tax.tax_id.iva_fatt:
                 # Imposta vs. soggetti privati
                 # 1.Operazioni Imponibili
                 account_move_line = self.env['account.move.line'].sudo().search(['&','&',('date', '>=', lipe_annuale.date_range_ids[0].date_start),
                                                                                  ('date', '<=', lipe_annuale.date_range_ids[0].date_end),
-                                                                                 ('tax_ids', 'in', [tax.tax_id.id] )])
+                                                                                 ('tax_ids', '=', tax.tax_id.id )])
                 for line in account_move_line:
                     imponibile = line.debit - line.credit
-                    if not line.partner_id or not line.partner_id.region_id:
-                        #Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
-                        region_private_operation['Lombardia']['imponibile'] += imponibile
+                    #Verifica che si tratti o di corrispettivo o di fattura  a privato
+                    if tax.tax_id.iva_corr or not line.invoice_id.partner_id.vat:
+
+                        if not line.partner_id or not line.invoice_id.session_id.config_id.analytic_account_id.region_id:
+                            #Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
+                            region_private_operation['Lombardia']['imponibile'] += imponibile
+                        elif line.invoice_id.session_id.config_id.analytic_account_id.region_id:
+                            region_private_operation[line.invoice_id.session_id.config_id.analytic_account_id.region_id.name]['imponibile'] += imponibile
+                        else:
+                            # Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
+                            region_private_operation['Lombardia']['imponibile'] += imponibile
 
 
-                    if line.partner_id.region_id:
-                        region_private_operation[line.partner_id.region_id.name]['imponibile'] += imponibile
+
 
 
                 # # 1.Operazioni Imposta
@@ -744,12 +939,17 @@ class ComunicazioneLiquidazione(models.Model):
                                                                                  ('tax_line_id', '=', tax.tax_id.id)])
                 for line in account_move_line:
                     imposta = line.debit - line.credit
-                    if not line.partner_id or not line.partner_id.region_id:
-                        #Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
-                        region_private_operation['Lombardia']['imposta'] += imposta
+                    # Verifica che si tratti o di corrispettivo o di fattura  a privato
+                    if tax.tax_id.iva_corr or not line.invoice_id.partner_id.vat:
+                        if not line.partner_id or not line.invoice_id.session_id.config_id.analytic_account_id.region_id:
+                            #Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
+                            region_private_operation['Lombardia']['imposta'] += imposta
 
-                    if line.partner_id.region_id:
-                        region_private_operation[line.partner_id.region_id.name]['imposta'] += imposta
+                        elif line.invoice_id.session_id.config_id.analytic_account_id.region_id:
+                            region_private_operation[line.invoice_id.session_id.config_id.analytic_account_id.region_id.name]['imposta'] += imposta
+                        else:
+                            # Se il cliente non e' impostato oppure non e' presente la regione imposta in quella di Default
+                            region_private_operation['Lombardia']['imposta'] += imposta
 
 
         data_dict_pag13 = {
@@ -764,8 +964,8 @@ class ComunicazioneLiquidazione(models.Model):
             'VT2/2': round(abs(region_private_operation['Abruzzo']['imposta']), 2),
             'VT3/1': round(abs(region_private_operation['Basilicata']['imponibile']), 2),
             'VT3/2': round(abs(region_private_operation['Basilicata']['imposta']), 2),
-            'VT4/1': round(abs(region_private_operation['Trentino Alto Adige']['imponibile']), 2),
-            'VT4/2': round(abs(region_private_operation['Trentino Alto Adige']['imposta']), 2),
+            'VT4/1': round(abs(region_private_operation['Bolzano']['imponibile']), 2),
+            'VT4/2': round(abs(region_private_operation['Bolzano']['imposta']), 2),
             'VT5/1': round(abs(region_private_operation['Calabria']['imponibile']), 2),
             'VT5/2': round(abs(region_private_operation['Calabria']['imposta']), 2),
             'VT6/1': round(abs(region_private_operation['Campania']['imponibile']), 2),
@@ -794,6 +994,8 @@ class ComunicazioneLiquidazione(models.Model):
             'VT17/2': round(abs(region_private_operation['Sicilia']['imposta']), 2),
             'VT18/1': round(abs(region_private_operation['Toscana']['imponibile']), 2),
             'VT18/2': round(abs(region_private_operation['Toscana']['imposta']), 2),
+            'VT19/1': round(abs(region_private_operation['Trento']['imponibile']), 2),
+            'VT19/2': round(abs(region_private_operation['Trento']['imposta']), 2),
             'VT20/1': round(abs(region_private_operation['Umbria']['imponibile']), 2),
             'VT20/2': round(abs(region_private_operation['Umbria']['imposta']), 2),
             'VT21/1': round(abs(region_private_operation["Valle d'Aosta"]['imponibile']), 2),
@@ -805,8 +1007,8 @@ class ComunicazioneLiquidazione(models.Model):
 
         data_dict_pag14 = {
             'CODICE FISCALE14': self.taxpayer_vat,
-            'VX1': str('').replace('.', ','),
-            'VX2/1': str('').replace('.', ','),
+            'VX1': str(VL3).replace('.', ','),
+            'VX2/1': str(VL4).replace('.', ','),
             'VX2/2': str('').replace('.', ','),
             'VX3': str('').replace('.', ','),
         }

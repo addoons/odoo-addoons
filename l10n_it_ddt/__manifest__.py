@@ -10,7 +10,7 @@
     'name': 'DDT',
     'version': '12.0.1.1.0',
     'category': 'Localization/Italy',
-    'summary': 'Gestione documenti di trasporto',
+    'summary': "DDT",
     "author": "servizi@addoons.it",
     'website': 'www.addoons.it',
     'license': 'AGPL-3',

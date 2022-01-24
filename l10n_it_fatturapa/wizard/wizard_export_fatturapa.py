@@ -458,8 +458,8 @@ class WizardExportFatturapa(models.TransientModel):
             DatiAnagrafici = DatiAnagraficiCessionarioType()
         if (not partner.vat and not partner.fiscalcode) or partner.country_id.code != 'IT':
             if (
-                    partner.codice_destinatario == 'XXXXXXX'
-                    and partner.country_id.code
+                    # partner.codice_destinatario == 'XXXXXXX'
+                    partner.country_id.code
                     and partner.country_id.code != 'IT'
             ):
                 # SDI accepts missing VAT# for foreign customers by setting a
@@ -473,6 +473,8 @@ class WizardExportFatturapa(models.TransientModel):
                 raise UserError(
                     _('VAT number and fiscal code are not set for %s.') %
                     partner.name)
+        #il fiscalcode è necessario impostarlo sia se privato, sia se azienda con partita iva differente
+        #Es. partita iva appartenente ad un gruppo
         if partner.fiscalcode:
             fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
                 DatiAnagrafici.CodiceFiscale = partner.fiscalcode.upper()
@@ -493,7 +495,7 @@ class WizardExportFatturapa(models.TransientModel):
         if partner.company_type == 'company':
             fatturapa.FatturaElettronicaHeader.CessionarioCommittente. \
                 DatiAnagrafici.Anagrafica = AnagraficaType(
-                Denominazione=partner.name)
+                Denominazione=str(partner.name))
         elif partner.company_type == 'person':
             firstname = False
             lastname = False
@@ -725,7 +727,7 @@ class WizardExportFatturapa(models.TransientModel):
                         wt_line.withholding_tax_id.tax, 2),
                     CausalePagamento=wt_line.withholding_tax_id.
                         causale_pagamento_id.code
-            ))
+                ))
 
             if wt_line.withholding_tax_id.use_daticassaprev:
                 tax_id = wt_line.withholding_tax_id.daticassprev_tax_id
@@ -859,6 +861,9 @@ class WizardExportFatturapa(models.TransientModel):
     def setDettaglioLinee(self, invoice, body):
 
         body.DatiBeniServizi = DatiBeniServiziType()
+
+        #AltriDatiGestionaliType
+
         # TipoCessionePrestazione not handled
 
         line_no = 1
@@ -911,6 +916,18 @@ class WizardExportFatturapa(models.TransientModel):
                     ].kind_id.code
                 if line.admin_ref:
                     DettaglioLinea.RiferimentoAmministrazione = line.admin_ref
+
+
+                #Altri Dati Gestionali
+                if line.altri_dati_gestionali_ids:
+                    for dati_gestionale in line.altri_dati_gestionali_ids:
+                        DatoGestionale = AltriDatiGestionaliType(
+                            TipoDato=dati_gestionale.name,
+                            RiferimentoTesto=dati_gestionale.text_ref,
+                            RiferimentoNumero=dati_gestionale.num_ref if dati_gestionale.num_ref else 0.00,
+                            RiferimentoData=dati_gestionale.date_ref,
+                        )
+                        DettaglioLinea.AltriDatiGestionali.append(DatoGestionale)
 
 
                 if line.product_id:
@@ -1034,7 +1051,7 @@ class WizardExportFatturapa(models.TransientModel):
                             payment_method = payment_due.fatturapa_payment_method_id.code
 
                 ImportoPagamento = '%.2f' % (
-                        move_line.amount_currency or move_line.debit)
+                        (move_line.amount_currency or move_line.debit) - invoice.amount_sp)
                 DettaglioPagamento = DettaglioPagamentoType(
                     ModalitaPagamento=(payment_method),
                     DataScadenzaPagamento=move_line.date_maturity,

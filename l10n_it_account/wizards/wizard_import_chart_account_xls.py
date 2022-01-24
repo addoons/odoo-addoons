@@ -35,7 +35,7 @@ class WizardImportChartAccountXls(models.TransientModel):
             sixthlevel = self.env.ref('l10n_it_account.account_type_sottoconto_6').id
             ricavi = self.env.ref('account.data_account_type_revenue').id
             attivita_correnti = self.env.ref('account.data_account_type_current_assets').id
-            conti_ordine = self.env.ref('l10n_it_account.account_type_ordine')
+            conti_ordine = self.env.ref('l10n_it_account.account_type_ordine').id
             costi = self.env.ref('account.data_account_type_expenses').id
             passivita_correnti = self.env.ref('account.data_account_type_current_liabilities').id
             credito = self.env.ref('account.data_account_type_receivable').id
@@ -67,7 +67,7 @@ class WizardImportChartAccountXls(models.TransientModel):
                             if cell.value and cell.value.lower() == 'stato patrimoniale':
                                 account['area'] = 'stato_patrimoniale'
                                 account['user_type_id'] = attivita_correnti
-                            if cell.value and cell.value.lower() == "conti d'ordine":
+                            if cell.value and cell.value.lower() == "conti ordine":
                                 account['area'] = 'conti_ordine'
                                 account['user_type_id'] = conti_ordine
                         if column == 3:
@@ -86,7 +86,7 @@ class WizardImportChartAccountXls(models.TransientModel):
                                         account['user_type_id'] = costi
                                     if cell.value.lower() == 'ricavi':
                                         account['user_type_id'] = ricavi
-                                    if cell.value.lower() == "conti d'ordine":
+                                    if cell.value.lower() == "conti ordine":
                                         account['user_type_id'] = conti_ordine
                         if column == 4:
                             # Legame al macroaggregato
@@ -103,7 +103,7 @@ class WizardImportChartAccountXls(models.TransientModel):
                                 if isinstance(cell.value, float):
                                     cell.value = int(cell.value)
                                 aggregato_obj = self.env['account.account'].search([
-                                    ('hierarchy_type_id', '=', aggregato),('code', '=', str(cell.value))])
+                                    ('hierarchy_type_id', '=', aggregato),('code', '=', str(cell.value))],limit=1)
                                 if aggregato_obj:
                                     account['parent_id'] = aggregato_obj.id
                         if column == 6:
@@ -112,7 +112,7 @@ class WizardImportChartAccountXls(models.TransientModel):
                                 if isinstance(cell.value, float):
                                     cell.value = int(cell.value)
                                 third_level_obj = self.env['account.account'].search([
-                                    ('hierarchy_type_id', '=', third_level),('code', '=', str(cell.value))])
+                                    ('hierarchy_type_id', '=', third_level),('code', '=', str(cell.value))],limit=1)
                                 if third_level_obj:
                                     account['sottoconto_terzo_livello'] = third_level_obj.id
                         if column == 7:
@@ -121,7 +121,7 @@ class WizardImportChartAccountXls(models.TransientModel):
                                 if isinstance(cell.value, float):
                                     cell.value = int(cell.value)
                                 fourth_level_obj = self.env['account.account'].search([
-                                    ('hierarchy_type_id', '=', fourth_level),('code', '=', str(cell.value))])
+                                    ('hierarchy_type_id', '=', fourth_level),('code', '=', str(cell.value))],limit=1)
                                 if fourth_level_obj:
                                     account['sottoconto_quarto_livello'] = fourth_level_obj.id
                         if column == 8:
@@ -130,7 +130,7 @@ class WizardImportChartAccountXls(models.TransientModel):
                                 if isinstance(cell.value, float):
                                     cell.value = int(cell.value)
                                 fifth_level_obj = self.env['account.account'].search([
-                                    ('hierarchy_type_id', '=', fifth_level),('code', '=', str(cell.value))])
+                                    ('hierarchy_type_id', '=', fifth_level),('code', '=', str(cell.value))],limit=1)
                                 if fifth_level_obj:
                                     account['sottoconto_quinto_livello'] = fifth_level_obj.id
                         if column == 9:
@@ -139,11 +139,11 @@ class WizardImportChartAccountXls(models.TransientModel):
                                 if isinstance(cell.value, float):
                                     cell.value = int(cell.value)
                                 sixth_level_obj = self.env['account.account'].search([
-                                    ('hierarchy_type_id', '=', sixthlevel),('code', '=', str(cell.value))])
+                                    ('hierarchy_type_id', '=', sixthlevel),('code', '=', str(cell.value))],limit=1)
                                 if sixth_level_obj:
                                     account['sottoconto_sesto_livello'] = sixth_level_obj.id
                         if column == 10:
-                            if cell.value >= 0:
+                            if cell.value and cell.value >= 0:
                                 if isinstance(cell.value, float):
                                     cell.value = int(cell.value)
                                 if cell.value == 0:

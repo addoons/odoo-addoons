@@ -317,7 +317,7 @@ class WizardImportFatturapa(models.TransientModel):
                     ('price_include', '=', False),
                     # partially deductible VAT must be set by user
                     ('children_tax_ids', '=', False),
-                ], order='sequence')
+                ], order='id')
             if not account_taxes:
                 self.log_inconsistency(
                     _(
@@ -825,7 +825,13 @@ class WizardImportFatturapa(models.TransientModel):
                 )
             )
         purchase_journal = self.get_purchase_journal(company)
-        credit_account_id = purchase_journal.default_credit_account_id.id
+        # conto da utilizzare sulle righe
+        # 1) usare quello impostato sull'anagrafica
+        # 2) altrimenti usare quello impostato sul registro della fattura
+        if partner.costi_account:
+            credit_account_id = partner.costi_account.id
+        else:
+            credit_account_id = purchase_journal.default_credit_account_id.id
         comment = ''
         # 2.1.1
         docType_id = False
@@ -1432,6 +1438,8 @@ class WizardImportFatturapa(models.TransientModel):
                             'intermediary': Intermediary_id
                         }
                     )
+
+                invoice._onchange_partner_id()
                 new_invoices.append(invoice_id)
                 self.check_invoice_amount(invoice, fattura)
 

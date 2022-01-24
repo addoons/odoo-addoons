@@ -33,9 +33,10 @@ class WizardSchedeContabili(models.TransientModel):
         """
         self.ensure_one()
 
-        domain = [('move_id.date', '>=', self.from_date), ('move_id.date', '<=', self.to_date)]
-        current_year = self.from_date.year
-        domain_previous = ['&', ('move_id.date', '>=', str(current_year)+'-01-01'), ('move_id.date', '<', self.from_date)]
+        domain = [('move_id.date', '>=', self.from_date), ('move_id.date', '<=', self.to_date), '|', ('debit', '!=', 0), ('credit', '!=', 0)]
+        # current_year = self.from_date.year
+        # domain_previous = ['&', ('move_id.date', '>=', str(current_year)+'-01-01'), ('move_id.date', '<', self.from_date)]
+        domain_previous = [('move_id.date', '<', self.from_date)]
 
         partner_ids = []
         account_ids = []

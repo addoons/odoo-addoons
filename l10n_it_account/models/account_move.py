@@ -13,6 +13,21 @@ class AccountMove(models.Model):
     account_move_template = fields.Many2one('account.move.template')
     correggi_importo_registrazione = fields.Float(store=True)
     merge_account_line_done = fields.Boolean()
+    data_bolletta_doganale = fields.Date()
+
+    @api.onchange('data_bolletta_doganale')
+    def onchange_data_bolletta_doganale(self):
+        if self.data_bolletta_doganale:
+            if self.state != 'draft':
+                raise UserError("Annullare prima la registrazione contabile")
+            for line in self.line_ids:
+                company_currency_id = line.account_id.company_id.currency_id
+                amount = line.amount_currency
+                if line.currency_id and company_currency_id and line.currency_id != company_currency_id:
+                    amount = line.currency_id._convert(amount, company_currency_id, line.company_id,
+                                                       self.data_bolletta_doganale or fields.Date.today())
+                    line.debit = amount > 0 and amount or 0.0
+                    line.credit = amount < 0 and -amount or 0.0
 
     @api.multi
     def assert_balanced(self):
@@ -99,9 +114,13 @@ class AccountMove(models.Model):
                 if move_id.state == 'posted':
                     move_id.button_cancel()
                 partner_id = False
+                conto_analitico_id = False
                 for line in move_id.line_ids:
                     partner_id = line.partner_id
                     line.remove_move_reconcile()
+                    if line.analytic_account_id:
+                        conto_analitico_id = line.analytic_account_id.id
+
                 iva_s_corr = self.env['account.account'].search([('name', '=', 'IVA SU CORRISPETTIVI')])
                 iva_corr_id = self.env['account.tax'].search([('name', '=', 'Iva al 22% CORR (debito)')], limit=1)
                 corr_p_cessioni = self.env['account.account'].search([('name', '=', 'CORR.P/CESSIONE MERCI-NO VENTILAZ')])
@@ -142,6 +161,7 @@ class AccountMove(models.Model):
                     'tax_ids': [(4, iva_corr_id.id)],
                     'company_id': 1,
                     'move_id': move_id.id,
+                    'analytic_account_id': conto_analitico_id
                 }))
 
                 move_id.line_ids = line_ids

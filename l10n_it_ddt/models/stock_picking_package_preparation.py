@@ -540,7 +540,8 @@ class StockPickingPackagePreparationLine(models.Model):
             self.tax_ids = fpos.map_tax(
                 taxes, product, partner) if fpos else taxes
             # Price and discount
-            self.price_unit = product.price
+            if not self.price_unit:
+                self.price_unit = product.lst_price
             if order:
                 context_partner = dict(
                     self.env.context, partner_id=partner.id)
