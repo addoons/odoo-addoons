@@ -924,7 +924,7 @@ class WizardExportFatturapa(models.TransientModel):
                         DatoGestionale = AltriDatiGestionaliType(
                             TipoDato=dati_gestionale.name,
                             RiferimentoTesto=dati_gestionale.text_ref,
-                            RiferimentoNumero=dati_gestionale.num_ref if dati_gestionale.num_ref else 0.00,
+                            RiferimentoNumero=dati_gestionale.num_ref if dati_gestionale.num_ref else '%.2f' % 0,
                             RiferimentoData=dati_gestionale.date_ref,
                         )
                         DettaglioLinea.AltriDatiGestionali.append(DatoGestionale)
