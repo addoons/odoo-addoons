@@ -14,22 +14,5 @@ class taskOreInherit(models.Model):
     parent = fields.Integer(compute='_compute_parent', store=True)
 
 
-class ProductProduct(models.Model):
 
-    _inherit = 'product.product'
-
-    recalculate_stock_value_9 = fields.Integer(compute='_recompute_stock_value', store=True)
-
-    def _recompute_stock_value(self):
-        product_ids = self.search([])
-        for p in product_ids:
-            moves = self.env['stock.move'].search([('product_id', '=', p.id)])
-            for m in moves:
-                self.env['product.price.history'].create({
-                    'product_id': p.id,
-                    'datetime': m.date,
-                    'cost': m.value
-                })
-            p._compute_stock_value()
-            print("FATTO")
 

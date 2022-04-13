@@ -8,7 +8,7 @@
     'website': 'www.addoons.it',
     'support': 'support@addoons.it',
     'depends': [
-        'base', 'sale', 'sale_management', 'account', 'project', 'addoons_reports', 'hr_timesheet', 'hr_attendance', 'report_xlsx', 'addoons_pacchetto_ore'
+        'base', 'sale', 'stock', 'sale_management', 'account', 'project', 'addoons_reports', 'hr_timesheet', 'hr_attendance', 'report_xlsx', 'addoons_pacchetto_ore'
     ],
     'data': [
         'views/project_gant.xml',
