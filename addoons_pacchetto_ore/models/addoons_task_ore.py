@@ -39,6 +39,7 @@ class taskOreInherit(models.Model):
 
     def compute_avviso_ore_terminate(self):
         for rec in self:
+            return
             if not self.partner_id.parent_id:
                 cliente = self.partner_id
             else:
