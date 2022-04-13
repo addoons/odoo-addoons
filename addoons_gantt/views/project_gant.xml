@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="project_gant_action_client" model="ir.actions.client">
+        <field name="name">Gantt View</field>
+        <field name="tag">project.gant.view</field>
+        <field name="res_model">project.task</field>
+        <field name="search_view_id" ref="project.view_task_search_form"/>
+        <field name="params" eval="{}"/>
+    </record>
+    <record id="addoons_project_kanban_view" model="ir.ui.view">
+        <field name="name">addoons.project.kanban.view</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="hr_timesheet.view_project_kanban_inherited"/>
+        <field name="arch" type="xml">
+            <xpath expr="//a[@t-if='record.allow_timesheets.raw_value']" position="after">
+                <a name="action_open_gantt" type="object" class="o_project_kanban_box o_project_timesheet_box" groups="project.group_project_manager">
+                    <div>
+                        <span class="o_label">Gantt View</span>
+                    </div>
+                </a>
+            </xpath>
+        </field>
+    </record>
+    <menuitem id="menu_gantt" name="Gantt View" parent="project.menu_main_pm"
+            sequence="20" groups="project.group_project_manager" action="project_gant_action_client"/>
+
+</odoo>

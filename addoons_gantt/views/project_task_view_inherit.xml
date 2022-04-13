@@ -1,0 +1,25 @@
+<odoo>
+    <data>
+        <record id="addoons_gantt_view_task_form_inherit" model="ir.ui.view">
+            <field name="name">project.gantt.task.ore</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//page[@name='extra_info']" position="after">
+                    <page string="Gantt" >
+                        <group>
+                            <field name="open"  string="Open" />
+                        <field name="start_date"  string="Start Date" />
+                        <field name="end_date"  string="End Date" />
+                        <field name="parent"  string="Parent" />
+                        <field name="duration"  string="Duration" />
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

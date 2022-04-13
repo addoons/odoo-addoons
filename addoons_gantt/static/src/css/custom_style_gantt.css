@@ -1,0 +1,22 @@
+.gantt_cal_light.gantt_cal_light_wide{
+    height: 300px !important;
+}
+.gantt_cal_larea{
+    height: 220px !important;
+}
+
+.gantt_cal_light_wide .gantt_section_time{
+    height: 90px !important;
+}
+.gantt_cal_light_wide .gantt_wrap_section{
+    height: 130px;
+}
+.gantt_task_line.gantt_task_inline_color .gantt_task_progress{
+    text-align: left;
+    color: white;
+    font-weight: bold;
+    padding-left: 5px;
+}
+.status_line {
+    background-color: #0ca30a;
+}
